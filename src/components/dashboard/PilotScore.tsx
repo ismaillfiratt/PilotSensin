@@ -49,9 +49,8 @@ export default function PilotScore({ score, enZayif }: Props) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5, duration: 0.5 }}
           >
-            {score}
+            %{score}
           </motion.span>
-          <span className="text-xs text-[#94a3b8] mt-0.5">/100</span>
         </div>
       </div>
 
@@ -73,7 +72,7 @@ export default function PilotScore({ score, enZayif }: Props) {
                 style={{ backgroundColor: s >= 80 ? "#22c55e" : s >= 60 ? "#fbc024" : "#ef4444" }}
               />
             </div>
-            <span className="text-xs text-[#94a3b8] w-6 text-right">{s}</span>
+            <span className="text-xs text-[#94a3b8] w-8 text-right">%{s}</span>
           </div>
         ))}
       </div>

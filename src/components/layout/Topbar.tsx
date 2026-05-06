@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -114,7 +114,7 @@ export default function Topbar() {
               backgroundColor: `${skorRenk}18`,
             }}
           >
-            Skor: {genelSkor}
+            Skor: %{genelSkor}
           </span>
         </div>
 
