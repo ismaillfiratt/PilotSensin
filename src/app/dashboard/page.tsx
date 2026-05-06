@@ -1,6 +1,7 @@
 import PilotScore from "@/components/dashboard/PilotScore";
 import ModuleCard from "@/components/dashboard/ModuleCard";
 import QuickActions from "@/components/dashboard/QuickActions";
+import TarihBilgisi from "@/components/dashboard/TarihBilgisi";
 
 const modules = [
   {
@@ -77,8 +78,8 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-2xl font-bold text-white">Kontrol Paneli</h1>
         <p className="text-sm text-[#94a3b8] mt-1">
-          Salı, 6 Mayıs 2026 &mdash; Son güncelleme: az önce
-        </p>
+          <TarihBilgisi />
+</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
