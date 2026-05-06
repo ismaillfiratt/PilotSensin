@@ -1,26 +1,162 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ── Koyu Tema (varsayılan) ── */
+:root,
+[data-theme="dark"] {
+  --bg-primary:    #0e172a;
+  --bg-secondary:  #162035;
+  --bg-card:       rgba(26, 39, 68, 0.85);
+  --text-primary:  #ffffff;
+  --text-secondary:#94a3b8;
+  --text-muted:    #64748b;
+  --border-color:  rgba(251, 192, 36, 0.2);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --input-bg:      rgba(255, 255, 255, 0.05);
+  --input-border:  rgba(255, 255, 255, 0.08);
+  --scrollbar-bg:  #0e172a;
+}
+
+/* ── Açık Tema ── */
+[data-theme="light"] {
+  --bg-primary:    #f0f4ff;
+  --bg-secondary:  #e4eaf8;
+  --bg-card:       rgba(255, 255, 255, 0.95);
+  --text-primary:  #0f172a;
+  --text-secondary:#475569;
+  --text-muted:    #94a3b8;
+  --border-color:  rgba(99, 102, 241, 0.18);
+  --border-subtle: rgba(0, 0, 0, 0.07);
+  --input-bg:      rgba(0, 0, 0, 0.04);
+  --input-border:  rgba(0, 0, 0, 0.1);
+  --scrollbar-bg:  #e4eaf8;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; padding: 0; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: var(--scrollbar-bg); }
+::-webkit-scrollbar-thumb  { background: var(--border-color); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #fbc024; }
+
+/* ── Glass card ── */
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+/* ══════════════════════════════════════
+   AÇIK TEMA OVERRIDE'LARI
+   Element selector kullanıyoruz — Tailwind
+   arbitrary value class'larından daha güvenli
+   ══════════════════════════════════════ */
+
+/* Yapısal bölümler */
+[data-theme="light"] body    { background: var(--bg-primary)   !important; color: var(--text-primary) !important; }
+[data-theme="light"] main    { background: var(--bg-primary)   !important; }
+[data-theme="light"] header  { background: var(--bg-secondary) !important; border-bottom-color: var(--border-subtle) !important; }
+[data-theme="light"] aside   { background: var(--bg-secondary) !important; border-right-color:  var(--border-subtle) !important; }
+[data-theme="light"] footer  { background: var(--bg-secondary) !important; border-top-color:    var(--border-subtle) !important; }
+
+/* Tailwind text renk sınıfları */
+[data-theme="light"] .text-white   { color: var(--text-primary)   !important; }
+[data-theme="light"] [class*="text-[#94a3b8]"] { color: var(--text-secondary) !important; }
+
+/* Tailwind arka plan sınıfları — attribute string içinde [ ] kaçış gerekmez */
+[data-theme="light"] [class*="bg-[#0e172a]"] { background-color: var(--bg-primary)   !important; }
+[data-theme="light"] [class*="bg-[#0a1020]"] { background-color: var(--bg-primary)   !important; }
+[data-theme="light"] [class*="bg-[#162035]"] { background-color: var(--bg-secondary) !important; }
+[data-theme="light"] [class*="bg-[#1a2744]"] { background-color: var(--bg-secondary) !important; }
+
+/* İnce transparent overlay'ler */
+[data-theme="light"] [class*="bg-[rgba(255,255,255,0.0"]  { background-color: rgba(0,0,0,0.03) !important; }
+[data-theme="light"] [class*="bg-[rgba(255,255,255,0.04]"] { background-color: rgba(0,0,0,0.04) !important; }
+[data-theme="light"] [class*="bg-[rgba(255,255,255,0.05]"] { background-color: rgba(0,0,0,0.04) !important; }
+[data-theme="light"] [class*="bg-[rgba(255,255,255,0.06]"] { background-color: rgba(0,0,0,0.05) !important; }
+[data-theme="light"] [class*="bg-[rgba(255,255,255,0.08]"] { background-color: rgba(0,0,0,0.06) !important; }
+
+/* Border renkleri */
+[data-theme="light"] [class*="border-[rgba(255,255,255,0.06)"]   { border-color: var(--border-subtle) !important; }
+[data-theme="light"] [class*="border-[rgba(255,255,255,0.08)"]   { border-color: var(--border-subtle) !important; }
+[data-theme="light"] [class*="border-[rgba(255,255,255,0.1)"]    { border-color: var(--border-subtle) !important; }
+[data-theme="light"] [class*="divide-[rgba(255,255,255,0.04)"]   { border-color: var(--border-subtle) !important; }
+
+/* Input alanları */
+[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  background: var(--input-bg)     !important;
+  border-color: var(--input-border) !important;
+  color: var(--text-primary)      !important;
+  color-scheme: light;
+}
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder { color: var(--text-muted) !important; }
+[data-theme="light"] option { background: var(--bg-card) !important; color: var(--text-primary) !important; }
+
+/* Hover arka planlar */
+[data-theme="light"] [class*="hover:bg-[rgba(255,255,255"]:hover { background-color: rgba(0,0,0,0.05) !important; }
+[data-theme="light"] [class*="hover:bg-[rgba(251,192,36"]:hover  { background-color: rgba(251,192,36,0.12) !important; }
+
+/* Gri icon'lar */
+[data-theme="light"] .text-\[\#94a3b8\]   { color: var(--text-secondary) !important; }
+[data-theme="light"] [style*="color: rgb(148, 163, 184)"] { color: var(--text-secondary) !important; }
+
+/* ── Politika sayfaları (prose) ── */
+.prose-custom { color: var(--text-primary); }
+.prose-custom h1 {
+  font-size: 1.875rem; font-weight: 800; margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+.prose-custom .lead {
+  font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 2rem;
+  border-left: 3px solid #fbc024; padding-left: 1rem; line-height: 1.7;
+}
+.prose-custom section { margin-bottom: 2rem; }
+.prose-custom h2 {
+  font-size: 1.05rem; font-weight: 700; color: #fbc024;
+  margin-bottom: 0.75rem; padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.prose-custom p { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.75; margin-bottom: 0.75rem; }
+.prose-custom ul { padding-left: 1.25rem; margin-bottom: 0.75rem; }
+.prose-custom li { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.3rem; list-style: disc; }
+.prose-custom strong { color: var(--text-primary); font-weight: 600; }
+.prose-custom a { color: #fbc024; text-decoration: none; }
+.prose-custom a:hover { text-decoration: underline; }
+.prose-custom .meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 3rem; border-top: 1px solid var(--border-subtle); padding-top: 1rem; }
+
+/* ── Animasyonlar ── */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-track { animation: marquee 30s linear infinite; }
+.marquee-track:hover { animation-play-state: paused; }
+
+@keyframes pulse-yellow {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.pulse-yellow { animation: pulse-yellow 2s ease-in-out infinite; }
+
+@keyframes gauge-fill {
+  from { stroke-dashoffset: 339.3; }
 }

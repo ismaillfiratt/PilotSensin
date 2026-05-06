@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Business {
+  id        String   @id @default(cuid())
+  ad        String
+  sektor    String?
+  vergiNo   String?
+  adres     String?
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id         String    @id @default(cuid())
+  email      String    @unique
+  password   String
+  ad         String
+  soyad      String?
+  telefon    String?
+  role       Role      @default(OWNER)
+  business   Business? @relation(fields: [businessId], references: [id])
+  businessId String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([email])
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  STAFF
+}
