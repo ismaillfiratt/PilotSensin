@@ -41,7 +41,7 @@ export default function Sidebar() {
       style={{ background: "var(--bg-secondary)", borderRight: "1px solid var(--border-subtle)", transition: "background 0.25s ease" }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-[rgba(251,192,36,0.1)]">
+      <Link href="/dashboard" className="flex items-center gap-3 px-4 py-5 border-b border-[rgba(251,192,36,0.1)] hover:opacity-80 transition-opacity">
         <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#fbc024] shrink-0">
           <Plane className="w-4 h-4 text-[#0e172a] rotate-45" />
         </div>
@@ -55,7 +55,7 @@ export default function Sidebar() {
             Pilot Sensin
           </motion.span>
         )}
-      </div>
+      </Link>
 
       {/* Nav */}
       <nav className="flex-1 px-2 py-4 space-y-1">

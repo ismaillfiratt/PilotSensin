@@ -83,12 +83,14 @@ export default function Topbar() {
       <header className="flex items-center justify-between px-6 py-3 shrink-0" style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-subtle)", transition: "background 0.25s ease" }}>
         {/* Sol: işletme adı */}
         <div className="flex items-center gap-2">
-          <Store className="w-4 h-4 text-[#94a3b8]" />
-          {kullanici ? (
-            <span className="text-white font-semibold text-sm">{kullanici.businessAd}</span>
-          ) : (
-            <span className="w-28 h-4 rounded bg-[rgba(255,255,255,0.06)] animate-pulse" />
-          )}
+          <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <Store className="w-4 h-4 text-[#94a3b8]" />
+            {kullanici ? (
+              <span className="text-white font-semibold text-sm">{kullanici.businessAd}</span>
+            ) : (
+              <span className="w-28 h-4 rounded bg-[rgba(255,255,255,0.06)] animate-pulse" />
+            )}
+          </Link>
           <span className="ml-2 px-2 py-0.5 rounded-full text-xs font-bold bg-[rgba(251,192,36,0.15)] text-[#fbc024] border border-[rgba(251,192,36,0.3)]">
             Skor: 72
           </span>
