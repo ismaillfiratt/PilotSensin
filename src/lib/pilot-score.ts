@@ -43,22 +43,24 @@ export function nakitSkoru(islemler: Islem[]): ModulSkoru {
 export function gorevSkoru(gorevler: Gorev[]): ModulSkoru {
   if (gorevler.length === 0) return { baslik: "Görevler", skor: 100, durum: "ok", metrik: "0", metrikLabel: "Görev yok", uyariSayisi: 0 };
 
-  const tamamlanan  = gorevler.filter((g) => g.durum === "tamamlandi").length;
-  const acik        = gorevler.filter((g) => g.durum !== "tamamlandi").length;
-  const gecikmiş    = gorevler.filter((g) => g.durum !== "tamamlandi" && new Date(g.sonTarih) < new Date()).length;
-  const acilAcik    = gorevler.filter((g) => g.durum !== "tamamlandi" && g.oncelik === "acil").length;
+  const tamamlanan = gorevler.filter((g) => g.durum === "tamamlandi").length;
+  const acik       = gorevler.filter((g) => g.durum !== "tamamlandi").length;
+  const gecikmiş   = gorevler.filter((g) => g.durum !== "tamamlandi" && new Date(g.sonTarih) < new Date()).length;
+  const acilAcik   = gorevler.filter((g) => g.durum !== "tamamlandi" && g.oncelik === "acil").length;
 
-  const tamamOran   = tamamlanan / gorevler.length;
-  const gecikCeza   = Math.min(30, gecikmiş * 8);
-  const acilCeza    = Math.min(20, acilAcik * 7);
-  const skor        = Math.round(Math.max(0, tamamOran * 100 - gecikCeza - acilCeza));
+  // Tamamlama: 60 puan, Zamanındalık: 30 puan, Baz: 10 puan
+  const tamamPuan  = (tamamlanan / gorevler.length) * 60;
+  const gecikOran  = gecikmiş / Math.max(1, acik);
+  const zamanPuan  = (1 - gecikOran) * 30;
+  const acilCeza   = Math.min(10, acilAcik * 3);
+  const skor       = Math.round(Math.max(0, tamamPuan + zamanPuan - acilCeza + 10));
 
   return {
     baslik: "Görevler",
     skor,
-    durum: skor >= 70 ? "ok" : skor >= 40 ? "warning" : "critical",
+    durum: skor >= 70 ? "ok" : skor >= 45 ? "warning" : "critical",
     metrik:      String(acik),
-    metrikLabel: "Açık görev",
+    metrikLabel: gecikmiş > 0 ? `${gecikmiş} gecikmiş görev` : "Açık görev",
     uyariSayisi: gecikmiş + acilAcik,
   };
 }

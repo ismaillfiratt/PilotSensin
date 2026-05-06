@@ -67,8 +67,10 @@ export default function ModuleCard({
 
           <div className="space-y-1">
             <div className="flex justify-between items-center">
-              <span className="text-xs text-[#94a3b8]">Modül Skoru</span>
-              <span className="text-xs font-bold" style={{ color: cfg.color }}>{score}/100</span>
+              <span className="text-xs text-[#94a3b8]">Performans Puanı</span>
+              <span className="text-xs font-bold" style={{ color: cfg.color }}>
+                {score} <span className="font-normal text-[#64748b]">/ 100</span>
+              </span>
             </div>
             <div className="h-1.5 rounded-full bg-[rgba(255,255,255,0.05)]">
               <motion.div
