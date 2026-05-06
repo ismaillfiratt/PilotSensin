@@ -4,7 +4,8 @@ import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Plus, History, Pencil, Trash2, AlertTriangle } from "lucide-react";
-import { MOCK_URUNLER, stokDurumu, gunKaldi, type Urun } from "@/lib/stok-data";
+import { stokDurumu, gunKaldi, type Urun } from "@/lib/stok-data";
+import { useStok } from "@/store/stok";
 import StokSeviyesi from "./StokSeviyesi";
 import HareketiModal from "./HareketiModal";
 import UrunEkleModal from "./UrunEkleModal";
@@ -25,7 +26,7 @@ interface Props {
 
 export default function StokTablosu({ otomatikAcilModal }: Props) {
   const router = useRouter();
-  const [urunler, setUrunler] = useState<Urun[]>(MOCK_URUNLER);
+  const { urunler, sil: storesSil } = useStok();
   const [arama, setArama] = useState("");
   const [filtre, setFiltre] = useState<Filtre>("tumu");
 
@@ -263,7 +264,7 @@ export default function StokTablosu({ otomatikAcilModal }: Props) {
                 </button>
                 <button
                   onClick={() => {
-                    setUrunler((prev) => prev.filter((u) => u.id !== silOnayi.id));
+                    storesSil(silOnayi.id);
                     setSilOnayi(null);
                   }}
                   className="flex-1 py-2.5 rounded-xl bg-[#ef4444] text-white text-sm font-bold hover:bg-[#dc2626] transition-colors"

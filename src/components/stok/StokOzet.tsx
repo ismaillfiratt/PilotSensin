@@ -2,10 +2,11 @@
 
 import { motion } from "framer-motion";
 import { Package, AlertTriangle, TrendingDown, Skull } from "lucide-react";
-import { MOCK_URUNLER, stokDurumu } from "@/lib/stok-data";
+import { stokDurumu } from "@/lib/stok-data";
+import { useStok } from "@/store/stok";
 
 export default function StokOzet() {
-  const urunler = MOCK_URUNLER;
+  const { urunler } = useStok();
   const kritikler = urunler.filter((u) => stokDurumu(u) === "kritik");
   const uyarilar = urunler.filter((u) => stokDurumu(u) === "uyari");
   const oluStok = urunler.filter((u) => stokDurumu(u) === "olu");

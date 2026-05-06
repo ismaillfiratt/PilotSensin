@@ -8,17 +8,15 @@ import {
   DURUM_CONFIG, DURUM_SIRASI,
   type Gorev, type GorevDurumu,
 } from "@/lib/gorev-data";
+import { useGorevler } from "@/store/gorevler";
 import GorevKarti from "./GorevKarti";
 import GorevModal from "./GorevModal";
 
-interface Props {
-  gorevler: Gorev[];
-  setGorevler: React.Dispatch<React.SetStateAction<Gorev[]>>;
-  otomatikAcilModal?: boolean;
-}
+interface Props { otomatikAcilModal?: boolean; }
 
-export default function KanbanBoard({ gorevler, setGorevler, otomatikAcilModal }: Props) {
+export default function KanbanBoard({ otomatikAcilModal }: Props) {
   const router = useRouter();
+  const { gorevler, ekle, guncelle, durumDegis, sil: storesSil } = useGorevler();
   const [modalAcik, setModalAcik] = useState(false);
   const [duzenle, setDuzenle]     = useState<Gorev | null>(null);
   const [silOnayi, setSilOnayi]   = useState<Gorev | null>(null);
@@ -35,19 +33,18 @@ export default function KanbanBoard({ gorevler, setGorevler, otomatikAcilModal }
 
   const handleKaydet = (form: Omit<Gorev, "id" | "olusturmaTarih">) => {
     if (duzenle) {
-      setGorevler((p) => p.map((g) => g.id === duzenle.id ? { ...form, id: duzenle.id, olusturmaTarih: duzenle.olusturmaTarih } : g));
+      guncelle(duzenle.id, { ...form, olusturmaTarih: duzenle.olusturmaTarih });
       setDuzenle(null);
     } else {
-      setGorevler((p) => [{ ...form, id: Date.now().toString(), olusturmaTarih: new Date().toISOString() }, ...p]);
+      ekle(form);
     }
   };
 
-  const tasi = (id: string, yeni: GorevDurumu) =>
-    setGorevler((p) => p.map((g) => g.id === id ? { ...g, durum: yeni } : g));
+  const tasi = (id: string, yeni: GorevDurumu) => durumDegis(id, yeni);
 
   const sil = () => {
     if (!silOnayi) return;
-    setGorevler((p) => p.filter((g) => g.id !== silOnayi.id));
+    storesSil(silOnayi.id);
     setSilOnayi(null);
   };
 
