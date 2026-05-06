@@ -62,9 +62,41 @@ export const MOCK_ISLEMLER: Islem[] = [
   { id: "i28", tip: "gider", tutar: 2100,  kategori: "Vergi & SGK",        aciklama: "SGK primi",            tarih: tarih(33), odemeYontemi: "havale" },
 ];
 
+export interface OzetSatir { etiket: string; gelir: number; gider: number; net: number }
+
+// Günlük özet hesaplama (son 14 gün)
+export function gunlukOzet(): OzetSatir[] {
+  const gunler: OzetSatir[] = [];
+
+  for (let g = 13; g >= 0; g--) {
+    const gunBaslangic = new Date();
+    gunBaslangic.setHours(0, 0, 0, 0);
+    gunBaslangic.setDate(gunBaslangic.getDate() - g);
+    const gunBitis = new Date(gunBaslangic);
+    gunBitis.setHours(23, 59, 59, 999);
+
+    const gunIslemleri = MOCK_ISLEMLER.filter((i) => {
+      const t = new Date(i.tarih);
+      return t >= gunBaslangic && t <= gunBitis;
+    });
+
+    const gelir = gunIslemleri.filter((i) => i.tip === "gelir").reduce((s, i) => s + i.tutar, 0);
+    const gider = gunIslemleri.filter((i) => i.tip === "gider").reduce((s, i) => s + i.tutar, 0);
+
+    gunler.push({
+      etiket: gunBaslangic.toLocaleDateString("tr-TR", { day: "numeric", month: "short" }),
+      gelir,
+      gider,
+      net: gelir - gider,
+    });
+  }
+
+  return gunler;
+}
+
 // Haftalık özet hesaplama (son 8 hafta)
-export function haftalikOzet() {
-  const haftalar: { hafta: string; gelir: number; gider: number; net: number }[] = [];
+export function haftalikOzet(): OzetSatir[] {
+  const haftalar: OzetSatir[] = [];
 
   for (let h = 7; h >= 0; h--) {
     const baslangic = new Date(Date.now() - (h * 7 + 6) * 86400000);
@@ -79,7 +111,7 @@ export function haftalikOzet() {
     const gider = haftalikIslemler.filter((i) => i.tip === "gider").reduce((s, i) => s + i.tutar, 0);
 
     haftalar.push({
-      hafta: `H${8 - h}`,
+      etiket: `H${8 - h}`,
       gelir,
       gider,
       net: gelir - gider,

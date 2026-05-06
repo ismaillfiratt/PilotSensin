@@ -12,13 +12,21 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { haftalikOzet, formatTL } from "@/lib/nakit-data";
+import { haftalikOzet, gunlukOzet, formatTL } from "@/lib/nakit-data";
+
+type Periyot = "gunluk" | "haftalik" | "aylik";
+
+const PERIYOTLAR: { key: Periyot; label: string }[] = [
+  { key: "gunluk",  label: "Günlük"  },
+  { key: "haftalik", label: "Haftalık" },
+  { key: "aylik",   label: "Aylık"   },
+];
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="glass-card rounded-xl p-3 text-xs space-y-1.5 min-w-[160px]">
-      <p className="text-[#94a3b8] font-semibold mb-2">{label}. Hafta</p>
+      <p className="text-[#94a3b8] font-semibold mb-2">{label}</p>
       {payload.map((p: any) => (
         <div key={p.dataKey} className="flex justify-between gap-4">
           <span style={{ color: p.color }}>{p.name}</span>
@@ -30,26 +38,28 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function NakitGrafik() {
-  const [aktif, setAktif] = useState<"haftalik" | "aylik">("haftalik");
-  const data = haftalikOzet();
+  const [aktif, setAktif] = useState<Periyot>("haftalik");
+
+  const data = aktif === "gunluk" ? gunlukOzet() : haftalikOzet();
+  const xKey = "etiket";
 
   return (
     <div className="glass-card rounded-2xl p-5 flex-1">
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-sm font-semibold text-white">Nakit Akışı</h2>
         <div className="flex gap-1 p-1 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)]">
-          {(["haftalik", "aylik"] as const).map((v) => (
+          {PERIYOTLAR.map(({ key, label }) => (
             <button
-              key={v}
-              onClick={() => setAktif(v)}
+              key={key}
+              onClick={() => setAktif(key)}
               className="px-3 py-1 rounded-md text-xs font-medium transition-all"
               style={{
-                backgroundColor: aktif === v ? "rgba(251,192,36,0.15)" : "transparent",
-                color: aktif === v ? "#fbc024" : "#94a3b8",
-                border: aktif === v ? "1px solid rgba(251,192,36,0.3)" : "1px solid transparent",
+                backgroundColor: aktif === key ? "rgba(251,192,36,0.15)" : "transparent",
+                color: aktif === key ? "#fbc024" : "#94a3b8",
+                border: aktif === key ? "1px solid rgba(251,192,36,0.3)" : "1px solid transparent",
               }}
             >
-              {v === "haftalik" ? "Haftalık" : "Aylık"}
+              {label}
             </button>
           ))}
         </div>
@@ -59,10 +69,11 @@ export default function NakitGrafik() {
         <ComposedChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
           <XAxis
-            dataKey="hafta"
-            tick={{ fill: "#94a3b8", fontSize: 11 }}
+            dataKey={xKey}
+            tick={{ fill: "#94a3b8", fontSize: aktif === "gunluk" ? 9 : 11 }}
             axisLine={false}
             tickLine={false}
+            interval={aktif === "gunluk" ? 1 : 0}
           />
           <YAxis
             tick={{ fill: "#94a3b8", fontSize: 10 }}

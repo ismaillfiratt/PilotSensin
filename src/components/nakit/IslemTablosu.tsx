@@ -74,7 +74,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
   };
 
   const tarihFormat = (iso: string) =>
-    new Date(iso).toLocaleDateString("tr-TR", { day: "2-digit", month: "short", year: "numeric" });
+    new Date(iso).toLocaleDateString("tr-TR", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
 
   return (
     <>
