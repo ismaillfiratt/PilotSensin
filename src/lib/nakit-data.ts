@@ -64,61 +64,71 @@ export const MOCK_ISLEMLER: Islem[] = [
 
 export interface OzetSatir { etiket: string; gelir: number; gider: number; net: number }
 
-// Günlük özet hesaplama (son 14 gün)
-export function gunlukOzet(): OzetSatir[] {
-  const gunler: OzetSatir[] = [];
+// Günlük: son 24 saat, saatlik gruplar
+export function saatlikOzet(): OzetSatir[] {
+  const simdi = new Date();
+  return Array.from({ length: 24 }, (_, i) => {
+    const saat = new Date(simdi);
+    saat.setHours(simdi.getHours() - 23 + i, 0, 0, 0);
+    const saatSonu = new Date(saat);
+    saatSonu.setMinutes(59, 59, 999);
 
-  for (let g = 13; g >= 0; g--) {
-    const gunBaslangic = new Date();
-    gunBaslangic.setHours(0, 0, 0, 0);
-    gunBaslangic.setDate(gunBaslangic.getDate() - g);
-    const gunBitis = new Date(gunBaslangic);
-    gunBitis.setHours(23, 59, 59, 999);
-
-    const gunIslemleri = MOCK_ISLEMLER.filter((i) => {
-      const t = new Date(i.tarih);
-      return t >= gunBaslangic && t <= gunBitis;
+    const islemler = MOCK_ISLEMLER.filter((x) => {
+      const t = new Date(x.tarih);
+      return t >= saat && t <= saatSonu;
     });
-
-    const gelir = gunIslemleri.filter((i) => i.tip === "gelir").reduce((s, i) => s + i.tutar, 0);
-    const gider = gunIslemleri.filter((i) => i.tip === "gider").reduce((s, i) => s + i.tutar, 0);
-
-    gunler.push({
-      etiket: gunBaslangic.toLocaleDateString("tr-TR", { day: "numeric", month: "short" }),
-      gelir,
-      gider,
-      net: gelir - gider,
-    });
-  }
-
-  return gunler;
+    const gelir = islemler.filter((x) => x.tip === "gelir").reduce((s, x) => s + x.tutar, 0);
+    const gider = islemler.filter((x) => x.tip === "gider").reduce((s, x) => s + x.tutar, 0);
+    return { etiket: `${String(saat.getHours()).padStart(2, "0")}:00`, gelir, gider, net: gelir - gider };
+  });
 }
 
-// Haftalık özet hesaplama (son 8 hafta)
+// Haftalık: son 7 gün, günlük gruplar
 export function haftalikOzet(): OzetSatir[] {
-  const haftalar: OzetSatir[] = [];
+  return Array.from({ length: 7 }, (_, i) => {
+    const gun = new Date();
+    gun.setDate(gun.getDate() - 6 + i);
+    gun.setHours(0, 0, 0, 0);
+    const gunSonu = new Date(gun);
+    gunSonu.setHours(23, 59, 59, 999);
 
-  for (let h = 7; h >= 0; h--) {
-    const baslangic = new Date(Date.now() - (h * 7 + 6) * 86400000);
-    const bitis = new Date(Date.now() - h * 7 * 86400000);
-
-    const haftalikIslemler = MOCK_ISLEMLER.filter((i) => {
-      const t = new Date(i.tarih);
-      return t >= baslangic && t <= bitis;
+    const islemler = MOCK_ISLEMLER.filter((x) => {
+      const t = new Date(x.tarih);
+      return t >= gun && t <= gunSonu;
     });
-
-    const gelir = haftalikIslemler.filter((i) => i.tip === "gelir").reduce((s, i) => s + i.tutar, 0);
-    const gider = haftalikIslemler.filter((i) => i.tip === "gider").reduce((s, i) => s + i.tutar, 0);
-
-    haftalar.push({
-      etiket: `H${8 - h}`,
+    const gelir = islemler.filter((x) => x.tip === "gelir").reduce((s, x) => s + x.tutar, 0);
+    const gider = islemler.filter((x) => x.tip === "gider").reduce((s, x) => s + x.tutar, 0);
+    return {
+      etiket: gun.toLocaleDateString("tr-TR", { weekday: "short", day: "numeric" }),
       gelir,
       gider,
       net: gelir - gider,
-    });
-  }
+    };
+  });
+}
 
-  return haftalar;
+// Aylık: son 30 gün, günlük gruplar
+export function aylikOzet(): OzetSatir[] {
+  return Array.from({ length: 30 }, (_, i) => {
+    const gun = new Date();
+    gun.setDate(gun.getDate() - 29 + i);
+    gun.setHours(0, 0, 0, 0);
+    const gunSonu = new Date(gun);
+    gunSonu.setHours(23, 59, 59, 999);
+
+    const islemler = MOCK_ISLEMLER.filter((x) => {
+      const t = new Date(x.tarih);
+      return t >= gun && t <= gunSonu;
+    });
+    const gelir = islemler.filter((x) => x.tip === "gelir").reduce((s, x) => s + x.tutar, 0);
+    const gider = islemler.filter((x) => x.tip === "gider").reduce((s, x) => s + x.tutar, 0);
+    return {
+      etiket: gun.toLocaleDateString("tr-TR", { day: "numeric", month: "short" }),
+      gelir,
+      gider,
+      net: gelir - gider,
+    };
+  });
 }
 
 // Kategori dağılımı
