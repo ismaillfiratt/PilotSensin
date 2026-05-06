@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, Search, User, Settings, LogOut, ChevronDown, Store, CheckCheck, ExternalLink } from "lucide-react";
+import { useNakit }    from "@/store/nakit";
+import { useGorevler } from "@/store/gorevler";
+import { useStok }     from "@/store/stok";
+import { nakitSkoru, gorevSkoru, stokSkoru, pilotSkoru } from "@/lib/pilot-score";
 import { createClient } from "@/utils/supabase/client";
 import { useBildirimler } from "@/store/bildirimler";
 import AramaModal from "@/components/arama/AramaModal";
@@ -42,6 +46,17 @@ export default function Topbar() {
   const [kullanici, setKullanici]     = useState<KullaniciBilgi | null>(null);
 
   const { bildirimler, okunduYap, tumunuOkunduYap } = useBildirimler();
+  const { islemler } = useNakit();
+  const { gorevler } = useGorevler();
+  const { urunler  } = useStok();
+
+  const genelSkor = pilotSkoru([
+    nakitSkoru(islemler),
+    gorevSkoru(gorevler),
+    stokSkoru(urunler),
+  ]);
+
+  const skorRenk = genelSkor >= 80 ? "#22c55e" : genelSkor >= 60 ? "#fbc024" : "#ef4444";
 
   // Kullanıcı bilgilerini Supabase'den çek
   useEffect(() => {
@@ -91,8 +106,15 @@ export default function Topbar() {
               <span className="w-28 h-4 rounded bg-[rgba(255,255,255,0.06)] animate-pulse" />
             )}
           </Link>
-          <span className="ml-2 px-2 py-0.5 rounded-full text-xs font-bold bg-[rgba(251,192,36,0.15)] text-[#fbc024] border border-[rgba(251,192,36,0.3)]">
-            Skor: 72
+          <span
+            className="ml-2 px-2 py-0.5 rounded-full text-xs font-bold border"
+            style={{
+              color:           skorRenk,
+              borderColor:     `${skorRenk}60`,
+              backgroundColor: `${skorRenk}18`,
+            }}
+          >
+            Skor: {genelSkor}
           </span>
         </div>
 
