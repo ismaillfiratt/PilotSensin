@@ -65,102 +65,65 @@ export const MOCK_ISLEMLER: Islem[] = [
 export interface OzetSatir { etiket: string; gelir: number; gider: number; net: number }
 
 // Günlük: son 24 saat, saatlik gruplar
-export function saatlikOzet(): OzetSatir[] {
+export function saatlikOzet(islemler: Islem[]): OzetSatir[] {
   const simdi = new Date();
   return Array.from({ length: 24 }, (_, i) => {
     const saat = new Date(simdi);
     saat.setHours(simdi.getHours() - 23 + i, 0, 0, 0);
-    const saatSonu = new Date(saat);
-    saatSonu.setMinutes(59, 59, 999);
-
-    const islemler = MOCK_ISLEMLER.filter((x) => {
-      const t = new Date(x.tarih);
-      return t >= saat && t <= saatSonu;
-    });
-    const gelir = islemler.filter((x) => x.tip === "gelir").reduce((s, x) => s + x.tutar, 0);
-    const gider = islemler.filter((x) => x.tip === "gider").reduce((s, x) => s + x.tutar, 0);
+    const saatSonu = new Date(saat); saatSonu.setMinutes(59, 59, 999);
+    const dilim = islemler.filter((x) => { const t = new Date(x.tarih); return t >= saat && t <= saatSonu; });
+    const gelir = dilim.filter((x) => x.tip === "gelir").reduce((s, x) => s + x.tutar, 0);
+    const gider = dilim.filter((x) => x.tip === "gider").reduce((s, x) => s + x.tutar, 0);
     return { etiket: `${String(saat.getHours()).padStart(2, "0")}:00`, gelir, gider, net: gelir - gider };
   });
 }
 
 // Haftalık: son 7 gün, günlük gruplar
-export function haftalikOzet(): OzetSatir[] {
+export function haftalikOzet(islemler: Islem[]): OzetSatir[] {
   return Array.from({ length: 7 }, (_, i) => {
-    const gun = new Date();
-    gun.setDate(gun.getDate() - 6 + i);
-    gun.setHours(0, 0, 0, 0);
-    const gunSonu = new Date(gun);
-    gunSonu.setHours(23, 59, 59, 999);
-
-    const islemler = MOCK_ISLEMLER.filter((x) => {
-      const t = new Date(x.tarih);
-      return t >= gun && t <= gunSonu;
-    });
-    const gelir = islemler.filter((x) => x.tip === "gelir").reduce((s, x) => s + x.tutar, 0);
-    const gider = islemler.filter((x) => x.tip === "gider").reduce((s, x) => s + x.tutar, 0);
-    return {
-      etiket: gun.toLocaleDateString("tr-TR", { weekday: "short", day: "numeric" }),
-      gelir,
-      gider,
-      net: gelir - gider,
-    };
+    const gun = new Date(); gun.setDate(gun.getDate() - 6 + i); gun.setHours(0, 0, 0, 0);
+    const gunSonu = new Date(gun); gunSonu.setHours(23, 59, 59, 999);
+    const dilim = islemler.filter((x) => { const t = new Date(x.tarih); return t >= gun && t <= gunSonu; });
+    const gelir = dilim.filter((x) => x.tip === "gelir").reduce((s, x) => s + x.tutar, 0);
+    const gider = dilim.filter((x) => x.tip === "gider").reduce((s, x) => s + x.tutar, 0);
+    return { etiket: gun.toLocaleDateString("tr-TR", { weekday: "short", day: "numeric" }), gelir, gider, net: gelir - gider };
   });
 }
 
 // Aylık: son 30 gün, günlük gruplar
-export function aylikOzet(): OzetSatir[] {
+export function aylikOzet(islemler: Islem[]): OzetSatir[] {
   return Array.from({ length: 30 }, (_, i) => {
-    const gun = new Date();
-    gun.setDate(gun.getDate() - 29 + i);
-    gun.setHours(0, 0, 0, 0);
-    const gunSonu = new Date(gun);
-    gunSonu.setHours(23, 59, 59, 999);
-
-    const islemler = MOCK_ISLEMLER.filter((x) => {
-      const t = new Date(x.tarih);
-      return t >= gun && t <= gunSonu;
-    });
-    const gelir = islemler.filter((x) => x.tip === "gelir").reduce((s, x) => s + x.tutar, 0);
-    const gider = islemler.filter((x) => x.tip === "gider").reduce((s, x) => s + x.tutar, 0);
-    return {
-      etiket: gun.toLocaleDateString("tr-TR", { day: "numeric", month: "short" }),
-      gelir,
-      gider,
-      net: gelir - gider,
-    };
+    const gun = new Date(); gun.setDate(gun.getDate() - 29 + i); gun.setHours(0, 0, 0, 0);
+    const gunSonu = new Date(gun); gunSonu.setHours(23, 59, 59, 999);
+    const dilim = islemler.filter((x) => { const t = new Date(x.tarih); return t >= gun && t <= gunSonu; });
+    const gelir = dilim.filter((x) => x.tip === "gelir").reduce((s, x) => s + x.tutar, 0);
+    const gider = dilim.filter((x) => x.tip === "gider").reduce((s, x) => s + x.tutar, 0);
+    return { etiket: gun.toLocaleDateString("tr-TR", { day: "numeric", month: "short" }), gelir, gider, net: gelir - gider };
   });
 }
 
 // Özel tarih aralığı: günlük gruplar
-export function ozelAralikOzet(baslangic: string, bitis: string): OzetSatir[] {
+export function ozelAralikOzet(baslangic: string, bitis: string, islemler: Islem[]): OzetSatir[] {
   const bas = new Date(baslangic); bas.setHours(0, 0, 0, 0);
   const bit = new Date(bitis);     bit.setHours(23, 59, 59, 999);
   const gunSayisi = Math.round((bit.getTime() - bas.getTime()) / 86400000) + 1;
-
   return Array.from({ length: gunSayisi }, (_, i) => {
     const gun = new Date(bas); gun.setDate(bas.getDate() + i);
     const gunSonu = new Date(gun); gunSonu.setHours(23, 59, 59, 999);
-    const islemler = MOCK_ISLEMLER.filter((x) => {
-      const t = new Date(x.tarih); return t >= gun && t <= gunSonu;
-    });
-    const gelir = islemler.filter((x) => x.tip === "gelir").reduce((s, x) => s + x.tutar, 0);
-    const gider = islemler.filter((x) => x.tip === "gider").reduce((s, x) => s + x.tutar, 0);
-    return {
-      etiket: gun.toLocaleDateString("tr-TR", { day: "numeric", month: "short" }),
-      gelir, gider, net: gelir - gider,
-    };
+    const dilim = islemler.filter((x) => { const t = new Date(x.tarih); return t >= gun && t <= gunSonu; });
+    const gelir = dilim.filter((x) => x.tip === "gelir").reduce((s, x) => s + x.tutar, 0);
+    const gider = dilim.filter((x) => x.tip === "gider").reduce((s, x) => s + x.tutar, 0);
+    return { etiket: gun.toLocaleDateString("tr-TR", { day: "numeric", month: "short" }), gelir, gider, net: gelir - gider };
   });
 }
 
 // Kategori dağılımı
-export function kategoriDagilimi(tip: IslemTipi) {
+export function kategoriDagilimi(tip: IslemTipi, islemler: Islem[]) {
   const map: Record<string, number> = {};
-  MOCK_ISLEMLER.filter((i) => i.tip === tip).forEach((i) => {
+  islemler.filter((i) => i.tip === tip).forEach((i) => {
     map[i.kategori] = (map[i.kategori] || 0) + i.tutar;
   });
-  return Object.entries(map)
-    .map(([name, value]) => ({ name, value }))
-    .sort((a, b) => b.value - a.value);
+  return Object.entries(map).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
 }
 
 export function formatTL(n: number) {

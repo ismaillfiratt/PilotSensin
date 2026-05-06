@@ -4,7 +4,8 @@ import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Pencil, Trash2, AlertTriangle, TrendingUp, TrendingDown, Search, CalendarRange, X, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
-import { MOCK_ISLEMLER, formatTL, type Islem } from "@/lib/nakit-data";
+import { formatTL, type Islem } from "@/lib/nakit-data";
+import { useNakit } from "@/store/nakit";
 import IslemModal from "./IslemModal";
 
 const odemeRenk: Record<string, string> = {
@@ -23,7 +24,7 @@ interface Props { otomatikAcilModal?: "gelir" | "gider" | null; }
 
 export default function IslemTablosu({ otomatikAcilModal }: Props) {
   const router = useRouter();
-  const [islemler, setIslemler]     = useState<Islem[]>(MOCK_ISLEMLER);
+  const { islemler, ekle, guncelle, sil } = useNakit();
   const [arama, setArama]           = useState("");
   const [tipFiltre, setTipFiltre]   = useState<"tumu" | "gelir" | "gider">("tumu");
   const [modalAcik, setModalAcik]   = useState(false);
@@ -68,16 +69,16 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
 
   const handleKaydet = (yeni: Omit<Islem, "id">) => {
     if (duzenle) {
-      setIslemler((prev) => prev.map((i) => i.id === duzenle.id ? { ...yeni, id: duzenle.id } : i));
+      guncelle(duzenle.id, yeni);
       setDuzenle(null);
     } else {
-      setIslemler((prev) => [{ ...yeni, id: Date.now().toString() }, ...prev]);
+      ekle(yeni);
     }
   };
 
   const handleSil = () => {
     if (!silOnayi) return;
-    setIslemler((prev) => prev.filter((i) => i.id !== silOnayi.id));
+    sil(silOnayi.id);
     setSilOnayi(null);
   };
 

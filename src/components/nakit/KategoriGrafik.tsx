@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { kategoriDagilimi, formatTL, type IslemTipi } from "@/lib/nakit-data";
+import { useNakit } from "@/store/nakit";
 
 const RENKLER_GELIR = ["#22c55e", "#4ade80", "#86efac", "#bbf7d0", "#dcfce7"];
 const RENKLER_GIDER = ["#ef4444", "#f87171", "#fca5a5", "#fecaca", "#fee2e2", "#fbc024", "#fbbf24"];
@@ -19,8 +20,9 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 export default function KategoriGrafik() {
+  const { islemler } = useNakit();
   const [tip, setTip] = useState<IslemTipi>("gider");
-  const data = kategoriDagilimi(tip);
+  const data = kategoriDagilimi(tip, islemler);
   const renkler = tip === "gelir" ? RENKLER_GELIR : RENKLER_GIDER;
   const toplam = data.reduce((s, d) => s + d.value, 0);
 

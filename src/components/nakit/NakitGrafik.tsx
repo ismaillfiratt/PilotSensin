@@ -7,6 +7,7 @@ import {
 } from "recharts";
 import { BarChart2, TrendingUp, CalendarRange, X } from "lucide-react";
 import { saatlikOzet, haftalikOzet, aylikOzet, ozelAralikOzet, formatTL } from "@/lib/nakit-data";
+import { useNakit } from "@/store/nakit";
 
 type Periyot  = "gunluk" | "haftalik" | "aylik" | "ozel";
 type GrafikTip = "bar" | "cizgi";
@@ -37,16 +38,17 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function NakitGrafik() {
+  const { islemler }                = useNakit();
   const [periyot,   setPeriyot]   = useState<Periyot>("haftalik");
   const [grafikTip, setGrafikTip] = useState<GrafikTip>("bar");
   const [baslangic, setBaslangic] = useState(otuzGunOnceIso());
   const [bitis,     setBitis]     = useState(bugunIso());
 
   const data =
-    periyot === "gunluk"  ? saatlikOzet()  :
-    periyot === "haftalik" ? haftalikOzet() :
-    periyot === "aylik"   ? aylikOzet()    :
-    ozelAralikOzet(baslangic, bitis);
+    periyot === "gunluk"   ? saatlikOzet(islemler)  :
+    periyot === "haftalik" ? haftalikOzet(islemler) :
+    periyot === "aylik"    ? aylikOzet(islemler)    :
+    ozelAralikOzet(baslangic, bitis, islemler);
 
   const gunSayisi     = data.length;
   const tickFontSize  = gunSayisi > 20 ? 8 : gunSayisi > 10 ? 9 : 11;

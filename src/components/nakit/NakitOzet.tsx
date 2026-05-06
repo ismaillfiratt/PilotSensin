@@ -2,28 +2,21 @@
 
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, Wallet, ArrowUpDown } from "lucide-react";
-import { MOCK_ISLEMLER, formatTL } from "@/lib/nakit-data";
+import { formatTL } from "@/lib/nakit-data";
+import { useNakit } from "@/store/nakit";
 
 export default function NakitOzet() {
-  const gelir = MOCK_ISLEMLER.filter((i) => i.tip === "gelir").reduce((s, i) => s + i.tutar, 0);
-  const gider = MOCK_ISLEMLER.filter((i) => i.tip === "gider").reduce((s, i) => s + i.tutar, 0);
-  const net = gelir - gider;
-  const mevcutNakit = 48200; // mock mevcut kasa bakiyesi
+  const { islemler } = useNakit();
+
+  const gelir = islemler.filter((i) => i.tip === "gelir").reduce((s, i) => s + i.tutar, 0);
+  const gider = islemler.filter((i) => i.tip === "gider").reduce((s, i) => s + i.tutar, 0);
+  const net   = gelir - gider;
 
   const kartlar = [
     {
-      label: "Mevcut Nakit",
-      value: formatTL(mevcutNakit),
-      alt: "Kasa + banka",
-      icon: Wallet,
-      color: "#fbc024",
-      bg: "rgba(251,192,36,0.1)",
-      border: "rgba(251,192,36,0.2)",
-    },
-    {
       label: "Bu Dönem Gelir",
       value: formatTL(gelir),
-      alt: `+%8 geçen döneme göre`,
+      alt: "+%8 geçen döneme göre",
       icon: TrendingUp,
       color: "#22c55e",
       bg: "rgba(34,197,94,0.1)",
@@ -32,7 +25,7 @@ export default function NakitOzet() {
     {
       label: "Bu Dönem Gider",
       value: formatTL(gider),
-      alt: `+%3 geçen döneme göre`,
+      alt: "+%3 geçen döneme göre",
       icon: TrendingDown,
       color: "#ef4444",
       bg: "rgba(239,68,68,0.1)",
@@ -46,6 +39,15 @@ export default function NakitOzet() {
       color: net >= 0 ? "#22c55e" : "#ef4444",
       bg: net >= 0 ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
       border: net >= 0 ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)",
+    },
+    {
+      label: "Toplam İşlem",
+      value: `${islemler.length} adet`,
+      alt: `${islemler.filter((i) => i.tip === "gelir").length} gelir · ${islemler.filter((i) => i.tip === "gider").length} gider`,
+      icon: Wallet,
+      color: "#fbc024",
+      bg: "rgba(251,192,36,0.1)",
+      border: "rgba(251,192,36,0.2)",
     },
   ];
 
