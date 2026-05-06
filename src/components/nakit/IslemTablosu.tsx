@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Pencil, Trash2, AlertTriangle, TrendingUp, TrendingDown, Search, CalendarRange, X } from "lucide-react";
+import { Plus, Pencil, Trash2, AlertTriangle, TrendingUp, TrendingDown, Search, CalendarRange, X, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { MOCK_ISLEMLER, formatTL, type Islem } from "@/lib/nakit-data";
 import IslemModal from "./IslemModal";
 
@@ -33,6 +33,8 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
   const [tarihAcik, setTarihAcik]   = useState(false);
   const [baslangic, setBaslangic]   = useState(otuzGunOnceIso());
   const [bitis, setBitis]           = useState(bugunIso());
+  const [sayfa, setSayfa]           = useState(1);
+  const SAYFA_BOYUTU                = 10;
 
   useEffect(() => {
     if (otomatikAcilModal === "gelir" || otomatikAcilModal === "gider") {
@@ -57,6 +59,12 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
       })
       .sort((a, b) => new Date(b.tarih).getTime() - new Date(a.tarih).getTime());
   }, [islemler, arama, tipFiltre, baslangic, bitis]);
+
+  // Filtre değişince sayfayı sıfırla
+  useEffect(() => { setSayfa(1); }, [arama, tipFiltre, baslangic, bitis]);
+
+  const toplamSayfa      = Math.max(1, Math.ceil(filtrelenmis.length / SAYFA_BOYUTU));
+  const sayfadakiIslemler = filtrelenmis.slice((sayfa - 1) * SAYFA_BOYUTU, sayfa * SAYFA_BOYUTU);
 
   const handleKaydet = (yeni: Omit<Islem, "id">) => {
     if (duzenle) {
@@ -229,7 +237,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
           {filtrelenmis.length === 0 ? (
             <div className="py-16 text-center text-[#94a3b8] text-sm">İşlem bulunamadı.</div>
           ) : (
-            filtrelenmis.map((islem, i) => {
+            sayfadakiIslemler.map((islem, i) => {
               const gelirMi = islem.tip === "gelir";
               return (
                 <motion.div
@@ -292,13 +300,93 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
           )}
         </div>
 
-        <div className="px-5 py-3 border-t border-[rgba(255,255,255,0.06)] flex items-center justify-between text-xs text-[#94a3b8]">
-          <span>{filtrelenmis.length} / {islemler.length} işlem gösteriliyor</span>
-          {tarihFiltreAktif && (
-            <span className="text-[#fbc024]">
-              {new Date(baslangic).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })} –{" "}
-              {new Date(bitis).toLocaleDateString("tr-TR",     { day: "numeric", month: "short" })}
+        <div className="px-5 py-3 border-t border-[rgba(255,255,255,0.06)] flex items-center justify-between gap-4">
+          {/* Sol: bilgi */}
+          <div className="flex items-center gap-3 text-xs text-[#94a3b8]">
+            <span>
+              {filtrelenmis.length === 0 ? "0 işlem" : (
+                <>
+                  <span className="text-white font-medium">
+                    {(sayfa - 1) * SAYFA_BOYUTU + 1}–{Math.min(sayfa * SAYFA_BOYUTU, filtrelenmis.length)}
+                  </span>
+                  {" / "}{filtrelenmis.length} işlem
+                </>
+              )}
             </span>
+            {tarihFiltreAktif && (
+              <span className="text-[#fbc024]">
+                {new Date(baslangic).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })} –{" "}
+                {new Date(bitis).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
+              </span>
+            )}
+          </div>
+
+          {/* Sağ: sayfalama */}
+          {toplamSayfa > 1 && (
+            <div className="flex items-center gap-1">
+              {/* İlk sayfa */}
+              <button
+                onClick={() => setSayfa(1)}
+                disabled={sayfa === 1}
+                className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronsLeft className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Önceki */}
+              <button
+                onClick={() => setSayfa((p) => Math.max(1, p - 1))}
+                disabled={sayfa === 1}
+                className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Sayfa numaraları */}
+              {Array.from({ length: toplamSayfa }, (_, i) => i + 1)
+                .filter((n) => n === 1 || n === toplamSayfa || Math.abs(n - sayfa) <= 1)
+                .reduce<(number | "...")[]>((acc, n, idx, arr) => {
+                  if (idx > 0 && n - (arr[idx - 1] as number) > 1) acc.push("...");
+                  acc.push(n);
+                  return acc;
+                }, [])
+                .map((item, idx) =>
+                  item === "..." ? (
+                    <span key={`dots-${idx}`} className="w-7 h-7 flex items-center justify-center text-xs text-[#64748b]">…</span>
+                  ) : (
+                    <button
+                      key={item}
+                      onClick={() => setSayfa(item as number)}
+                      className="w-7 h-7 flex items-center justify-center rounded-lg text-xs font-medium border transition-all"
+                      style={{
+                        borderColor:     sayfa === item ? "rgba(251,192,36,0.4)" : "rgba(255,255,255,0.08)",
+                        backgroundColor: sayfa === item ? "rgba(251,192,36,0.12)" : "transparent",
+                        color:           sayfa === item ? "#fbc024" : "#94a3b8",
+                      }}
+                    >
+                      {item}
+                    </button>
+                  )
+                )}
+
+              {/* Sonraki */}
+              <button
+                onClick={() => setSayfa((p) => Math.min(toplamSayfa, p + 1))}
+                disabled={sayfa === toplamSayfa}
+                className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Son sayfa */}
+              <button
+                onClick={() => setSayfa(toplamSayfa)}
+                disabled={sayfa === toplamSayfa}
+                className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronsRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           )}
         </div>
       </div>
