@@ -131,6 +131,27 @@ export function aylikOzet(): OzetSatir[] {
   });
 }
 
+// Özel tarih aralığı: günlük gruplar
+export function ozelAralikOzet(baslangic: string, bitis: string): OzetSatir[] {
+  const bas = new Date(baslangic); bas.setHours(0, 0, 0, 0);
+  const bit = new Date(bitis);     bit.setHours(23, 59, 59, 999);
+  const gunSayisi = Math.round((bit.getTime() - bas.getTime()) / 86400000) + 1;
+
+  return Array.from({ length: gunSayisi }, (_, i) => {
+    const gun = new Date(bas); gun.setDate(bas.getDate() + i);
+    const gunSonu = new Date(gun); gunSonu.setHours(23, 59, 59, 999);
+    const islemler = MOCK_ISLEMLER.filter((x) => {
+      const t = new Date(x.tarih); return t >= gun && t <= gunSonu;
+    });
+    const gelir = islemler.filter((x) => x.tip === "gelir").reduce((s, x) => s + x.tutar, 0);
+    const gider = islemler.filter((x) => x.tip === "gider").reduce((s, x) => s + x.tutar, 0);
+    return {
+      etiket: gun.toLocaleDateString("tr-TR", { day: "numeric", month: "short" }),
+      gelir, gider, net: gelir - gider,
+    };
+  });
+}
+
 // Kategori dağılımı
 export function kategoriDagilimi(tip: IslemTipi) {
   const map: Record<string, number> = {};
