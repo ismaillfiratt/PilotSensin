@@ -3,11 +3,12 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import Sidebar      from "./Sidebar";
-import Topbar       from "./Topbar";
-import AlertMarquee from "./AlertMarquee";
-import MobileNav    from "./MobileNav";
-import { useLayout } from "@/store/layout";
+import Sidebar           from "./Sidebar";
+import Topbar            from "./Topbar";
+import AlertMarquee      from "./AlertMarquee";
+import MobileNav         from "./MobileNav";
+import RealtimeProvider  from "@/components/providers/RealtimeProvider";
+import { useLayout }     from "@/store/layout";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { mobileSidebarAcik, mobileSidebarKapat } = useLayout();
@@ -64,6 +65,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Mobil Alt Navigasyon */}
       <MobileNav />
+
+      {/* Cihazlar arası gerçek zamanlı senkronizasyon */}
+      <RealtimeProvider />
     </div>
   );
 }

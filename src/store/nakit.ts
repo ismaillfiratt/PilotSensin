@@ -1,16 +1,29 @@
 import { create } from "zustand";
 import { MOCK_ISLEMLER, type Islem } from "@/lib/nakit-data";
+import { yayin } from "@/lib/realtime";
 
 interface NakitStore {
-  islemler: Islem[];
-  ekle:     (islem: Omit<Islem, "id">) => void;
-  guncelle: (id: string, islem: Omit<Islem, "id">) => void;
-  sil:      (id: string) => void;
+  islemler:       Islem[];
+  ekle:           (islem: Omit<Islem, "id">) => void;
+  guncelle:       (id: string, islem: Omit<Islem, "id">) => void;
+  sil:            (id: string) => void;
+  syncFromRemote: (islemler: Islem[]) => void;
 }
 
-export const useNakit = create<NakitStore>((set) => ({
+export const useNakit = create<NakitStore>((set, get) => ({
   islemler: MOCK_ISLEMLER,
-  ekle:     (islem)     => set((s) => ({ islemler: [{ ...islem, id: Date.now().toString() }, ...s.islemler] })),
-  guncelle: (id, islem) => set((s) => ({ islemler: s.islemler.map((i) => i.id === id ? { ...islem, id } : i) })),
-  sil:      (id)        => set((s) => ({ islemler: s.islemler.filter((i) => i.id !== id) })),
+
+  ekle: (islem) => {
+    set((s) => ({ islemler: [{ ...islem, id: Date.now().toString() }, ...s.islemler] }));
+    yayin({ tip: "nakit", veri: get().islemler });
+  },
+  guncelle: (id, islem) => {
+    set((s) => ({ islemler: s.islemler.map((i) => i.id === id ? { ...islem, id } : i) }));
+    yayin({ tip: "nakit", veri: get().islemler });
+  },
+  sil: (id) => {
+    set((s) => ({ islemler: s.islemler.filter((i) => i.id !== id) }));
+    yayin({ tip: "nakit", veri: get().islemler });
+  },
+  syncFromRemote: (islemler) => set({ islemler }),
 }));

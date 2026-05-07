@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { yayin } from "@/lib/realtime";
 
 export type BildirimTip = "kritik" | "uyari" | "bilgi";
 export type BildirimModul =
@@ -17,12 +18,13 @@ export interface Bildirim {
 }
 
 interface BildirimStore {
-  bildirimler: Bildirim[];
-  okunduYap: (id: string) => void;
-  okunduToggle: (id: string) => void;
+  bildirimler:    Bildirim[];
+  okunduYap:      (id: string) => void;
+  okunduToggle:   (id: string) => void;
   tumunuOkunduYap: () => void;
-  sil: (id: string) => void;
-  tumunuSil: () => void;
+  sil:            (id: string) => void;
+  tumunuSil:      () => void;
+  syncFromRemote: (bildirimler: Bildirim[]) => void;
 }
 
 function tarih(dakikaGeri: number) {
@@ -44,34 +46,30 @@ const BASLANGIC: Bildirim[] = [
 
 export const useBildirimler = create<BildirimStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       bildirimler: BASLANGIC,
 
-      okunduYap: (id) =>
-        set((s) => ({
-          bildirimler: s.bildirimler.map((b) =>
-            b.id === id ? { ...b, okundu: true } : b
-          ),
-        })),
-
-      okunduToggle: (id) =>
-        set((s) => ({
-          bildirimler: s.bildirimler.map((b) =>
-            b.id === id ? { ...b, okundu: !b.okundu } : b
-          ),
-        })),
-
-      tumunuOkunduYap: () =>
-        set((s) => ({
-          bildirimler: s.bildirimler.map((b) => ({ ...b, okundu: true })),
-        })),
-
-      sil: (id) =>
-        set((s) => ({
-          bildirimler: s.bildirimler.filter((b) => b.id !== id),
-        })),
-
-      tumunuSil: () => set({ bildirimler: [] }),
+      okunduYap: (id) => {
+        set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: true } : b) }));
+        yayin({ tip: "bildirimler", veri: get().bildirimler });
+      },
+      okunduToggle: (id) => {
+        set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: !b.okundu } : b) }));
+        yayin({ tip: "bildirimler", veri: get().bildirimler });
+      },
+      tumunuOkunduYap: () => {
+        set((s) => ({ bildirimler: s.bildirimler.map((b) => ({ ...b, okundu: true })) }));
+        yayin({ tip: "bildirimler", veri: get().bildirimler });
+      },
+      sil: (id) => {
+        set((s) => ({ bildirimler: s.bildirimler.filter((b) => b.id !== id) }));
+        yayin({ tip: "bildirimler", veri: get().bildirimler });
+      },
+      tumunuSil: () => {
+        set({ bildirimler: [] });
+        yayin({ tip: "bildirimler", veri: [] });
+      },
+      syncFromRemote: (bildirimler) => set({ bildirimler }),
     }),
     {
       name: "pilotsensin-bildirimler",
