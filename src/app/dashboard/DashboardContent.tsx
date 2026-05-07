@@ -73,7 +73,7 @@ export default function DashboardContent() {
         </div>
         <div className="lg:col-span-2 flex flex-col gap-6">
           <QuickActions />
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {summaryStats.map(({ label, value, change, up }, i) => (
               <motion.div key={label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} className="glass-card rounded-xl p-4">
                 <p className="text-xs text-[#94a3b8] mb-1">{label}</p>
@@ -86,7 +86,7 @@ export default function DashboardContent() {
       </div>
 
       {/* Anlık özet kartlar */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {quickStats.map(({ label, value, alt, color, href }, i) => (
           <motion.div key={label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
             <Link href={href} className="glass-card rounded-xl p-4 block hover:border-[rgba(251,192,36,0.3)] transition-colors">

@@ -224,6 +224,8 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
 
       {/* Tablo */}
       <div className="glass-card rounded-2xl overflow-hidden">
+        <div className="overflow-x-auto">
+        <div className="min-w-[640px]">
         <div className="grid grid-cols-[auto_2fr_1fr_1fr_1fr_1fr_auto] gap-3 px-5 py-3 border-b border-[rgba(255,255,255,0.06)] text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">
           <span>Tip</span>
           <span>Açıklama</span>
@@ -300,6 +302,8 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
             })
           )}
         </div>
+        </div>{/* min-w */}
+        </div>{/* overflow-x-auto */}
 
         <div className="px-5 py-3 border-t border-[rgba(255,255,255,0.06)] flex items-center justify-between gap-4">
           {/* Sol: bilgi */}

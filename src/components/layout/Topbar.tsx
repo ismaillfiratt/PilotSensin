@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, Search, User, Settings, LogOut, ChevronDown, Store, CheckCheck, ExternalLink } from "lucide-react";
+import { Bell, Search, User, Settings, LogOut, ChevronDown, Store, CheckCheck, ExternalLink, Menu } from "lucide-react";
+import { useLayout } from "@/store/layout";
 import { useNakit }    from "@/store/nakit";
 import { useGorevler } from "@/store/gorevler";
 import { useStok }     from "@/store/stok";
@@ -49,6 +50,7 @@ export default function Topbar() {
   const { islemler } = useNakit();
   const { gorevler } = useGorevler();
   const { urunler  } = useStok();
+  const { mobileSidebarToggle } = useLayout();
 
   const genelSkor = pilotSkoru([
     nakitSkoru(islemler),
@@ -95,8 +97,15 @@ export default function Topbar() {
 
   return (
     <>
-      <header className="flex items-center justify-between px-6 py-3 shrink-0" style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-subtle)", transition: "background 0.25s ease" }}>
-        {/* Sol: işletme adı */}
+      <header className="flex items-center justify-between px-3 sm:px-6 py-3 shrink-0" style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-subtle)", transition: "background 0.25s ease" }}>
+        {/* Sol: hamburger (mobil) + işletme adı */}
+        <button
+          onClick={mobileSidebarToggle}
+          className="md:hidden mr-3 w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white transition-colors"
+          aria-label="Menüyü aç"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
         <div className="flex items-center gap-2">
           <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <Store className="w-4 h-4 text-[#94a3b8]" />
@@ -107,7 +116,7 @@ export default function Topbar() {
             )}
           </Link>
           <span
-            className="ml-2 px-2 py-0.5 rounded-full text-xs font-bold border"
+            className="hidden sm:inline ml-2 px-2 py-0.5 rounded-full text-xs font-bold border"
             style={{
               color:           skorRenk,
               borderColor:     `${skorRenk}60`,
@@ -120,15 +129,23 @@ export default function Topbar() {
 
         {/* Sağ: arama + bildirim + profil */}
         <div className="flex items-center gap-3">
-          {/* Arama butonu */}
+          {/* Arama butonu — desktop */}
           <button
             onClick={() => setAramaAcik(true)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[rgba(251,192,36,0.1)] text-[#94a3b8] text-xs hover:border-[rgba(251,192,36,0.3)] hover:text-white transition-colors"
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[rgba(251,192,36,0.1)] text-[#94a3b8] text-xs hover:border-[rgba(251,192,36,0.3)] hover:text-white transition-colors"
             style={{ background: "var(--bg-card)" }}
           >
             <Search className="w-3.5 h-3.5" />
             <span>Ara...</span>
             <kbd className="ml-2 px-1 py-0.5 rounded text-[10px] bg-[rgba(251,192,36,0.1)] text-[#fbc024]">⌘K</kbd>
+          </button>
+          {/* Arama ikonu — mobil */}
+          <button
+            onClick={() => setAramaAcik(true)}
+            className="sm:hidden w-8 h-8 flex items-center justify-center rounded-lg border border-[rgba(251,192,36,0.1)] text-[#94a3b8] hover:text-white transition-colors"
+            style={{ background: "var(--bg-card)" }}
+          >
+            <Search className="w-4 h-4" />
           </button>
 
           {/* Bildirimler */}
