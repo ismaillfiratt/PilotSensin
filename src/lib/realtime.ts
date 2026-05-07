@@ -8,10 +8,13 @@ export function kanalAyarla(kanal: typeof _channel) {
 }
 
 export type SyncEvent =
-  | { tip: "nakit";       veri: unknown }
-  | { tip: "gorevler";    veri: unknown }
-  | { tip: "stok";        veri: unknown }
-  | { tip: "bildirimler"; veri: unknown };
+  | { tip: "nakit";             veri: unknown }
+  | { tip: "gorevler";          veri: unknown }
+  | { tip: "stok";              veri: unknown }
+  | { tip: "bildirimler";       veri: unknown }
+  | { tip: "prosedurler";       veri: unknown }
+  | { tip: "acil-fon";          veri: unknown }
+  | { tip: "isletme-giderleri"; veri: unknown };
 
 export function yayin(event: SyncEvent) {
   if (!_channel) return;

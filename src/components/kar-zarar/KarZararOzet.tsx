@@ -3,9 +3,14 @@
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, DollarSign, Percent } from "lucide-react";
 import { plOzeti, formatTL, type Urun } from "@/lib/kar-zarar-data";
+import { useIsletmeGiderleri } from "@/store/isletmeGiderleri";
 
 export default function KarZararOzet({ urunler }: { urunler: Urun[] }) {
-  const { toplamGelir, toplamSMM, brutKar, brutMarj, netKar, netMarj } = plOzeti(urunler);
+  const { giderler } = useIsletmeGiderleri();
+  const { toplamGelir, toplamSMM, brutKar, brutMarj } = plOzeti(urunler);
+  const toplamOpGider = giderler.reduce((s, g) => s + g.tutar, 0);
+  const netKar  = brutKar - toplamOpGider;
+  const netMarj = toplamGelir > 0 ? (netKar / toplamGelir) * 100 : 0;
 
   const kartlar = [
     {
