@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Settings2 } from "lucide-react";
-import { MOCK_ISLEMLER, MOCK_AYAR, mevcutBirikim, type FonIslem, type FonAyar } from "@/lib/acil-fon-data";
+import { mevcutBirikim, type FonIslem, type FonAyar } from "@/lib/acil-fon-data";
 import FonGauge from "@/components/acil-fon/FonGauge";
 import RiskPanel from "@/components/acil-fon/RiskPanel";
 import FonGrafik from "@/components/acil-fon/FonGrafik";
@@ -10,8 +10,8 @@ import IslemGecmisi from "@/components/acil-fon/IslemGecmisi";
 import HedefModal from "@/components/acil-fon/HedefModal";
 
 export default function AcilFonPage() {
-  const [islemler, setIslemler] = useState<FonIslem[]>(MOCK_ISLEMLER);
-  const [ayar, setAyar]         = useState<FonAyar>(MOCK_AYAR);
+  const [islemler, setIslemler] = useState<FonIslem[]>([]);
+  const [ayar, setAyar]         = useState<FonAyar>({ hedef: 30000, aylikHedef: 3000, aylarSayisi: 3 });
   const [hedefModalAcik, setHedefModalAcik] = useState(false);
 
   const mevcut = mevcutBirikim(islemler);

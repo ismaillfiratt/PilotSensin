@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { MOCK_ISLEMLER, type Islem } from "@/lib/nakit-data";
+import { type Islem } from "@/lib/nakit-data";
 import { yayin } from "@/lib/realtime";
 
 interface NakitStore {
@@ -11,7 +11,7 @@ interface NakitStore {
 }
 
 export const useNakit = create<NakitStore>((set, get) => ({
-  islemler: MOCK_ISLEMLER,
+  islemler: [],
 
   ekle: (islem) => {
     set((s) => ({ islemler: [{ ...islem, id: Date.now().toString() }, ...s.islemler] }));

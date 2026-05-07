@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { MOCK_GOREVLER, type Gorev, type GorevDurumu } from "@/lib/gorev-data";
+import { type Gorev, type GorevDurumu } from "@/lib/gorev-data";
 import { yayin } from "@/lib/realtime";
 
 interface GorevStore {
@@ -12,7 +12,7 @@ interface GorevStore {
 }
 
 export const useGorevler = create<GorevStore>((set, get) => ({
-  gorevler: MOCK_GOREVLER,
+  gorevler: [],
 
   ekle: (gorev) => {
     set((s) => ({ gorevler: [{ ...gorev, id: Date.now().toString(), olusturmaTarih: new Date().toISOString() }, ...s.gorevler] }));

@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { MOCK_URUNLER, type Urun } from "@/lib/kar-zarar-data";
+import { type Urun } from "@/lib/kar-zarar-data";
 import KarZararOzet from "@/components/kar-zarar/KarZararOzet";
 import MarjGrafik from "@/components/kar-zarar/MarjGrafik";
 import PLTablosu from "@/components/kar-zarar/PLTablosu";
 import UrunMarjTablosu from "@/components/kar-zarar/UrunMarjTablosu";
 
 export default function KarZararPage() {
-  const [urunler, setUrunler] = useState<Urun[]>(MOCK_URUNLER);
+  const [urunler, setUrunler] = useState<Urun[]>([]);
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">

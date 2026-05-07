@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { MOCK_URUNLER, stokDurumu, type Urun } from "@/lib/stok-data";
+import { stokDurumu, type Urun } from "@/lib/stok-data";
 import { yayin } from "@/lib/realtime";
 
 interface StokStore {
@@ -11,7 +11,7 @@ interface StokStore {
 }
 
 export const useStok = create<StokStore>((set, get) => ({
-  urunler: MOCK_URUNLER,
+  urunler: [],
 
   ekle: (urun) => {
     set((s) => ({ urunler: [{ ...urun, id: Date.now().toString() }, ...s.urunler] }));

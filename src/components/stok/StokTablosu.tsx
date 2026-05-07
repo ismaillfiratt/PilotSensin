@@ -121,8 +121,9 @@ export default function StokTablosu({ otomatikAcilModal }: Props) {
         {/* Satırlar */}
         <div className="divide-y divide-[rgba(255,255,255,0.04)]">
           {filtrelenmis.length === 0 ? (
-            <div className="py-16 text-center text-[#94a3b8] text-sm">
-              Ürün bulunamadı.
+            <div className="py-16 text-center space-y-2">
+              <p className="text-[#94a3b8] text-sm font-medium">Henüz ürün yok</p>
+              <p className="text-[#64748b] text-xs">İlk ürününüzü eklemek için "Ürün Ekle" butonuna tıklayın.</p>
             </div>
           ) : (
             filtrelenmis.map((urun, i) => {

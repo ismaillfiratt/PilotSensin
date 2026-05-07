@@ -89,7 +89,7 @@ export default function KanbanBoard({ otomatikAcilModal }: Props) {
                       animate={{ opacity: 1 }}
                       className="py-8 text-center text-xs text-[#94a3b8] border border-dashed border-[rgba(255,255,255,0.06)] rounded-xl"
                     >
-                      Görev yok
+                      Görev eklenmedi
                     </motion.div>
                   ) : (
                     list.map((g, i) => (

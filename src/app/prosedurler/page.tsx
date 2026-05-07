@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { MOCK_PROSEDURLER, MOCK_CHECKLIST, type Prosedur, type ChecklistItem } from "@/lib/prosedur-data";
+import { type Prosedur, type ChecklistItem } from "@/lib/prosedur-data";
 import ProsedurOzet from "@/components/prosedurler/ProsedurOzet";
 import ProsedurListesi from "@/components/prosedurler/ProsedurListesi";
 import ChecklistPanel from "@/components/prosedurler/ChecklistPanel";
 
 export default function ProsedurlerPage() {
-  const [prosedurler, setProsedurler] = useState<Prosedur[]>(MOCK_PROSEDURLER);
-  const [checklist, setChecklist]     = useState<ChecklistItem[]>(MOCK_CHECKLIST);
+  const [prosedurler, setProsedurler] = useState<Prosedur[]>([]);
+  const [checklist, setChecklist]     = useState<ChecklistItem[]>([]);
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">

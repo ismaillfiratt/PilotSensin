@@ -238,7 +238,10 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
 
         <div className="divide-y divide-[rgba(255,255,255,0.04)]">
           {filtrelenmis.length === 0 ? (
-            <div className="py-16 text-center text-[#94a3b8] text-sm">İşlem bulunamadı.</div>
+            <div className="py-16 text-center space-y-2">
+              <p className="text-[#94a3b8] text-sm font-medium">Henüz işlem yok</p>
+              <p className="text-[#64748b] text-xs">İlk gelir veya giderinizi eklemek için "İşlem Ekle" butonuna tıklayın.</p>
+            </div>
           ) : (
             sayfadakiIslemler.map((islem, i) => {
               const gelirMi = islem.tip === "gelir";
