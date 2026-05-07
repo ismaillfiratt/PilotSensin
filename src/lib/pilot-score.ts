@@ -1,7 +1,10 @@
-import type { Islem }  from "./nakit-data";
-import type { Gorev }  from "./gorev-data";
-import type { Urun }   from "./stok-data";
-import { stokDurumu }  from "./stok-data";
+import type { Islem }       from "./nakit-data";
+import type { Gorev }       from "./gorev-data";
+import type { Urun }        from "./stok-data";
+import type { Prosedur, ChecklistItem } from "./prosedur-data";
+import type { FonIslem, FonAyar }      from "./acil-fon-data";
+import { stokDurumu }       from "./stok-data";
+import { mevcutBirikim }    from "./acil-fon-data";
 
 export interface ModulSkoru {
   baslik:      string;
@@ -88,13 +91,51 @@ export function stokSkoru(urunler: Urun[]): ModulSkoru {
   };
 }
 
+/* ── Prosedürler skoru ── */
+export function prosedurSkoru(prosedurler: Prosedur[], checklist: ChecklistItem[]): ModulSkoru {
+  if (prosedurler.length === 0 && checklist.length === 0) {
+    return { baslik: "Prosedürler", skor: 0, durum: "critical", metrik: "%0", metrikLabel: "Prosedür eklenmedi", uyariSayisi: 0 };
+  }
+  const tamamlanan  = checklist.filter((c) => c.tamamlandi).length;
+  const toplamCheck = checklist.length;
+  const checkOran   = toplamCheck > 0 ? tamamlanan / toplamCheck : 1;
+  const skor        = Math.round(checkOran * 100);
+  return {
+    baslik:      "Prosedürler",
+    skor,
+    durum:       skor >= 75 ? "ok" : skor >= 40 ? "warning" : "critical",
+    metrik:      `%${skor}`,
+    metrikLabel: `${prosedurler.length} prosedür · ${tamamlanan}/${toplamCheck} kontrol`,
+    uyariSayisi: toplamCheck - tamamlanan,
+  };
+}
+
+/* ── Acil Durum Fonu skoru ── */
+export function acilFonSkoru(islemler: FonIslem[], ayar: FonAyar): ModulSkoru {
+  const mevcut = mevcutBirikim(islemler);
+  const hedef  = ayar.hedef;
+  const oran   = hedef > 0 ? Math.min(1, mevcut / hedef) : 0;
+  const skor   = Math.round(oran * 100);
+  const formatTL = (n: number) => "₺" + n.toLocaleString("tr-TR");
+  return {
+    baslik:      "Acil Durum Fonu",
+    skor,
+    durum:       skor >= 80 ? "ok" : skor >= 40 ? "warning" : "critical",
+    metrik:      formatTL(mevcut),
+    metrikLabel: `Hedef: ${formatTL(hedef)}`,
+    uyariSayisi: skor < 40 ? 1 : 0,
+  };
+}
+
 /* ── Genel Pilot Skoru (ağırlıklı ortalama) ── */
 export function pilotSkoru(modüller: ModulSkoru[]): number {
   if (modüller.length === 0) return 0;
   const agirliklar: Record<string, number> = {
-    "Nakit Akışı":   0.35,
-    "Görevler":      0.20,
-    "Stok Yönetimi": 0.25,
+    "Nakit Akışı":      0.30,
+    "Görevler":         0.20,
+    "Stok Yönetimi":    0.20,
+    "Prosedürler":      0.15,
+    "Acil Durum Fonu":  0.15,
   };
   let toplam = 0; let agirlik = 0;
   modüller.forEach((m) => {

@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ISLETME_GIDERLERI, plOzeti, formatTL, type Urun } from "@/lib/kar-zarar-data";
+import { plOzeti, formatTL, type Urun } from "@/lib/kar-zarar-data";
+import { useIsletmeGiderleri } from "@/store/isletmeGiderleri";
 
 function Satir({
   label, value, indent = false, bold = false, color, bg, delay = 0,
@@ -46,7 +47,11 @@ function Ayrac({ label }: { label: string }) {
 }
 
 export default function PLTablosu({ urunler }: { urunler: Urun[] }) {
-  const { toplamGelir, toplamSMM, brutKar, brutMarj, toplamOpGider, netKar, netMarj } = plOzeti(urunler);
+  const { giderler } = useIsletmeGiderleri();
+  const toplamOpGider = giderler.reduce((s, g) => s + g.tutar, 0);
+  const { toplamGelir, toplamSMM, brutKar, brutMarj } = plOzeti(urunler);
+  const netKar  = brutKar - toplamOpGider;
+  const netMarj = toplamGelir > 0 ? (netKar / toplamGelir) * 100 : 0;
 
   return (
     <div className="glass-card rounded-2xl py-4 w-full lg:w-80 shrink-0">
@@ -73,9 +78,13 @@ export default function PLTablosu({ urunler }: { urunler: Urun[] }) {
         />
 
         <Ayrac label="İşletme Giderleri" />
-        {ISLETME_GIDERLERI.map(({ kategori, tutar }, i) => (
-          <Satir key={kategori} label={kategori} value={-tutar} color="#ef4444" indent delay={0.18 + i * 0.04} />
-        ))}
+        {giderler.length === 0 ? (
+          <div className="px-5 py-2 text-xs text-[#64748b] italic">Henüz işletme gideri eklenmedi</div>
+        ) : (
+          giderler.map(({ kategori, tutar }: { kategori: string; tutar: number }, i: number) => (
+            <Satir key={kategori} label={kategori} value={-tutar} color="#ef4444" indent delay={0.18 + i * 0.04} />
+          ))
+        )}
         <Satir label="Toplam İşletme Gideri" value={-toplamOpGider} bold color="#ef4444" delay={0.38} />
 
         <div className="mx-5 my-1 h-px bg-[rgba(255,255,255,0.08)]" />

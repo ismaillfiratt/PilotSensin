@@ -9,7 +9,9 @@ import { useLayout } from "@/store/layout";
 import { useNakit }    from "@/store/nakit";
 import { useGorevler } from "@/store/gorevler";
 import { useStok }     from "@/store/stok";
-import { nakitSkoru, gorevSkoru, stokSkoru, pilotSkoru } from "@/lib/pilot-score";
+import { nakitSkoru, gorevSkoru, stokSkoru, prosedurSkoru, acilFonSkoru, pilotSkoru } from "@/lib/pilot-score";
+import { useProsedurler } from "@/store/prosedurler";
+import { useAcilFon }     from "@/store/acilFon";
 import { createClient } from "@/utils/supabase/client";
 import { useBildirimler } from "@/store/bildirimler";
 import AramaModal from "@/components/arama/AramaModal";
@@ -47,15 +49,19 @@ export default function Topbar() {
   const [kullanici, setKullanici]     = useState<KullaniciBilgi | null>(null);
 
   const { bildirimler, okunduYap, tumunuOkunduYap } = useBildirimler();
-  const { islemler } = useNakit();
-  const { gorevler } = useGorevler();
-  const { urunler  } = useStok();
-  const { mobileSidebarToggle } = useLayout();
+  const { islemler }                   = useNakit();
+  const { gorevler }                   = useGorevler();
+  const { urunler }                    = useStok();
+  const { prosedurler, checklist }     = useProsedurler();
+  const { islemler: fonIslemler, ayar } = useAcilFon();
+  const { mobileSidebarToggle }        = useLayout();
 
   const genelSkor = pilotSkoru([
     nakitSkoru(islemler),
     gorevSkoru(gorevler),
     stokSkoru(urunler),
+    prosedurSkoru(prosedurler, checklist),
+    acilFonSkoru(fonIslemler, ayar),
   ]);
 
   const skorRenk = genelSkor >= 80 ? "#22c55e" : genelSkor >= 60 ? "#fbc024" : "#ef4444";

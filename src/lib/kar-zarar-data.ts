@@ -48,14 +48,11 @@ export const ISLETME_GIDERLERI: IsletmeGideri[] = [
 ];
 
 export function plOzeti(urunler: Urun[]) {
-  const toplamGelir    = urunler.reduce((s, u) => s + karHesapla(u).toplamGelir,    0);
-  const toplamSMM      = urunler.reduce((s, u) => s + karHesapla(u).toplamMaliyet,  0);
-  const brutKar        = toplamGelir - toplamSMM;
-  const brutMarj       = toplamGelir > 0 ? (brutKar / toplamGelir) * 100 : 0;
-  const toplamOpGider  = ISLETME_GIDERLERI.reduce((s, g) => s + g.tutar, 0);
-  const netKar         = brutKar - toplamOpGider;
-  const netMarj        = toplamGelir > 0 ? (netKar / toplamGelir) * 100 : 0;
-  return { toplamGelir, toplamSMM, brutKar, brutMarj, toplamOpGider, netKar, netMarj };
+  const toplamGelir = urunler.reduce((s, u) => s + karHesapla(u).toplamGelir,   0);
+  const toplamSMM   = urunler.reduce((s, u) => s + karHesapla(u).toplamMaliyet, 0);
+  const brutKar     = toplamGelir - toplamSMM;
+  const brutMarj    = toplamGelir > 0 ? (brutKar / toplamGelir) * 100 : 0;
+  return { toplamGelir, toplamSMM, brutKar, brutMarj };
 }
 
 export const KATEGORILER = [

@@ -2,29 +2,33 @@
 
 import { useState } from "react";
 import { Settings2 } from "lucide-react";
-import { mevcutBirikim, type FonIslem, type FonAyar } from "@/lib/acil-fon-data";
-import FonGauge from "@/components/acil-fon/FonGauge";
-import RiskPanel from "@/components/acil-fon/RiskPanel";
-import FonGrafik from "@/components/acil-fon/FonGrafik";
-import IslemGecmisi from "@/components/acil-fon/IslemGecmisi";
-import HedefModal from "@/components/acil-fon/HedefModal";
+import { useAcilFon } from "@/store/acilFon";
+import FonGauge      from "@/components/acil-fon/FonGauge";
+import RiskPanel     from "@/components/acil-fon/RiskPanel";
+import FonGrafik     from "@/components/acil-fon/FonGrafik";
+import IslemGecmisi  from "@/components/acil-fon/IslemGecmisi";
+import HedefModal    from "@/components/acil-fon/HedefModal";
 
 export default function AcilFonPage() {
-  const [islemler, setIslemler] = useState<FonIslem[]>([]);
-  const [ayar, setAyar]         = useState<FonAyar>({ hedef: 30000, aylikHedef: 3000, aylarSayisi: 3 });
+  const { islemler, ayar, mevcut, islemEkle, ayarGuncelle } = useAcilFon();
   const [hedefModalAcik, setHedefModalAcik] = useState(false);
 
-  const mevcut = mevcutBirikim(islemler);
+  // IslemGecmisi bileşeni setIslemler bekliyor — store wrapper
+  const setIslemler = (fn: any) => {
+    const yeni = typeof fn === "function" ? fn(islemler) : fn;
+    const eklenenler = yeni.filter((x: any) => !islemler.find((i) => i.id === x.id));
+    eklenenler.forEach((x: any) => {
+      const { id, ...rest } = x;
+      islemEkle(rest);
+    });
+  };
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      {/* Başlık */}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Acil Durum Fonu</h1>
-          <p className="text-sm text-[#94a3b8] mt-1">
-            İşletmeni beklenmedik durumlara karşı koru
-          </p>
+          <p className="text-sm text-[#94a3b8] mt-1">İşletmeni beklenmedik durumlara karşı koru</p>
         </div>
         <button
           onClick={() => setHedefModalAcik(true)}
@@ -35,29 +39,23 @@ export default function AcilFonPage() {
         </button>
       </div>
 
-      {/* Üst bölüm: Gauge + Risk paneli */}
       <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
-        <FonGauge mevcut={mevcut} ayar={ayar} />
-        <RiskPanel islemler={islemler} mevcut={mevcut} ayar={ayar} />
+        <FonGauge mevcut={mevcut()} ayar={ayar} />
+        <RiskPanel islemler={islemler} mevcut={mevcut()} ayar={ayar} />
       </div>
 
-      {/* Grafik */}
       <FonGrafik islemler={islemler} ayar={ayar} />
 
-      {/* İşlem geçmişi */}
       <div>
-        <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest mb-4">
-          İşlem Geçmişi
-        </h2>
+        <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest mb-4">İşlem Geçmişi</h2>
         <IslemGecmisi islemler={islemler} setIslemler={setIslemler} />
       </div>
 
-      {/* Hedef modalı */}
       <HedefModal
         open={hedefModalAcik}
         onClose={() => setHedefModalAcik(false)}
         ayar={ayar}
-        onKaydet={setAyar}
+        onKaydet={ayarGuncelle}
       />
     </div>
   );
