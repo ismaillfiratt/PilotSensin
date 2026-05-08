@@ -34,7 +34,8 @@ const statusConfig = {
 export default function ModuleCard({
   title, href, iconName, score, status, metric, metricLabel, alertCount = 0, index,
 }: Props) {
-  const cfg = statusConfig[status];
+  const effectiveStatus = score === 0 ? "critical" : status;
+  const cfg  = statusConfig[effectiveStatus];
   const Icon = iconMap[iconName];
 
   return (

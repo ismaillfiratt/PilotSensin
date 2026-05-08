@@ -102,10 +102,11 @@ export default function Sidebar({ mobile = false }: Props) {
       {!mobile && (
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute top-1/2 -right-3 transform -translate-y-1/2 w-6 h-6 rounded-full border border-[rgba(251,192,36,0.3)] flex items-center justify-center text-[#fbc024] hover:bg-[#fbc024] hover:text-[#0e172a] transition-colors z-10"
+          className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full border-2 border-[#fbc024] flex items-center justify-center text-[#fbc024] hover:bg-[#fbc024] hover:text-[#0e172a] transition-colors z-20 shadow-md"
           style={{ background: "var(--bg-secondary)" }}
+          title={collapsed ? "Genişlet" : "Daralt"}
         >
-          {collapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
+          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
       )}
     </motion.aside>

@@ -25,12 +25,17 @@ const odemeYontemleri = [
   { value: "cek", label: "Çek" },
 ] as const;
 
+function localDateStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
 const bosForm = {
   tip: "gelir" as IslemTipi,
   tutar: "",
   kategori: "Satış",
   aciklama: "",
-  tarih: new Date().toISOString().split("T")[0],
+  tarih: localDateStr(),
   odemeYontemi: "nakit" as Islem["odemeYontemi"],
 };
 
@@ -74,7 +79,7 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
       tutar: Number(form.tutar),
       kategori: form.kategori,
       aciklama: form.aciklama,
-      tarih: new Date(form.tarih).toISOString(),
+      tarih: (() => { const [y,m,d] = form.tarih.split("-").map(Number); return new Date(y, m-1, d, 12).toISOString(); })(),
       odemeYontemi: form.odemeYontemi,
     });
     onClose();
