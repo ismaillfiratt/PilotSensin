@@ -33,7 +33,7 @@ export default function Sidebar({ mobile = false }: Props) {
     <motion.aside
       animate={{ width: genislik }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
-      className="relative flex flex-col h-full overflow-hidden shrink-0"
+      className="relative flex flex-col h-full shrink-0"
       style={{ background: "var(--bg-secondary)", borderRight: "1px solid var(--border-subtle)", transition: "background 0.25s ease" }}
     >
       {/* Logo */}
@@ -49,7 +49,7 @@ export default function Sidebar({ mobile = false }: Props) {
       </Link>
 
       {/* Nav */}
-      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto overflow-x-hidden">
         {modules.map(({ href, icon: Icon, label }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
@@ -102,11 +102,16 @@ export default function Sidebar({ mobile = false }: Props) {
       {!mobile && (
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full border-2 border-[#fbc024] flex items-center justify-center text-[#fbc024] hover:bg-[#fbc024] hover:text-[#0e172a] transition-colors z-20 shadow-md"
-          style={{ background: "var(--bg-secondary)" }}
+          className="absolute top-1/2 -right-4 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center transition-all z-50 shadow-lg"
+          style={{
+            background: "#fbc024",
+            color: "#0e172a",
+            border: "2px solid #0e172a",
+            boxShadow: "0 0 0 2px #fbc024, 0 4px 12px rgba(251,192,36,0.5)",
+          }}
           title={collapsed ? "Genişlet" : "Daralt"}
         >
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          {collapsed ? <ChevronRight className="w-4 h-4 font-black" /> : <ChevronLeft className="w-4 h-4 font-black" />}
         </button>
       )}
     </motion.aside>

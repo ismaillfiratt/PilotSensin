@@ -24,7 +24,7 @@ export default function PilotScore({ score, enZayif }: Props) {
   ];
 
   return (
-    <div className="glass-card rounded-2xl p-6 flex flex-col items-center gap-4">
+    <div className="glass-card rounded-2xl p-6 flex flex-col items-center gap-4 h-full">
       <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest">
         Pilot Skoru
       </h2>

@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import PilotScore   from "@/components/dashboard/PilotScore";
-import ModuleCard   from "@/components/dashboard/ModuleCard";
-import QuickActions from "@/components/dashboard/QuickActions";
+import PilotScore        from "@/components/dashboard/PilotScore";
+import ModuleCard        from "@/components/dashboard/ModuleCard";
+import QuickActions      from "@/components/dashboard/QuickActions";
+import BugunYapilacaklar from "@/components/dashboard/BugunYapilacaklar";
 import { useNakit }        from "@/store/nakit";
 import { useGorevler }     from "@/store/gorevler";
 import { useStok }         from "@/store/stok";
@@ -48,13 +49,10 @@ export default function DashboardContent() {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
-          <PilotScore score={genelSkor} enZayif={enZayif} />
-        </div>
-        <div className="lg:col-span-2">
-          <QuickActions />
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+        <PilotScore score={genelSkor} enZayif={enZayif} />
+        <QuickActions />
+        <BugunYapilacaklar />
       </div>
 
       <div>

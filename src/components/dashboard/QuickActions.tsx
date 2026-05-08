@@ -4,28 +4,27 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   TrendingUp, TrendingDown, Package,
-  CheckSquare, BarChart3, ClipboardList, Shield,
+  CheckSquare, ClipboardList, Shield,
 } from "lucide-react";
 
 const actions = [
-  { label: "Gelir Ekle",      icon: TrendingUp,     color: "#22c55e", href: "/nakit-akisi?modal=gelir",   rotate: false },
-  { label: "Gider Ekle",      icon: TrendingDown,   color: "#ef4444", href: "/nakit-akisi?modal=gider",   rotate: false },
-  { label: "Ürün Ekle",       icon: Package,         color: "#fbc024", href: "/stok?modal=urun-ekle",      rotate: false },
-  { label: "Görev Ekle",      icon: CheckSquare,     color: "#94a3b8", href: "/gorevler?modal=ekle",       rotate: false },
-  { label: "Kar-Zarar",       icon: BarChart3,       color: "#a855f7", href: "/kar-zarar",                 rotate: false },
-  { label: "Prosedür Ekle",   icon: ClipboardList,   color: "#3b82f6", href: "/prosedurler",               rotate: false },
-  { label: "Fon Yatır",       icon: Shield,          color: "#22c55e", href: "/acil-fon",                  rotate: false },
+  { label: "Gelir Ekle",    icon: TrendingUp,   color: "#22c55e", href: "/nakit-akisi?modal=gelir" },
+  { label: "Gider Ekle",    icon: TrendingDown, color: "#ef4444", href: "/nakit-akisi?modal=gider" },
+  { label: "Ürün Ekle",     icon: Package,       color: "#fbc024", href: "/stok?modal=urun-ekle"   },
+  { label: "Görev Ekle",    icon: CheckSquare,   color: "#94a3b8", href: "/gorevler?modal=ekle"    },
+  { label: "Prosedür Ekle", icon: ClipboardList, color: "#3b82f6", href: "/prosedurler"             },
+  { label: "Fon Yatır",     icon: Shield,        color: "#22c55e", href: "/acil-fon"                },
 ];
 
 export default function QuickActions() {
   const router = useRouter();
 
   return (
-    <div className="glass-card rounded-2xl p-5">
+    <div className="glass-card rounded-2xl p-5 h-full flex flex-col">
       <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest mb-4">
         Hızlı Aksiyonlar
       </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2 flex-1 content-start">
         {actions.map(({ label, icon: Icon, color, href }, i) => (
           <motion.button
             key={label}
