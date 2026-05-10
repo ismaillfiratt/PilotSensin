@@ -8,7 +8,8 @@ import { type Urun } from "@/lib/stok-data";
 interface Props {
   open: boolean;
   onClose: () => void;
-  urun?: Urun | null; // dolu gelirse düzenleme modu
+  urun?: Urun | null;
+  onKaydet: (u: Omit<Urun, "id">) => void;
 }
 
 const kategoriler = ["Süt Ürünleri", "Unlu Mamüller", "İçecek", "Yağ", "Bakliyat", "Temizlik", "Diğer"];
@@ -19,7 +20,7 @@ const bosForm = {
   mevcutAdet: "", emniyetStogu: "", kritikStok: "", gunlukSatis: "",
 };
 
-export default function UrunEkleModal({ open, onClose, urun }: Props) {
+export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) {
   const duzenlemeModu = !!urun;
 
   const [form, setForm] = useState(bosForm);
@@ -48,7 +49,14 @@ export default function UrunEkleModal({ open, onClose, urun }: Props) {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Mock: gerçek DB bağlantısında buraya save çağrısı gelecek
+    onKaydet({
+      ad: form.ad, sku: form.sku, kategori: form.kategori, birim: form.birim,
+      mevcutAdet: Number(form.mevcutAdet),
+      emniyetStogu: Number(form.emniyetStogu),
+      kritikStok: Number(form.kritikStok),
+      gunlukSatis: Number(form.gunlukSatis),
+      sonHareket: new Date().toISOString(),
+    });
     onClose();
   };
 

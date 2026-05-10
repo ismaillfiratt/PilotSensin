@@ -26,7 +26,7 @@ interface Props {
 
 export default function StokTablosu({ otomatikAcilModal }: Props) {
   const router = useRouter();
-  const { urunler, sil: storesSil } = useStok();
+  const { urunler, ekle, guncelle, sil: storesSil } = useStok();
   const [arama, setArama] = useState("");
   const [filtre, setFiltre] = useState<Filtre>("tumu");
 
@@ -219,6 +219,7 @@ export default function StokTablosu({ otomatikAcilModal }: Props) {
       <UrunEkleModal
         open={urunEkleAcik}
         onClose={() => setUrunEkleAcik(false)}
+        onKaydet={(u) => ekle(u)}
       />
 
       {/* Ürün düzenle modal */}
@@ -226,6 +227,7 @@ export default function StokTablosu({ otomatikAcilModal }: Props) {
         open={!!duzenle}
         urun={duzenle}
         onClose={() => setDuzenle(null)}
+        onKaydet={(u) => duzenle && guncelle(duzenle.id, u)}
       />
 
       {/* Silme onay modal */}
