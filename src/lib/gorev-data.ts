@@ -1,3 +1,5 @@
+import { trGunFarki, trGoster } from "./tarih";
+
 export type GorevDurumu  = "yapilacak" | "devam" | "tamamlandi";
 export type Oncelik      = "acil" | "yuksek" | "normal" | "dusuk";
 
@@ -53,9 +55,9 @@ export const DURUM_CONFIG: Record<GorevDurumu, { label: string; color: string; b
 export const DURUM_SIRASI: GorevDurumu[] = ["yapilacak", "devam", "tamamlandi"];
 
 export function sonTarihDurumu(iso: string) {
-  const fark = Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000);
+  const fark = trGunFarki(iso); // TR takvim günü — UTC saatten bağımsız
   if (fark < 0)  return { renk: "#ef4444", etiket: `${Math.abs(fark)}g gecikti` };
   if (fark === 0) return { renk: "#ef4444", etiket: "Bugün" };
   if (fark <= 2)  return { renk: "#fbc024", etiket: `${fark}g kaldı` };
-  return { renk: "#94a3b8", etiket: new Date(iso).toLocaleDateString("tr-TR", { day: "2-digit", month: "short" }) };
+  return { renk: "#94a3b8", etiket: trGoster(iso, "kisa") };
 }

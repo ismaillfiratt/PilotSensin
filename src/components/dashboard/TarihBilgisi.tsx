@@ -1,31 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useTRSaat, trSaatiStr, trTarihiUzun } from "@/lib/tarih";
 
 export default function TarihBilgisi() {
-  const [tarih, setTarih] = useState("");
-
-  useEffect(() => {
-    const guncelle = () => {
-      setTarih(
-        new Date().toLocaleDateString("tr-TR", {
-          weekday: "long",
-          day:     "numeric",
-          month:   "long",
-          year:    "numeric",
-        })
-      );
-    };
-    guncelle();
-    const timer = setInterval(guncelle, 60_000);
-    return () => clearInterval(timer);
-  }, []);
-
-  if (!tarih) return null;
+  const simdi = useTRSaat(); // her saniye güncellenir, TR timezone, cleanup otomatik
 
   return (
-    <p className="text-sm text-[#94a3b8] mt-1">
-      {tarih} &mdash; Son güncelleme: az önce
+    <p className="text-sm text-[#94a3b8] mt-1 tabular-nums">
+      {trTarihiUzun(simdi)}
+      <span className="ml-2 text-[#475569] text-xs">{trSaatiStr(simdi)}</span>
     </p>
   );
 }

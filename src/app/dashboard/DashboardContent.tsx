@@ -14,6 +14,7 @@ import {
   nakitSkoru, gorevSkoru, stokSkoru,
   prosedurSkoru, acilFonSkoru, pilotSkoru,
 } from "@/lib/pilot-score";
+import { trGunBaslangici } from "@/lib/tarih";
 
 export default function DashboardContent() {
   const { islemler }                    = useNakit();
@@ -34,7 +35,10 @@ export default function DashboardContent() {
   );
 
   const acikGorev  = useMemo(() => gorevler.filter((g) => g.durum !== "tamamlandi").length, [gorevler]);
-  const gecikGorev = useMemo(() => gorevler.filter((g) => g.durum !== "tamamlandi" && new Date(g.sonTarih) < new Date()).length, [gorevler]);
+  const gecikGorev = useMemo(() => {
+    const gunBasi = trGunBaslangici(); // TR gece yarısı başlangıcı
+    return gorevler.filter((g) => g.durum !== "tamamlandi" && new Date(g.sonTarih) < gunBasi).length;
+  }, [gorevler]);
 
   const modules = useMemo(() => [
     { title: mNakit.baslik, href: "/nakit-akisi", iconName: "TrendingUp"    as const, score: mNakit.skor, status: mNakit.durum, metric: mNakit.metrik, metricLabel: mNakit.metrikLabel, alertCount: mNakit.uyariSayisi },

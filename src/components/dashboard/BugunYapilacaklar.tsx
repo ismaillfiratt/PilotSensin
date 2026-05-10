@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, AlertTriangle, Info, Zap } from "lucide-react";
@@ -12,6 +12,7 @@ import { useProsedurler } from "@/store/prosedurler";
 import { stokDurumu }     from "@/lib/stok-data";
 import { mevcutBirikim }  from "@/lib/acil-fon-data";
 import { isDue }          from "@/lib/prosedur-data";
+import { trGunBaslangici, trGunSonu, useGunDegisimi } from "@/lib/tarih";
 
 type Tip = "kritik" | "uyari" | "bilgi";
 interface Gorev { id: string; mesaj: string; tip: Tip; href: string; }
@@ -29,21 +30,25 @@ export default function BugunYapilacaklar() {
   const { hedefler, islemler: fonIslemler } = useAcilFon();
   const { checklist }                = useProsedurler();
 
+  // Gece yarısı TR'de geçince bileşeni yenile (günlük görevler güncellenir)
+  const [gunSayaci, setGunSayaci] = useState(0);
+  useGunDegisimi(() => setGunSayaci((n) => n + 1));
+
   const gorevListesi = useMemo((): Gorev[] => {
     const liste: Gorev[] = [];
-    const bugun = new Date();
+    const bugun    = new Date();
+    const gunBasi  = trGunBaslangici(); // TR gece yarısı 00:00+03:00
+    const gunSonu_ = trGunSonu();       // TR gece yarısı 23:59:59+03:00
 
-    // ── Gecikmiş görevler ───────────────────────────────────────────────
+    // ── Gecikmiş görevler — TR takvim gününe göre ───────────────────────
     gorevler
-      .filter(g => g.durum !== "tamamlandi" && new Date(g.sonTarih) < bugun)
+      .filter(g => g.durum !== "tamamlandi" && new Date(g.sonTarih) < gunBasi)
       .slice(0, 3)
       .forEach(g => liste.push({ id: `gorev-${g.id}`, mesaj: `"${g.baslik}" görevi gecikti`, tip: "kritik", href: "/gorevler" }));
 
-    // ── Bugün biten acil görevler ────────────────────────────────────────
-    const gunSonu = new Date(); gunSonu.setHours(23, 59, 59, 999);
-    const gunBasi = new Date(); gunBasi.setHours(0, 0, 0, 0);
+    // ── Bugün biten acil görevler — TR gün sınırları ────────────────────
     gorevler
-      .filter(g => g.durum !== "tamamlandi" && g.oncelik === "acil" && new Date(g.sonTarih) >= gunBasi && new Date(g.sonTarih) <= gunSonu)
+      .filter(g => g.durum !== "tamamlandi" && g.oncelik === "acil" && new Date(g.sonTarih) >= gunBasi && new Date(g.sonTarih) <= gunSonu_)
       .slice(0, 2)
       .forEach(g => liste.push({ id: `acil-${g.id}`, mesaj: `"${g.baslik}" bugün bitiyor — acil`, tip: "kritik", href: "/gorevler" }));
 
@@ -65,9 +70,10 @@ export default function BugunYapilacaklar() {
     if (hedefler.length === 0 && fonIslemler.length === 0) {
       liste.push({ id: "acil-fon-bos", mesaj: "Acil durum fonu henüz oluşturulmadı — hedef ekle", tip: "bilgi", href: "/acil-fon" });
     } else {
+      const trBugünGun = gunBasi.getDate(); // Istanbul gün numarası
       hedefler.forEach(hedef => {
-        // Bugün bu hedefin ödeme günü mü?
-        if (bugun.getDate() !== hedef.odemeGunu) return;
+        // Bugün bu hedefin ödeme günü mü? — TR takvim günü ile karşılaştır
+        if (trBugünGun !== hedef.odemeGunu) return;
 
         // Bu ay bu hedef için ne kadar yatırıldı?
         const buAyOdendi = fonIslemler
@@ -91,7 +97,7 @@ export default function BugunYapilacaklar() {
 
       // Hedef var ama %50'nin altında ve ödeme günü değilse bilgi ver
       hedefler.forEach(hedef => {
-        if (bugun.getDate() === hedef.odemeGunu) return; // zaten yukarıda işlendi
+        if (trBugünGun === hedef.odemeGunu) return; // zaten yukarıda işlendi
         const hMevcut = mevcutBirikim(fonIslemler, hedef.id);
         const oran = hedef.toplamHedef > 0 ? hMevcut / hedef.toplamHedef : 0;
         if (oran < 0.25 && hedef.toplamHedef > 0) {
@@ -126,7 +132,7 @@ export default function BugunYapilacaklar() {
     }
 
     return liste;
-  }, [gorevler, urunler, islemler, fonIslemler, hedefler, checklist]);
+  }, [gorevler, urunler, islemler, fonIslemler, hedefler, checklist, gunSayaci]);
 
   return (
     <div className="glass-card rounded-2xl p-5 flex flex-col h-full">

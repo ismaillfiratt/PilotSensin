@@ -4,16 +4,10 @@ import { useState, useMemo } from "react";
 import { Calendar, CheckCircle2, Clock, ListTodo, AlertCircle } from "lucide-react";
 import { useGorevler } from "@/store/gorevler";
 import { ONCELIK_CONFIG, DURUM_CONFIG } from "@/lib/gorev-data";
+import { trBugun, trOncekiGun, trGunBaslangici, trGunSonu, trGoster } from "@/lib/tarih";
 
-/* ── Yardımcılar ── */
-function bugun()       { return new Date().toISOString().split("T")[0]; }
-function oncekiGun(n: number) { const d = new Date(); d.setDate(d.getDate() - n); return d.toISOString().split("T")[0]; }
-function formatKisa(iso: string) {
-  return new Date(iso).toLocaleDateString("tr-TR", { day: "2-digit", month: "short", year: "numeric" });
-}
-function formatLong(iso: string) {
-  return new Date(iso).toLocaleDateString("tr-TR", { day: "2-digit", month: "long", year: "numeric" });
-}
+function formatKisa(iso: string) { return trGoster(iso, "tarih"); }
+function formatLong(iso: string)  { return trGoster(iso, "tarih"); }
 
 type Mod = "bugun" | "dun" | "hafta" | "ay" | "ozel";
 type Filtre = "toplam" | "yapilacak" | "devam" | "tamamlandi" | "geciken" | null;
@@ -43,24 +37,25 @@ export default function GorevTarihselPanel() {
   const { gorevler } = useGorevler();
 
   const [mod, setMod]           = useState<Mod>("bugun");
-  const [ozelBas, setOzelBas]   = useState(oncekiGun(6));
-  const [ozelBit, setOzelBit]   = useState(bugun());
+  const [ozelBas, setOzelBas]   = useState(trOncekiGun(6));
+  const [ozelBit, setOzelBit]   = useState(trBugun());
   const [filtre, setFiltre]     = useState<Filtre>(null);
 
-  /* Dönem aralığı */
+  /* Dönem aralığı — TR timezone ile */
   const { baslangic, bitis } = useMemo<{ baslangic: string; bitis: string }>(() => {
-    const bg = bugun();
+    const bg = trBugun();
     switch (mod) {
-      case "bugun": return { baslangic: bg,             bitis: bg             };
-      case "dun":   return { baslangic: oncekiGun(1),   bitis: oncekiGun(1)   };
-      case "hafta": return { baslangic: oncekiGun(6),   bitis: bg             };
-      case "ay":    return { baslangic: oncekiGun(29),  bitis: bg             };
-      case "ozel":  return { baslangic: ozelBas,        bitis: ozelBit        };
+      case "bugun": return { baslangic: bg,               bitis: bg             };
+      case "dun":   return { baslangic: trOncekiGun(1),   bitis: trOncekiGun(1) };
+      case "hafta": return { baslangic: trOncekiGun(6),   bitis: bg             };
+      case "ay":    return { baslangic: trOncekiGun(29),  bitis: bg             };
+      case "ozel":  return { baslangic: ozelBas,          bitis: ozelBit        };
     }
   }, [mod, ozelBas, ozelBit]);
 
-  const basT   = new Date(baslangic + "T00:00:00");
-  const bitisT = new Date(bitis     + "T23:59:59");
+  /* TR gün sınırları — UTC değil, Istanbul 00:00 ve 23:59:59 */
+  const basT   = trGunBaslangici(baslangic);
+  const bitisT = trGunSonu(bitis);
   const simdi  = new Date();
 
   /* Seçilen aralıkta oluşturulmuş görevler */
@@ -173,7 +168,7 @@ export default function GorevTarihselPanel() {
             <span className="text-[#64748b] text-xs">—</span>
             <div className="flex items-center gap-2">
               <label className="text-xs text-[#94a3b8] whitespace-nowrap">Bitiş</label>
-              <input type="date" value={ozelBit} min={ozelBas} max={bugun()}
+              <input type="date" value={ozelBit} min={ozelBas} max={trBugun()}
                 onChange={(e) => setOzelBit(e.target.value)}
                 className="px-2.5 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] text-white text-xs focus:outline-none focus:border-[rgba(251,192,36,0.5)] scheme-dark" />
             </div>
