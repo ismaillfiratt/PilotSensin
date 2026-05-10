@@ -1,16 +1,5 @@
 "use client";
 
-/**
- * BildirimProvider
- * Arka planda periyodik olarak tüm koşulları kontrol eder ve
- * gerektiğinde otomatik bildirimler oluşturur.
- *
- * Bellek yönetimi: useEffect cleanup ile interval temizlenir.
- * Dedup: Her bildirim günlük sabit ID taşır — aynı gün bir kez eklenir.
- * Gerçek zamanlı: Bildirimler user_store'a yazıldığı anda
- *   Supabase Realtime aracılığıyla diğer cihazlara yayılır.
- */
-
 import { useEffect, useRef } from "react";
 import { useStok }        from "@/store/stok";
 import { useNakit }       from "@/store/nakit";
@@ -18,54 +7,57 @@ import { useProsedurler } from "@/store/prosedurler";
 import { useGorevler }    from "@/store/gorevler";
 import { useBildirimler } from "@/store/bildirimler";
 import {
-  stokTetikle,
-  nakitTetikle,
-  sopTetikle,
-  gorevTetikle,
-  gunlukOzetTetikle,
+  stokTetikle, nakitTetikle, sopTetikle,
+  gorevTetikle, gunlukOzetTetikle,
 } from "@/lib/bildirim-engine";
 
 const KONTROL_ARASI_MS = 10 * 60 * 1000; // 10 dakika
-const ILK_GECIKME_MS   =  8 * 1000;      // uygulama açılışından 8 sn sonra ilk kontrol
+const ILK_GECIKME_MS   =  8 * 1000;      // ilk kontrol gecikmesi
+const SESSIZ_KONTROL_MS =  60 * 1000;    // sessiz mod süre kontrolü: her 1 dk
 
 export default function BildirimProvider() {
   const { urunler }   = useStok();
   const { islemler }  = useNakit();
   const { checklist } = useProsedurler();
   const { gorevler }  = useGorevler();
-  const { bildirimler, ekle } = useBildirimler();
+  const { bildirimler, sessizModu, ekle, sessizKontrol } = useBildirimler();
 
-  /*
-   * Kontrol fonksiyonunu ref'e alıyoruz.
-   * Bu sayede interval her zaman güncel store verisini görür,
-   * ama interval'i yeniden oluşturmaya gerek kalmaz.
-   */
+  // Ref pattern — interval her zaman güncel veriyi görür, yeniden oluşturulmaz
   const kontrol = useRef<() => void>(() => {});
 
   kontrol.current = () => {
-    const tetikleyiciler = [
+    // Sessiz modda bildirim oluşturma
+    if (sessizModu) return;
+
+    const yeniler = [
       ...stokTetikle(urunler, bildirimler),
       ...nakitTetikle(islemler, bildirimler),
       ...sopTetikle(checklist, bildirimler),
       ...gorevTetikle(gorevler, bildirimler),
       ...gunlukOzetTetikle(gorevler, islemler, bildirimler),
     ];
-
-    tetikleyiciler.forEach((b) => ekle(b));
+    yeniler.forEach((b) => ekle(b));
   };
 
   useEffect(() => {
-    // İlk kontrol — uygulamanın tamamen yüklenmesini bekle
-    const ilkKontrol = setTimeout(() => kontrol.current(), ILK_GECIKME_MS);
+    // Uygulama açılışında sessiz mod süresini hemen kontrol et
+    sessizKontrol();
 
-    // Periyodik kontrol — cleanup ile bellek sızıntısı önlenir
-    const periyodik  = setInterval(() => kontrol.current(), KONTROL_ARASI_MS);
+    // İlk bildirim kontrolü
+    const ilk       = setTimeout(() => kontrol.current(), ILK_GECIKME_MS);
+
+    // Periyodik bildirim kontrolü
+    const periyodik = setInterval(() => kontrol.current(), KONTROL_ARASI_MS);
+
+    // Sessiz mod süre kontrolü (1 dk'da bir)
+    const sessizTimer = setInterval(sessizKontrol, SESSIZ_KONTROL_MS);
 
     return () => {
-      clearTimeout(ilkKontrol);
-      clearInterval(periyodik); // bellek sızıntısı yok
+      clearTimeout(ilk);
+      clearInterval(periyodik);
+      clearInterval(sessizTimer);   // bellek sızıntısı yok
     };
-  }, []); // sadece mount'ta kurulur — kontrol.current ref ile güncellenir
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return null;
 }

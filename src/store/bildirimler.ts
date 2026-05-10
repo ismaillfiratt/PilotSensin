@@ -17,18 +17,25 @@ export interface Bildirim {
   modul:       BildirimModul;
   tarih:       string;
   okundu:      boolean;
-  ilgiliLink?: string; // tıklanınca yönlendirme
+  ilgiliLink?: string;
 }
 
 interface BildirimStore {
-  bildirimler:      Bildirim[];
-  ekle:             (b: Omit<Bildirim, "tarih" | "okundu">) => Promise<void>;
-  okunduYap:        (id: string) => void;
-  okunduToggle:     (id: string) => void;
-  tumunuOkunduYap:  () => void;
-  sil:              (id: string) => void;
-  tumunuSil:        () => void;
-  syncFromRemote:   (bildirimler: Bildirim[]) => void;
+  bildirimler:       Bildirim[];
+  sessizModu:        boolean;
+  sessizBitis:       string | null; // ISO veya null (süresiz)
+
+  ekle:              (b: Omit<Bildirim, "tarih" | "okundu">) => Promise<void>;
+  okunduYap:         (id: string) => void;
+  okunduToggle:      (id: string) => void;
+  tumunuOkunduYap:   () => void;
+  sil:               (id: string) => void;
+  tumunuSil:         () => void;
+  syncFromRemote:    (bildirimler: Bildirim[]) => void;
+
+  sessizeAl:         (dakika: number | null) => void; // null = süresiz
+  sessizModuAc:      () => void;
+  sessizKontrol:     () => void; // süresi dolduysa otomatik kapat
 }
 
 async function kaydet(bildirimler: Bildirim[]) {
@@ -40,9 +47,10 @@ export const useBildirimler = create<BildirimStore>()(
   persist(
     (set, get) => ({
       bildirimler: [],
+      sessizModu:  false,
+      sessizBitis: null,
 
       ekle: async (b) => {
-        // Aynı ID varsa tekrar ekleme (gruplandırma/dedup)
         if (get().bildirimler.some((m) => m.id === b.id)) return;
         const yeni: Bildirim = { ...b, tarih: new Date().toISOString(), okundu: false };
         set((s) => ({ bildirimler: [yeni, ...s.bildirimler] }));
@@ -77,10 +85,31 @@ export const useBildirimler = create<BildirimStore>()(
       },
 
       syncFromRemote: (bildirimler) => set({ bildirimler }),
+
+      sessizeAl: (dakika) => {
+        const bitis = dakika === null
+          ? null
+          : new Date(Date.now() + dakika * 60_000).toISOString();
+        set({ sessizModu: true, sessizBitis: bitis });
+      },
+
+      sessizModuAc: () => set({ sessizModu: false, sessizBitis: null }),
+
+      sessizKontrol: () => {
+        const { sessizModu, sessizBitis } = get();
+        if (!sessizModu) return;
+        if (sessizBitis && new Date(sessizBitis) <= new Date()) {
+          set({ sessizModu: false, sessizBitis: null });
+        }
+      },
     }),
     {
       name: "pilot-bildirimler-v1",
-      partialize: (s) => ({ bildirimler: s.bildirimler }),
+      partialize: (s) => ({
+        bildirimler: s.bildirimler,
+        sessizModu:  s.sessizModu,
+        sessizBitis: s.sessizBitis,
+      }),
     }
   )
 );
