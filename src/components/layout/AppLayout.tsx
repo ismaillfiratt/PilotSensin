@@ -8,6 +8,7 @@ import Topbar            from "./Topbar";
 import AlertMarquee      from "./AlertMarquee";
 import MobileNav         from "./MobileNav";
 import RealtimeProvider  from "@/components/providers/RealtimeProvider";
+import DataProvider      from "@/components/providers/DataProvider";
 import { useLayout }     from "@/store/layout";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -66,7 +67,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Mobil Alt Navigasyon */}
       <MobileNav />
 
-      {/* Cihazlar arası gerçek zamanlı senkronizasyon */}
+      {/* Supabase'den veri yükle + Realtime dinle */}
+      <DataProvider />
       <RealtimeProvider />
     </div>
   );

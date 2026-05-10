@@ -1,0 +1,3 @@
+ALTER TABLE acil_fon_hedefler ADD COLUMN IF NOT EXISTS odeme_gunu  INT  NOT NULL DEFAULT 1;
+ALTER TABLE acil_fon_hedefler ADD COLUMN IF NOT EXISTS aciklama    TEXT NOT NULL DEFAULT '';
+ALTER TABLE checklist_items   ADD COLUMN IF NOT EXISTS sorumlu     TEXT NOT NULL DEFAULT '';
