@@ -2,9 +2,10 @@ import type { Islem }                from "./nakit-data";
 import type { Gorev }                from "./gorev-data";
 import type { Urun }                 from "./stok-data";
 import type { Prosedur, ChecklistItem } from "./prosedur-data";
-import type { FonIslem, FonAyar }   from "./acil-fon-data";
+import type { FonIslem, FonHedef }  from "./acil-fon-data";
 import { stokDurumu }                from "./stok-data";
 import { mevcutBirikim }             from "./acil-fon-data";
+import { uyumSkoru, isDue }          from "./prosedur-data";
 
 export interface ModulSkoru {
   baslik:      string;
@@ -91,35 +92,36 @@ export function prosedurSkoru(prosedurler: Prosedur[], checklist: ChecklistItem[
   if (prosedurler.length === 0 && checklist.length === 0)
     return { baslik: "Prosedürler", skor: 100, durum: "ok", metrik: "%100", metrikLabel: "Prosedür eklenmedi", uyariSayisi: 0 };
 
-  const tamamlanan  = checklist.filter((c) => c.tamamlandi).length;
-  const toplamCheck = checklist.length;
-  const checkOran   = toplamCheck > 0 ? tamamlanan / toplamCheck : 1;
-  const skor        = Math.round(checkOran * 100);
+  const uyum      = uyumSkoru(checklist);
+  const bekleyen  = checklist.filter(c => isDue(c)).length;
   return {
     baslik:      "Prosedürler",
-    skor,
-    durum:       skor >= 75 ? "ok" : skor >= 40 ? "warning" : "critical",
-    metrik:      `%${skor}`,
-    metrikLabel: `${prosedurler.length} prosedür · ${tamamlanan}/${toplamCheck} kontrol`,
-    uyariSayisi: toplamCheck - tamamlanan,
+    skor:        uyum,
+    durum:       uyum >= 75 ? "ok" : uyum >= 40 ? "warning" : "critical",
+    metrik:      `%${uyum}`,
+    metrikLabel: `${prosedurler.length} SOP · ${bekleyen} bekleyen kontrol`,
+    uyariSayisi: bekleyen,
   };
 }
 
 /* ── Acil Durum Fonu ── */
-export function acilFonSkoru(islemler: FonIslem[], ayar: FonAyar): ModulSkoru {
-  if (islemler.length === 0)
-    return { baslik: "Acil Durum Fonu", skor: 100, durum: "ok", metrik: "₺0", metrikLabel: "Birikim eklenmedi", uyariSayisi: 0 };
+export function acilFonSkoru(islemler: FonIslem[], hedefler: FonHedef[]): ModulSkoru {
+  if (hedefler.length === 0)
+    return { baslik: "Acil Durum Fonu", skor: 100, durum: "ok", metrik: "₺0", metrikLabel: "Hedef eklenmedi", uyariSayisi: 0 };
 
+  if (islemler.length === 0)
+    return { baslik: "Acil Durum Fonu", skor: 0, durum: "critical", metrik: "₺0", metrikLabel: "Birikim eklenmedi", uyariSayisi: 1 };
+
+  const toplamHedef = hedefler.reduce((s, h) => s + h.toplamHedef, 0);
   const mevcut = mevcutBirikim(islemler);
-  const hedef  = ayar.hedef;
-  const oran   = hedef > 0 ? Math.min(1, mevcut / hedef) : 0;
+  const oran   = toplamHedef > 0 ? Math.min(1, mevcut / toplamHedef) : 0;
   const skor   = Math.round(oran * 100);
   return {
     baslik:      "Acil Durum Fonu",
     skor,
     durum:       skor >= 80 ? "ok" : skor >= 40 ? "warning" : "critical",
     metrik:      fmt(mevcut),
-    metrikLabel: `Hedef: ${fmt(hedef)}`,
+    metrikLabel: `Toplam hedef: ${fmt(toplamHedef)}`,
     uyariSayisi: skor < 40 ? 1 : 0,
   };
 }

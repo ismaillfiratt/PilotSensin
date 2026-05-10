@@ -21,14 +21,14 @@ export default function ProfilAvatar({ ad, soyad, email }: Props) {
   const { gorevler }                   = useGorevler();
   const { urunler }                    = useStok();
   const { prosedurler, checklist }     = useProsedurler();
-  const { islemler: fonIslemler, ayar } = useAcilFon();
+  const { islemler: fonIslemler, hedefler: fonHedefler } = useAcilFon();
 
   const skor = pilotSkoru([
     nakitSkoru(islemler),
     gorevSkoru(gorevler),
     stokSkoru(urunler),
     prosedurSkoru(prosedurler, checklist),
-    acilFonSkoru(fonIslemler, ayar),
+    acilFonSkoru(fonIslemler, fonHedefler),
   ]);
 
   const skorRenk = skor >= 80 ? "#22c55e" : skor >= 60 ? "#fbc024" : "#ef4444";

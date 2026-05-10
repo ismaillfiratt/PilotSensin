@@ -20,13 +20,13 @@ export default function DashboardContent() {
   const { gorevler }                    = useGorevler();
   const { urunler }                     = useStok();
   const { prosedurler, checklist }      = useProsedurler();
-  const { islemler: fonIslemler, ayar } = useAcilFon();
+  const { islemler: fonIslemler, hedefler: fonHedefler } = useAcilFon();
 
   const mNakit = useMemo(() => nakitSkoru(islemler),                   [islemler]);
   const mGorev = useMemo(() => gorevSkoru(gorevler),                   [gorevler]);
   const mStok  = useMemo(() => stokSkoru(urunler),                     [urunler]);
   const mPros  = useMemo(() => prosedurSkoru(prosedurler, checklist),  [prosedurler, checklist]);
-  const mAcil  = useMemo(() => acilFonSkoru(fonIslemler, ayar),        [fonIslemler, ayar]);
+  const mAcil  = useMemo(() => acilFonSkoru(fonIslemler, fonHedefler), [fonIslemler, fonHedefler]);
 
   const genelSkor = useMemo(
     () => pilotSkoru([mNakit, mGorev, mStok, mPros, mAcil]),

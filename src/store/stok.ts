@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { stokDurumu, type Urun } from "@/lib/stok-data";
 import { yayin } from "@/lib/realtime";
 import { stokDB } from "@/lib/db";
-import { createClient } from "@/utils/supabase/client";
+import { getKullaniciId } from "@/lib/auth";
 
 interface StokStore {
   urunler:        Urun[];
@@ -12,11 +12,6 @@ interface StokStore {
   syncFromRemote: (urunler: Urun[]) => void;
 }
 
-async function userId() {
-  const { data } = await createClient().auth.getUser();
-  return data.user?.id ?? "";
-}
-
 export const useStok = create<StokStore>((set, get) => ({
   urunler: [],
 
@@ -24,7 +19,7 @@ export const useStok = create<StokStore>((set, get) => ({
     const yeni = { ...urun, id: Date.now().toString() };
     set((s) => ({ urunler: [yeni, ...s.urunler] }));
     yayin({ tip: "stok", veri: get().urunler });
-    const uid = await userId();
+    const uid = await getKullaniciId();
     if (uid) await stokDB.ekle(uid, yeni);
   },
   guncelle: async (id, urun) => {

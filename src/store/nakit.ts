@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { type Islem } from "@/lib/nakit-data";
 import { yayin } from "@/lib/realtime";
 import { nakitDB } from "@/lib/db";
-import { createClient } from "@/utils/supabase/client";
+import { getKullaniciId } from "@/lib/auth";
 
 interface NakitStore {
   islemler:       Islem[];
@@ -12,11 +12,6 @@ interface NakitStore {
   syncFromRemote: (islemler: Islem[]) => void;
 }
 
-async function userId() {
-  const { data } = await createClient().auth.getUser();
-  return data.user?.id ?? "";
-}
-
 export const useNakit = create<NakitStore>((set, get) => ({
   islemler: [],
 
@@ -24,7 +19,7 @@ export const useNakit = create<NakitStore>((set, get) => ({
     const yeni = { ...islem, id: Date.now().toString() };
     set((s) => ({ islemler: [yeni, ...s.islemler] }));
     yayin({ tip: "nakit", veri: get().islemler });
-    const uid = await userId();
+    const uid = await getKullaniciId();
     if (uid) await nakitDB.ekle(uid, yeni);
   },
   guncelle: async (id, islem) => {

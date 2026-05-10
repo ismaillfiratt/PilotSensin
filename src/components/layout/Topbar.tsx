@@ -53,7 +53,7 @@ export default function Topbar() {
   const { gorevler }                   = useGorevler();
   const { urunler }                    = useStok();
   const { prosedurler, checklist }     = useProsedurler();
-  const { islemler: fonIslemler, ayar } = useAcilFon();
+  const { islemler: fonIslemler, hedefler: fonHedefler } = useAcilFon();
   const { mobileSidebarToggle }        = useLayout();
 
   const genelSkor = pilotSkoru([
@@ -61,7 +61,7 @@ export default function Topbar() {
     gorevSkoru(gorevler),
     stokSkoru(urunler),
     prosedurSkoru(prosedurler, checklist),
-    acilFonSkoru(fonIslemler, ayar),
+    acilFonSkoru(fonIslemler, fonHedefler),
   ]);
 
   const skorRenk = genelSkor >= 80 ? "#22c55e" : genelSkor >= 60 ? "#fbc024" : "#ef4444";

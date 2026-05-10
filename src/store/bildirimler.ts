@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 import { yayin } from "@/lib/realtime";
+import { bildirimlerDB } from "@/lib/db";
+import { getKullaniciId } from "@/lib/auth";
 
 export type BildirimTip = "kritik" | "uyari" | "bilgi";
 export type BildirimModul =
@@ -27,43 +28,36 @@ interface BildirimStore {
   syncFromRemote: (bildirimler: Bildirim[]) => void;
 }
 
-const BASLANGIC: Bildirim[] = [];
+export const useBildirimler = create<BildirimStore>((set, get) => ({
+  bildirimler: [],
 
-export const useBildirimler = create<BildirimStore>()(
-  persist(
-    (set, get) => ({
-      bildirimler: BASLANGIC,
-
-      okunduYap: (id) => {
-        set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: true } : b) }));
-        yayin({ tip: "bildirimler", veri: get().bildirimler });
-      },
-      okunduToggle: (id) => {
-        set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: !b.okundu } : b) }));
-        yayin({ tip: "bildirimler", veri: get().bildirimler });
-      },
-      tumunuOkunduYap: () => {
-        set((s) => ({ bildirimler: s.bildirimler.map((b) => ({ ...b, okundu: true })) }));
-        yayin({ tip: "bildirimler", veri: get().bildirimler });
-      },
-      sil: (id) => {
-        set((s) => ({ bildirimler: s.bildirimler.filter((b) => b.id !== id) }));
-        yayin({ tip: "bildirimler", veri: get().bildirimler });
-      },
-      tumunuSil: () => {
-        set({ bildirimler: [] });
-        yayin({ tip: "bildirimler", veri: [] });
-      },
-      syncFromRemote: (bildirimler) => set({ bildirimler }),
-    }),
-    {
-      name: "pilotsensin-bildirimler",
-      storage: createJSONStorage(() => localStorage),
-      // Sadece okundu durumunu ve silinen bildirimleri sakla
-      partialize: (state) => ({
-        bildirimler: state.bildirimler.map(({ id, okundu }) => ({ id, okundu })),
-      }),
-      merge: (persisted: any, current) => persisted ?? current,
-    }
-  )
-);
+  okunduYap: (id) => {
+    set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: true } : b) }));
+    yayin({ tip: "bildirimler", veri: get().bildirimler });
+    bildirimlerDB.guncelle(id, true);
+  },
+  okunduToggle: (id) => {
+    const yeniDurum = !(get().bildirimler.find(b => b.id === id)?.okundu ?? false);
+    set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: yeniDurum } : b) }));
+    yayin({ tip: "bildirimler", veri: get().bildirimler });
+    bildirimlerDB.guncelle(id, yeniDurum);
+  },
+  tumunuOkunduYap: async () => {
+    set((s) => ({ bildirimler: s.bildirimler.map((b) => ({ ...b, okundu: true })) }));
+    yayin({ tip: "bildirimler", veri: get().bildirimler });
+    const uid = await getKullaniciId();
+    if (uid) bildirimlerDB.tumunuGuncelle(uid);
+  },
+  sil: (id) => {
+    set((s) => ({ bildirimler: s.bildirimler.filter((b) => b.id !== id) }));
+    yayin({ tip: "bildirimler", veri: get().bildirimler });
+    bildirimlerDB.sil(id);
+  },
+  tumunuSil: async () => {
+    set({ bildirimler: [] });
+    yayin({ tip: "bildirimler", veri: [] });
+    const uid = await getKullaniciId();
+    if (uid) bildirimlerDB.tumunuSil(uid);
+  },
+  syncFromRemote: (bildirimler) => set({ bildirimler }),
+}));

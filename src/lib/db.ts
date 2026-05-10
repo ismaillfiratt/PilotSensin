@@ -16,9 +16,17 @@ const sb = () => createClient();
 function kontrol(hata: unknown, islem: string) {
   if (hata) {
     const err = hata as { message?: string; code?: string; details?: string };
-    console.error(`[DB Hatası] ${islem}:`, err.message ?? hata, { code: err.code, details: err.details });
+    const mesaj = err.message ?? String(hata);
+    console.error(`[DB Hatası] ${islem}:`, mesaj, { code: err.code, details: err.details });
+    // Kullanıcıya görünür hata — tarayıcı konsolunda "DB Hatası" araması yapın
+    if (typeof window !== "undefined") {
+      const kodu = err.code ? ` (${err.code})` : "";
+      window.__dbHata = `[${islem}] ${mesaj}${kodu}`;
+    }
   }
 }
+
+declare global { interface Window { __dbHata?: string } }
 
 /* ─────────────── NAKİT İŞLEMLER ─────────────── */
 export const nakitDB = {

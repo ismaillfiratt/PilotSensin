@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { type IsletmeGideri } from "@/lib/kar-zarar-data";
 import { type GiderRow, isletmeGiderleriDB } from "@/lib/db";
 import { yayin } from "@/lib/realtime";
-import { createClient } from "@/utils/supabase/client";
+import { getKullaniciId } from "@/lib/auth";
 
 // Giderler dbId ile saklanır (silme/güncelleme için UUID lazım)
 export type GiderItem = IsletmeGideri & { dbId?: string };
@@ -15,11 +15,6 @@ interface IsletmeGiderleriStore {
   syncFromRemote: (giderler: GiderRow[]) => void;
 }
 
-async function userId() {
-  const { data } = await createClient().auth.getUser();
-  return data.user?.id ?? "";
-}
-
 export const useIsletmeGiderleri = create<IsletmeGiderleriStore>((set, get) => ({
   giderler: [],
 
@@ -28,7 +23,7 @@ export const useIsletmeGiderleri = create<IsletmeGiderleriStore>((set, get) => (
     const temp: GiderItem = { ...gider, dbId: undefined };
     set((s) => ({ giderler: [...s.giderler, temp] }));
 
-    const uid = await userId();
+    const uid = await getKullaniciId();
     if (uid) {
       const dbId = await isletmeGiderleriDB.ekle(uid, gider);
       // DB'den gelen UUID ile güncelle

@@ -39,3 +39,14 @@ enum Role {
   ADMIN
   STAFF
 }
+
+model UserStore {
+  id        String   @id @default(cuid())
+  userId    String
+  storeKey  String
+  data      Json
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, storeKey])
+  @@index([userId])
+}

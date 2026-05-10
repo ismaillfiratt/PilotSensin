@@ -39,8 +39,9 @@ export default function DataProvider() {
 
     const supabase = createClient();
 
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) return;
+    supabase.auth.getSession().then(async ({ data: sessionData }) => {
+      if (!sessionData.session?.user) return;
+      const userId = sessionData.session.user.id;
 
       // 1. Tüm verileri paralel olarak çek
       const [
@@ -70,36 +71,36 @@ export default function DataProvider() {
 
       // 3. Realtime — tablolardaki değişiklikleri dinle
       const kanal = supabase
-        .channel(`db:${data.user.id}`)
-        .on("postgres_changes", { event: "*", schema: "public", table: "nakit_islemler", filter: `user_id=eq.${data.user.id}` }, async () => {
+        .channel(`db:${userId}`)
+        .on("postgres_changes", { event: "*", schema: "public", table: "nakit_islemler", filter: `user_id=eq.${userId}` }, async () => {
           nakitSync(await nakitDB.getAll());
         })
-        .on("postgres_changes", { event: "*", schema: "public", table: "gorevler", filter: `user_id=eq.${data.user.id}` }, async () => {
+        .on("postgres_changes", { event: "*", schema: "public", table: "gorevler", filter: `user_id=eq.${userId}` }, async () => {
           gorevSync(await gorevlerDB.getAll());
         })
-        .on("postgres_changes", { event: "*", schema: "public", table: "stok_urunler", filter: `user_id=eq.${data.user.id}` }, async () => {
+        .on("postgres_changes", { event: "*", schema: "public", table: "stok_urunler", filter: `user_id=eq.${userId}` }, async () => {
           stokSync(await stokDB.getAll());
         })
-        .on("postgres_changes", { event: "*", schema: "public", table: "bildirimler", filter: `user_id=eq.${data.user.id}` }, async () => {
+        .on("postgres_changes", { event: "*", schema: "public", table: "bildirimler", filter: `user_id=eq.${userId}` }, async () => {
           bildirimSync(await bildirimlerDB.getAll());
         })
-        .on("postgres_changes", { event: "*", schema: "public", table: "prosedurler", filter: `user_id=eq.${data.user.id}` }, async () => {
+        .on("postgres_changes", { event: "*", schema: "public", table: "prosedurler", filter: `user_id=eq.${userId}` }, async () => {
           const [p, c] = await Promise.all([prosedurlerDB.getAll(), checklistDB.getAll()]);
           prosedurSync({ prosedurler: p, checklist: c });
         })
-        .on("postgres_changes", { event: "*", schema: "public", table: "checklist_items", filter: `user_id=eq.${data.user.id}` }, async () => {
+        .on("postgres_changes", { event: "*", schema: "public", table: "checklist_items", filter: `user_id=eq.${userId}` }, async () => {
           const [p, c] = await Promise.all([prosedurlerDB.getAll(), checklistDB.getAll()]);
           prosedurSync({ prosedurler: p, checklist: c });
         })
-        .on("postgres_changes", { event: "*", schema: "public", table: "acil_fon_hedefler", filter: `user_id=eq.${data.user.id}` }, async () => {
+        .on("postgres_changes", { event: "*", schema: "public", table: "acil_fon_hedefler", filter: `user_id=eq.${userId}` }, async () => {
           const [h, fi] = await Promise.all([acilFonHedeflerDB.getAll(), acilFonIslemlerDB.getAll()]);
           acilFonSync({ hedefler: h, islemler: fi, aktifHedefId: useAcilFon.getState().aktifHedefId });
         })
-        .on("postgres_changes", { event: "*", schema: "public", table: "acil_fon_islemler", filter: `user_id=eq.${data.user.id}` }, async () => {
+        .on("postgres_changes", { event: "*", schema: "public", table: "acil_fon_islemler", filter: `user_id=eq.${userId}` }, async () => {
           const [h, fi] = await Promise.all([acilFonHedeflerDB.getAll(), acilFonIslemlerDB.getAll()]);
           acilFonSync({ hedefler: h, islemler: fi, aktifHedefId: useAcilFon.getState().aktifHedefId });
         })
-        .on("postgres_changes", { event: "*", schema: "public", table: "isletme_giderleri", filter: `user_id=eq.${data.user.id}` }, async () => {
+        .on("postgres_changes", { event: "*", schema: "public", table: "isletme_giderleri", filter: `user_id=eq.${userId}` }, async () => {
           const g = await isletmeGiderleriDB.getAll();
           giderSync(g.map(({ dbId, ...x }) => ({ ...x, dbId })));
         })

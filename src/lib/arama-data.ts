@@ -39,7 +39,7 @@ const TUM_SONUCLAR: AramaSonucu[] = [
     href: "/gorevler",
   })),
 
-  ...MOCK_PROSEDURLER.map((p) => ({
+  ...MOCK_PROSEDURLER.map((p: import("./prosedur-data").Prosedur) => ({
     id: `prosedur-${p.id}`,
     tip: "prosedur" as const,
     baslik: p.baslik,

@@ -1,79 +1,75 @@
 export type IslemTipi = "yatirma" | "cekme";
 
+export interface FonHedef {
+  id:               string;
+  ad:               string;   // "Makine Alımı", "İşletme Güvenliği" vb.
+  toplamHedef:      number;   // ₺50.000
+  aylikOdeme:       number;   // ₺2.000
+  odemeGunu:        number;   // 1-31 — her ayın X'inde hatırlatma
+  aciklama?:        string;
+  olusturmaTarih:   string;
+}
+
 export interface FonIslem {
-  id: string;
-  tip: IslemTipi;
-  tutar: number;
+  id:       string;
+  hedefId?: string;   // hangi hedefe bağlı
+  tip:      IslemTipi;
+  tutar:    number;
   aciklama: string;
-  tarih: string; // ISO
+  tarih:    string;   // ISO
 }
 
-export interface FonAyar {
-  hedef: number;       // Hedef fon tutarı (₺)
-  aylikHedef: number;  // Aylık birikim hedefi (₺)
-  aylarSayisi: number; // Kaç aylık gidere eşit olsun
+/** Mevcut birikimi hesapla — opsiyonel hedefId ile filtrele */
+export function mevcutBirikim(islemler: FonIslem[], hedefId?: string): number {
+  const list = hedefId ? islemler.filter(i => i.hedefId === hedefId) : islemler;
+  return list.reduce((s, i) => i.tip === "yatirma" ? s + i.tutar : s - i.tutar, 0);
 }
 
-function tarih(gunGeri: number) {
-  return new Date(Date.now() - gunGeri * 86400000).toISOString();
-}
-
-export const MOCK_AYAR: FonAyar = {
-  hedef: 30000,
-  aylikHedef: 3000,
-  aylarSayisi: 3,
-};
-
-export const MOCK_ISLEMLER: FonIslem[] = [
-  { id: "f1",  tip: "yatirma", tutar: 3000, aciklama: "Ocak ayı birikimi",     tarih: tarih(120) },
-  { id: "f2",  tip: "yatirma", tutar: 3000, aciklama: "Şubat ayı birikimi",    tarih: tarih(90)  },
-  { id: "f3",  tip: "cekme",   tutar: 1500, aciklama: "Acil ekipman tamiri",   tarih: tarih(75)  },
-  { id: "f4",  tip: "yatirma", tutar: 3000, aciklama: "Mart ayı birikimi",     tarih: tarih(60)  },
-  { id: "f5",  tip: "yatirma", tutar: 1500, aciklama: "Ek birikim",            tarih: tarih(45)  },
-  { id: "f6",  tip: "yatirma", tutar: 3000, aciklama: "Nisan ayı birikimi",    tarih: tarih(30)  },
-  { id: "f7",  tip: "cekme",   tutar: 2000, aciklama: "Beklenmedik gider",     tarih: tarih(20)  },
-  { id: "f8",  tip: "yatirma", tutar: 3000, aciklama: "Mayıs ayı birikimi",    tarih: tarih(5)   },
-];
-
-export function mevcutBirikim(islemler: FonIslem[]) {
-  return islemler.reduce((s, i) => i.tip === "yatirma" ? s + i.tutar : s - i.tutar, 0);
-}
-
-// Bu ay yapılan yatırma
-export function buAyYatirma(islemler: FonIslem[]) {
-  const ay = new Date();
-  return islemler
-    .filter((i) => {
+/** Bu ay yapılan yatırmalar */
+export function buAyYatirma(islemler: FonIslem[], hedefId?: string): number {
+  const bugun = new Date();
+  const list  = hedefId ? islemler.filter(i => i.hedefId === hedefId) : islemler;
+  return list
+    .filter(i => {
       const t = new Date(i.tarih);
-      return i.tip === "yatirma" && t.getMonth() === ay.getMonth() && t.getFullYear() === ay.getFullYear();
+      return i.tip === "yatirma" && t.getMonth() === bugun.getMonth() && t.getFullYear() === bugun.getFullYear();
     })
     .reduce((s, i) => s + i.tutar, 0);
 }
 
-// Aylık grafik verisi (son 6 ay)
-export function aylikGrafik(islemler: FonIslem[]) {
+/** Aylık grafik/tablo verisi — seçili dönem + opsiyonel hedef filtresi */
+export function aylikGrafikAralik(
+  islemler: FonIslem[],
+  baslangic: Date,
+  aySayisi: number,
+  hedefId?: string,
+): { ay: string; yatirma: number; cekme: number; bakiye: number }[] {
+  const list      = hedefId ? islemler.filter(i => i.hedefId === hedefId) : islemler;
+  const rangeStart = new Date(baslangic.getFullYear(), baslangic.getMonth(), 1);
+
+  let birikimli = list
+    .filter(i => new Date(i.tarih) < rangeStart)
+    .reduce((s, i) => i.tip === "yatirma" ? s + i.tutar : s - i.tutar, 0);
+
   const aylar: { ay: string; yatirma: number; cekme: number; bakiye: number }[] = [];
-  let birikimli = 0;
 
-  for (let a = 5; a >= 0; a--) {
-    const d = new Date();
-    d.setMonth(d.getMonth() - a);
-    const yil = d.getFullYear();
+  for (let a = 0; a < aySayisi; a++) {
+    const d    = new Date(baslangic.getFullYear(), baslangic.getMonth() + a, 1);
+    const yil  = d.getFullYear();
     const ayNo = d.getMonth();
-    const ayAd = d.toLocaleDateString("tr-TR", { month: "short" });
+    const ayAd = d.toLocaleDateString("tr-TR", { month: "long", year: "numeric" });
 
-    const ayIslemler = islemler.filter((i) => {
+    const ayIslemler = list.filter(i => {
       const t = new Date(i.tarih);
       return t.getMonth() === ayNo && t.getFullYear() === yil;
     });
 
-    const yatirma = ayIslemler.filter((i) => i.tip === "yatirma").reduce((s, i) => s + i.tutar, 0);
-    const cekme   = ayIslemler.filter((i) => i.tip === "cekme").reduce((s, i) => s + i.tutar, 0);
+    const yatirma = ayIslemler.filter(i => i.tip === "yatirma").reduce((s, i) => s + i.tutar, 0);
+    const cekme   = ayIslemler.filter(i => i.tip === "cekme").reduce((s, i) => s + i.tutar, 0);
     birikimli += yatirma - cekme;
 
     aylar.push({ ay: ayAd, yatirma, cekme, bakiye: Math.max(birikimli, 0) });
   }
-
   return aylar;
 }
 

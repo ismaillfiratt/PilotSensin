@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { type Gorev, type GorevDurumu } from "@/lib/gorev-data";
 import { yayin } from "@/lib/realtime";
 import { gorevlerDB } from "@/lib/db";
-import { createClient } from "@/utils/supabase/client";
+import { getKullaniciId } from "@/lib/auth";
 
 interface GorevStore {
   gorevler:       Gorev[];
@@ -13,11 +13,6 @@ interface GorevStore {
   syncFromRemote: (gorevler: Gorev[]) => void;
 }
 
-async function userId() {
-  const { data } = await createClient().auth.getUser();
-  return data.user?.id ?? "";
-}
-
 export const useGorevler = create<GorevStore>((set, get) => ({
   gorevler: [],
 
@@ -25,7 +20,7 @@ export const useGorevler = create<GorevStore>((set, get) => ({
     const yeni: Gorev = { ...gorev, id: Date.now().toString(), olusturmaTarih: new Date().toISOString() };
     set((s) => ({ gorevler: [yeni, ...s.gorevler] }));
     yayin({ tip: "gorevler", veri: get().gorevler });
-    const uid = await userId();
+    const uid = await getKullaniciId();
     if (uid) await gorevlerDB.ekle(uid, yeni);
   },
   guncelle: async (id, gorev) => {
