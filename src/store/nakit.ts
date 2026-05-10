@@ -1,15 +1,20 @@
 import { create } from "zustand";
 import { type Islem } from "@/lib/nakit-data";
 import { yayin } from "@/lib/realtime";
-import { nakitDB } from "@/lib/db";
+import { userStoreDB } from "@/lib/db";
 import { getKullaniciId } from "@/lib/auth";
 
 interface NakitStore {
   islemler:       Islem[];
-  ekle:           (islem: Omit<Islem, "id">) => void;
-  guncelle:       (id: string, islem: Omit<Islem, "id">) => void;
-  sil:            (id: string) => void;
+  ekle:           (islem: Omit<Islem, "id">) => Promise<void>;
+  guncelle:       (id: string, islem: Omit<Islem, "id">) => Promise<void>;
+  sil:            (id: string) => Promise<void>;
   syncFromRemote: (islemler: Islem[]) => void;
+}
+
+async function kaydet(islemler: Islem[]) {
+  const uid = await getKullaniciId();
+  if (uid) await userStoreDB.kaydet(uid, "nakit_islemler", islemler);
 }
 
 export const useNakit = create<NakitStore>((set, get) => ({
@@ -19,19 +24,20 @@ export const useNakit = create<NakitStore>((set, get) => ({
     const yeni = { ...islem, id: Date.now().toString() };
     set((s) => ({ islemler: [yeni, ...s.islemler] }));
     yayin({ tip: "nakit", veri: get().islemler });
-    const uid = await getKullaniciId();
-    if (uid) await nakitDB.ekle(uid, yeni);
+    await kaydet(get().islemler);
   },
+
   guncelle: async (id, islem) => {
-    const guncellendi = { ...islem, id };
-    set((s) => ({ islemler: s.islemler.map((i) => i.id === id ? guncellendi : i) }));
+    set((s) => ({ islemler: s.islemler.map((i) => i.id === id ? { ...islem, id } : i) }));
     yayin({ tip: "nakit", veri: get().islemler });
-    await nakitDB.guncelle(guncellendi);
+    await kaydet(get().islemler);
   },
+
   sil: async (id) => {
     set((s) => ({ islemler: s.islemler.filter((i) => i.id !== id) }));
     yayin({ tip: "nakit", veri: get().islemler });
-    await nakitDB.sil(id);
+    await kaydet(get().islemler);
   },
+
   syncFromRemote: (islemler) => set({ islemler }),
 }));

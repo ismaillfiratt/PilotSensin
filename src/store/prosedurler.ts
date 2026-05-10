@@ -7,7 +7,7 @@ import {
   type ChecklistSablon, type SopBelgeSablon,
 } from "@/lib/prosedur-data";
 import { yayin } from "@/lib/realtime";
-import { prosedurlerDB, checklistDB } from "@/lib/db";
+import { userStoreDB } from "@/lib/db";
 import { getKullaniciId } from "@/lib/auth";
 
 export interface OzelSablonMaddesi extends ChecklistSablon {
@@ -115,18 +115,19 @@ export const useProsedurler = create<ProsedurStore>()(
         set(s => ({ prosedurler: [yeni, ...s.prosedurler] }));
         yayinla(get);
         const kulId = await getKullaniciId();
-        if (kulId) await prosedurlerDB.ekle(kulId, yeni);
+        if (kulId) await userStoreDB.kaydet(kulId, "prosedurler", get().prosedurler);
       },
-      prosedurGuncelle: (id, p) => {
+      prosedurGuncelle: async (id, p) => {
         set(s => ({ prosedurler: s.prosedurler.map(x => x.id === id ? { ...x, ...p, sonGuncelleme: new Date().toISOString() } : x) }));
         yayinla(get);
-        const prosedur = get().prosedurler.find(x => x.id === id);
-        if (prosedur) prosedurlerDB.guncelle(prosedur);
+        const kulId = await getKullaniciId();
+        if (kulId) await userStoreDB.kaydet(kulId, "prosedurler", get().prosedurler);
       },
-      prosedurSil: (id) => {
+      prosedurSil: async (id) => {
         set(s => ({ prosedurler: s.prosedurler.filter(x => x.id !== id) }));
         yayinla(get);
-        prosedurlerDB.sil(id);
+        const kulId = await getKullaniciId();
+        if (kulId) await userStoreDB.kaydet(kulId, "prosedurler", get().prosedurler);
       },
 
       checklistEkle: async (item) => {
@@ -134,9 +135,9 @@ export const useProsedurler = create<ProsedurStore>()(
         set(s => ({ checklist: [yeni, ...s.checklist] }));
         yayinla(get);
         const kulId = await getKullaniciId();
-        if (kulId) await checklistDB.ekle(kulId, yeni);
+        if (kulId) await userStoreDB.kaydet(kulId, "checklist_items", get().checklist);
       },
-      checklistToggle: (id) => {
+      checklistToggle: async (id) => {
         set(s => ({
           checklist: s.checklist.map(x => {
             if (x.id !== id) return x;
@@ -152,16 +153,20 @@ export const useProsedurler = create<ProsedurStore>()(
           }),
         }));
         yayinla(get);
-        checklistDB.guncelle(id, get().checklist.find(x => x.id === id)?.tamamlandi ?? false);
+        const kulId = await getKullaniciId();
+        if (kulId) await userStoreDB.kaydet(kulId, "checklist_items", get().checklist);
       },
-      checklistSifirla: (sikligi) => {
+      checklistSifirla: async (sikligi) => {
         set(s => ({ checklist: s.checklist.map(x => x.sikligi === sikligi ? { ...x, tamamlandi: false } : x) }));
         yayinla(get);
+        const kulId = await getKullaniciId();
+        if (kulId) await userStoreDB.kaydet(kulId, "checklist_items", get().checklist);
       },
-      checklistSil: (id) => {
+      checklistSil: async (id) => {
         set(s => ({ checklist: s.checklist.filter(x => x.id !== id) }));
         yayinla(get);
-        checklistDB.sil(id);
+        const kulId = await getKullaniciId();
+        if (kulId) await userStoreDB.kaydet(kulId, "checklist_items", get().checklist);
       },
 
       ozelKategoriEkle: (k) => {

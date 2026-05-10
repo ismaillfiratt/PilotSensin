@@ -1,53 +1,42 @@
 import { create } from "zustand";
 import { type IsletmeGideri } from "@/lib/kar-zarar-data";
-import { type GiderRow, isletmeGiderleriDB } from "@/lib/db";
+import { type GiderItem, userStoreDB } from "@/lib/db";
 import { yayin } from "@/lib/realtime";
 import { getKullaniciId } from "@/lib/auth";
-
-// Giderler dbId ile saklanır (silme/güncelleme için UUID lazım)
-export type GiderItem = IsletmeGideri & { dbId?: string };
 
 interface IsletmeGiderleriStore {
   giderler:       GiderItem[];
   ekle:           (gider: IsletmeGideri) => Promise<void>;
-  guncelle:       (dbId: string, tutar: number) => void;
-  sil:            (dbId: string) => void;
-  syncFromRemote: (giderler: GiderRow[]) => void;
+  guncelle:       (id: string, tutar: number) => Promise<void>;
+  sil:            (id: string) => Promise<void>;
+  syncFromRemote: (giderler: GiderItem[]) => void;
+}
+
+async function kaydet(giderler: GiderItem[]) {
+  const uid = await getKullaniciId();
+  if (uid) await userStoreDB.kaydet(uid, "isletme_giderleri", giderler);
 }
 
 export const useIsletmeGiderleri = create<IsletmeGiderleriStore>((set, get) => ({
   giderler: [],
 
   ekle: async (gider) => {
-    // Optimistik güncelleme
-    const temp: GiderItem = { ...gider, dbId: undefined };
-    set((s) => ({ giderler: [...s.giderler, temp] }));
-
-    const uid = await getKullaniciId();
-    if (uid) {
-      const dbId = await isletmeGiderleriDB.ekle(uid, gider);
-      // DB'den gelen UUID ile güncelle
-      set((s) => ({
-        giderler: s.giderler.map((g) =>
-          g.kategori === gider.kategori && g.dbId === undefined
-            ? { ...g, dbId }
-            : g
-        ),
-      }));
-      yayin({ tip: "isletme-giderleri", veri: get().giderler });
-    }
+    const yeni: GiderItem = { ...gider, id: Date.now().toString() };
+    set((s) => ({ giderler: [...s.giderler, yeni] }));
+    yayin({ tip: "isletme-giderleri", veri: get().giderler });
+    await kaydet(get().giderler);
   },
 
-  guncelle: (dbId, tutar) => {
-    set((s) => ({ giderler: s.giderler.map((g) => g.dbId === dbId ? { ...g, tutar } : g) }));
-    isletmeGiderleriDB.guncelle(dbId, tutar);
+  guncelle: async (id, tutar) => {
+    set((s) => ({ giderler: s.giderler.map((g) => g.id === id ? { ...g, tutar } : g) }));
     yayin({ tip: "isletme-giderleri", veri: get().giderler });
+    await kaydet(get().giderler);
   },
 
-  sil: (dbId) => {
-    set((s) => ({ giderler: s.giderler.filter((g) => g.dbId !== dbId) }));
-    isletmeGiderleriDB.sil(dbId);
+  sil: async (id) => {
+    set((s) => ({ giderler: s.giderler.filter((g) => g.id !== id) }));
     yayin({ tip: "isletme-giderleri", veri: get().giderler });
+    await kaydet(get().giderler);
   },
 
   syncFromRemote: (giderler) => set({ giderler }),

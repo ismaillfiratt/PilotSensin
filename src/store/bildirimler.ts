@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { yayin } from "@/lib/realtime";
-import { bildirimlerDB } from "@/lib/db";
+import { userStoreDB } from "@/lib/db";
 import { getKullaniciId } from "@/lib/auth";
 
 export type BildirimTip = "kritik" | "uyari" | "bilgi";
@@ -19,13 +19,18 @@ export interface Bildirim {
 }
 
 interface BildirimStore {
-  bildirimler:    Bildirim[];
-  okunduYap:      (id: string) => void;
-  okunduToggle:   (id: string) => void;
-  tumunuOkunduYap: () => void;
-  sil:            (id: string) => void;
-  tumunuSil:      () => void;
-  syncFromRemote: (bildirimler: Bildirim[]) => void;
+  bildirimler:      Bildirim[];
+  okunduYap:        (id: string) => void;
+  okunduToggle:     (id: string) => void;
+  tumunuOkunduYap:  () => void;
+  sil:              (id: string) => void;
+  tumunuSil:        () => void;
+  syncFromRemote:   (bildirimler: Bildirim[]) => void;
+}
+
+async function kaydet(bildirimler: Bildirim[]) {
+  const uid = await getKullaniciId();
+  if (uid) await userStoreDB.kaydet(uid, "bildirimler", bildirimler);
 }
 
 export const useBildirimler = create<BildirimStore>((set, get) => ({
@@ -34,30 +39,32 @@ export const useBildirimler = create<BildirimStore>((set, get) => ({
   okunduYap: (id) => {
     set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: true } : b) }));
     yayin({ tip: "bildirimler", veri: get().bildirimler });
-    bildirimlerDB.guncelle(id, true);
+    kaydet(get().bildirimler);
   },
+
   okunduToggle: (id) => {
-    const yeniDurum = !(get().bildirimler.find(b => b.id === id)?.okundu ?? false);
-    set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: yeniDurum } : b) }));
+    set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: !b.okundu } : b) }));
     yayin({ tip: "bildirimler", veri: get().bildirimler });
-    bildirimlerDB.guncelle(id, yeniDurum);
+    kaydet(get().bildirimler);
   },
-  tumunuOkunduYap: async () => {
+
+  tumunuOkunduYap: () => {
     set((s) => ({ bildirimler: s.bildirimler.map((b) => ({ ...b, okundu: true })) }));
     yayin({ tip: "bildirimler", veri: get().bildirimler });
-    const uid = await getKullaniciId();
-    if (uid) bildirimlerDB.tumunuGuncelle(uid);
+    kaydet(get().bildirimler);
   },
+
   sil: (id) => {
     set((s) => ({ bildirimler: s.bildirimler.filter((b) => b.id !== id) }));
     yayin({ tip: "bildirimler", veri: get().bildirimler });
-    bildirimlerDB.sil(id);
+    kaydet(get().bildirimler);
   },
-  tumunuSil: async () => {
+
+  tumunuSil: () => {
     set({ bildirimler: [] });
     yayin({ tip: "bildirimler", veri: [] });
-    const uid = await getKullaniciId();
-    if (uid) bildirimlerDB.tumunuSil(uid);
+    kaydet([]);
   },
+
   syncFromRemote: (bildirimler) => set({ bildirimler }),
 }));
