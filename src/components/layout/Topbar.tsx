@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, Search, User, Settings, LogOut, ChevronDown, Store, CheckCheck, ExternalLink, Menu } from "lucide-react";
+import { Bell, Search, User, Settings, LogOut, ChevronDown, Store, CheckCheck, ExternalLink, Menu, CheckCircle2, Circle } from "lucide-react";
 import { useLayout } from "@/store/layout";
 import { useNakit }    from "@/store/nakit";
 import { useGorevler } from "@/store/gorevler";
@@ -48,7 +48,8 @@ export default function Topbar() {
   const [aramaAcik, setAramaAcik]     = useState(false);
   const [kullanici, setKullanici]     = useState<KullaniciBilgi | null>(null);
 
-  const { bildirimler, okunduYap, tumunuOkunduYap } = useBildirimler();
+  const { bildirimler, okunduYap, okunduToggle, tumunuOkunduYap } = useBildirimler();
+  const notifRef = useRef<HTMLDivElement>(null);
   const { islemler }                   = useNakit();
   const { gorevler }                   = useGorevler();
   const { urunler }                    = useStok();
@@ -81,6 +82,18 @@ export default function Topbar() {
     });
   }, []);
   const okunmamis = bildirimler.filter((b) => !b.okundu);
+
+  // Bildirim paneli dışına tıklanınca kapat
+  useEffect(() => {
+    if (!notifOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setNotifOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [notifOpen]);
 
   // ⌘K / Ctrl+K kısayolu
   useEffect(() => {
@@ -155,7 +168,7 @@ export default function Topbar() {
           </button>
 
           {/* Bildirimler */}
-          <div className="relative">
+          <div className="relative" ref={notifRef}>
             <button
               onClick={() => { setNotifOpen(!notifOpen); setProfileOpen(false); }}
               className="relative flex items-center justify-center w-8 h-8 rounded-lg border border-[rgba(251,192,36,0.1)] text-[#94a3b8] hover:border-[rgba(251,192,36,0.3)] hover:text-white transition-colors"
@@ -198,41 +211,50 @@ export default function Topbar() {
                   </div>
 
                   {/* Liste */}
-                  <div className="max-h-72 overflow-y-auto divide-y divide-[rgba(255,255,255,0.04)]">
+                  <div className="max-h-80 overflow-y-auto divide-y divide-[rgba(255,255,255,0.04)]">
                     {bildirimler.length === 0 ? (
                       <div className="py-8 text-center text-xs text-[#94a3b8]">Bildirim yok</div>
                     ) : (
-                      bildirimler.slice(0, 6).map((b) => (
-                        <div
-                          key={b.id}
-                          onClick={() => okunduYap(b.id)}
-                          className="flex items-start gap-3 px-4 py-3 hover:bg-[rgba(251,192,36,0.04)] cursor-pointer transition-colors"
-                        >
-                          <span
-                            className="mt-1.5 w-2 h-2 rounded-full shrink-0"
-                            style={{
-                              backgroundColor: b.okundu ? "transparent" : (b.tip === "kritik" ? "#ef4444" : b.tip === "uyari" ? "#fbc024" : "#94a3b8"),
-                              border: b.okundu ? "1.5px solid rgba(148,163,184,0.3)" : "none",
-                            }}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className={`text-xs font-semibold truncate ${b.okundu ? "text-[#94a3b8]" : "text-white"}`}>
-                              {b.baslik}
-                            </p>
-                            <p className="text-[11px] text-[#94a3b8] truncate mt-0.5">{b.mesaj}</p>
+                      bildirimler.slice(0, 8).map((b) => {
+                        const dotColor = b.tip === "kritik" ? "#ef4444" : b.tip === "uyari" ? "#fbc024" : "#94a3b8";
+                        return (
+                          <div key={b.id} className="flex items-start gap-3 px-4 py-3 hover:bg-[rgba(251,192,36,0.04)] transition-colors group">
+                            {/* Durum noktası */}
+                            <span className="mt-1.5 w-2 h-2 rounded-full shrink-0 flex-none"
+                              style={{
+                                backgroundColor: b.okundu ? "transparent" : dotColor,
+                                border: b.okundu ? `1.5px solid rgba(148,163,184,0.3)` : "none",
+                              }} />
+                            {/* İçerik */}
+                            <div className="flex-1 min-w-0 cursor-pointer" onClick={() => okunduYap(b.id)}>
+                              <p className={`text-xs font-semibold truncate ${b.okundu ? "text-[#64748b]" : "text-white"}`}>
+                                {b.baslik}
+                              </p>
+                              <p className="text-[11px] text-[#64748b] truncate mt-0.5">{b.mesaj}</p>
+                              <p className="text-[10px] text-[#475569] mt-0.5">{zaman(b.tarih)}</p>
+                            </div>
+                            {/* Aksiyonlar */}
+                            <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                              {/* Okundu toggle */}
+                              <button onClick={() => okunduToggle(b.id)}
+                                title={b.okundu ? "Okunmadı işaretle" : "Okundu işaretle"}
+                                className="w-6 h-6 flex items-center justify-center rounded-md transition-colors"
+                                style={{ color: b.okundu ? "#22c55e" : "#94a3b8" }}>
+                                {b.okundu
+                                  ? <CheckCircle2 className="w-3.5 h-3.5" />
+                                  : <Circle className="w-3.5 h-3.5" />
+                                }
+                              </button>
+                              {/* Modüle git */}
+                              <Link href={b.ilgiliLink ?? MODUL_HREF[b.modul] ?? "/dashboard"}
+                                onClick={(e) => { e.stopPropagation(); okunduYap(b.id); setNotifOpen(false); }}
+                                className="w-6 h-6 flex items-center justify-center rounded-md text-[#94a3b8] hover:text-[#fbc024] transition-colors">
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </Link>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <span className="text-[10px] text-[#94a3b8]">{zaman(b.tarih)}</span>
-                            <Link
-                              href={b.ilgiliLink ?? MODUL_HREF[b.modul] ?? "/dashboard"}
-                              onClick={(e) => { e.stopPropagation(); okunduYap(b.id); setNotifOpen(false); }}
-                              className="text-[#94a3b8] hover:text-[#fbc024] transition-colors"
-                            >
-                              <ExternalLink className="w-3 h-3" />
-                            </Link>
-                          </div>
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                   </div>
 
