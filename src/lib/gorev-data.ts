@@ -11,6 +11,7 @@ export interface Gorev {
   durum: GorevDurumu;
   olusturmaTarih: string; // ISO
   tamamlanmaTarihi?: string; // tamamlandığı an — gecikme hesabı için sabit kalır
+  devamaTarihi?:    string; // devam ediyor'a alındığı an
 }
 
 function tarih(gunFark: number) {

@@ -61,10 +61,8 @@ export const useGorevler = create<GorevStore>()(
               ? {
                   ...g,
                   durum,
-                  // tamamlanmaTarihi sadece tamamlandıya geçişte set edilir, geri alınmaz
-                  tamamlanmaTarihi: durum === "tamamlandi" && !g.tamamlanmaTarihi
-                    ? simdi
-                    : g.tamamlanmaTarihi,
+                  tamamlanmaTarihi: durum === "tamamlandi" && !g.tamamlanmaTarihi ? simdi : g.tamamlanmaTarihi,
+                  devamaTarihi:     durum === "devam"      && !g.devamaTarihi      ? simdi : g.devamaTarihi,
                 }
               : g
           ),

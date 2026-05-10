@@ -14,6 +14,7 @@ interface Props {
   onDuzenle: () => void;
   onSil: () => void;
   onTasi: (yeniDurum: GorevDurumu) => void;
+  isOverlay?: boolean;
 }
 
 function tamamlanmaEtiketi(gorev: Gorev): { etiket: string; renk: string } {
@@ -24,7 +25,11 @@ function tamamlanmaEtiketi(gorev: Gorev): { etiket: string; renk: string } {
   return { etiket: `${gun} gün gecikmeli tamamlandı`, renk: "#f97316" };
 }
 
-export default function GorevKarti({ gorev, index, onDuzenle, onSil, onTasi }: Props) {
+function olusturmaTarihiEtiket(iso: string) {
+  return new Date(iso).toLocaleDateString("tr-TR", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+export default function GorevKarti({ gorev, index, onDuzenle, onSil, onTasi, isOverlay }: Props) {
   const oncelikCfg = ONCELIK_CONFIG[gorev.oncelik];
   const durumIdx   = DURUM_SIRASI.indexOf(gorev.durum);
   const solDurum   = durumIdx > 0 ? DURUM_SIRASI[durumIdx - 1] : null;
@@ -34,27 +39,34 @@ export default function GorevKarti({ gorev, index, onDuzenle, onSil, onTasi }: P
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: gorev.id,
     data: { durum: gorev.durum },
+    disabled: !!isOverlay,
   });
 
   const tarihBilgi = tamamlandi ? tamamlanmaEtiketi(gorev) : sonTarihDurumu(gorev.sonTarih);
 
+  const style = !isOverlay && transform
+    ? { transform: `translate3d(${transform.x}px,${transform.y}px,0)`, zIndex: 50 }
+    : undefined;
+
   return (
     <motion.div
-      ref={setNodeRef}
-      layout
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: isDragging ? 0.35 : 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.22, delay: index * 0.04 }}
-      style={transform ? { transform: `translate3d(${transform.x}px,${transform.y}px,0)`, zIndex: 50 } : undefined}
-      className="glass-card rounded-xl p-4 group hover:border-[rgba(251,192,36,0.3)] transition-all"
+      ref={!isOverlay ? setNodeRef : undefined}
+      layout={!isOverlay}
+      initial={!isOverlay ? { opacity: 0, y: 12 } : false}
+      animate={!isOverlay ? { opacity: isDragging ? 0 : 1, y: 0 } : undefined}
+      exit={!isOverlay ? { opacity: 0, scale: 0.95 } : undefined}
+      transition={{ duration: 0.22, delay: !isOverlay ? index * 0.04 : 0 }}
+      style={style}
+      className={`glass-card rounded-xl p-4 group hover:border-[rgba(251,192,36,0.3)] transition-all ${isOverlay ? "shadow-2xl ring-1 ring-[rgba(251,192,36,0.4)]" : ""}`}
     >
       {/* Başlık satırı */}
       <div className="flex items-start gap-2 mb-2">
-        <button {...listeners} {...attributes}
-          className="mt-0.5 shrink-0 text-[#475569] hover:text-[#94a3b8] cursor-grab active:cursor-grabbing transition-colors touch-none">
-          <GripVertical className="w-4 h-4" />
-        </button>
+        {!isOverlay && (
+          <button {...listeners} {...attributes}
+            className="mt-0.5 shrink-0 text-[#475569] hover:text-[#94a3b8] cursor-grab active:cursor-grabbing transition-colors touch-none">
+            <GripVertical className="w-4 h-4" />
+          </button>
+        )}
         <p className={`flex-1 text-sm font-semibold leading-snug ${tamamlandi ? "line-through text-[#94a3b8]" : "text-white"}`}>
           {gorev.baslik}
         </p>
@@ -68,8 +80,8 @@ export default function GorevKarti({ gorev, index, onDuzenle, onSil, onTasi }: P
         <p className="text-xs text-[#94a3b8] mb-3 line-clamp-2 ml-6">{gorev.aciklama}</p>
       )}
 
-      {/* Sorumlu + tarih */}
-      <div className="flex items-center justify-between text-xs mb-3 ml-6">
+      {/* Sorumlu + tarih bilgisi */}
+      <div className="flex items-center justify-between text-xs mb-2 ml-6">
         <div className="flex items-center gap-1.5 text-[#94a3b8]">
           <User className="w-3 h-3" />
           <span>{gorev.sorumlu}</span>
@@ -80,28 +92,37 @@ export default function GorevKarti({ gorev, index, onDuzenle, onSil, onTasi }: P
         </div>
       </div>
 
-      {/* Aksiyonlar */}
-      <div className="flex items-center gap-1.5 pt-2 border-t border-[rgba(255,255,255,0.05)]">
-        <button onClick={() => solDurum && onTasi(solDurum)} disabled={!solDurum}
-          title={solDurum ? DURUM_CONFIG[solDurum].label : ""}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] disabled:opacity-20 hover:enabled:border-[rgba(251,192,36,0.4)] hover:enabled:text-[#fbc024] transition-all">
-          <ChevronLeft className="w-3.5 h-3.5" />
-        </button>
-        <button onClick={() => sagDurum && onTasi(sagDurum)} disabled={!sagDurum}
-          title={sagDurum ? DURUM_CONFIG[sagDurum].label : ""}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] disabled:opacity-20 hover:enabled:border-[rgba(34,197,94,0.4)] hover:enabled:text-[#22c55e] transition-all">
-          <ChevronRight className="w-3.5 h-3.5" />
-        </button>
-        <div className="flex-1" />
-        <button onClick={onDuzenle}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] transition-all">
-          <Pencil className="w-3.5 h-3.5" />
-        </button>
-        <button onClick={onSil}
-          className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] transition-all">
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
+      {/* Oluşturma tarihi */}
+      <div className="ml-6 mb-3">
+        <span className="text-[10px] text-[#475569]">
+          Eklendi: {olusturmaTarihiEtiket(gorev.olusturmaTarih)}
+        </span>
       </div>
+
+      {/* Aksiyonlar */}
+      {!isOverlay && (
+        <div className="flex items-center gap-1.5 pt-2 border-t border-[rgba(255,255,255,0.05)]">
+          <button onClick={() => solDurum && onTasi(solDurum)} disabled={!solDurum}
+            title={solDurum ? DURUM_CONFIG[solDurum].label : ""}
+            className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] disabled:opacity-20 hover:enabled:border-[rgba(251,192,36,0.4)] hover:enabled:text-[#fbc024] transition-all">
+            <ChevronLeft className="w-3.5 h-3.5" />
+          </button>
+          <button onClick={() => sagDurum && onTasi(sagDurum)} disabled={!sagDurum}
+            title={sagDurum ? DURUM_CONFIG[sagDurum].label : ""}
+            className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] disabled:opacity-20 hover:enabled:border-[rgba(34,197,94,0.4)] hover:enabled:text-[#22c55e] transition-all">
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+          <div className="flex-1" />
+          <button onClick={onDuzenle}
+            className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] transition-all">
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+          <button onClick={onSil}
+            className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] transition-all">
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
     </motion.div>
   );
 }

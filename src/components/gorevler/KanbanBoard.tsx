@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, AlertTriangle } from "lucide-react";
-import { DndContext, DragEndEvent, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
+import {
+  DndContext, DragEndEvent, DragStartEvent, DragOverEvent,
+  DragOverlay, PointerSensor, TouchSensor, useSensor, useSensors,
+} from "@dnd-kit/core";
 import { useDroppable } from "@dnd-kit/core";
 import {
   DURUM_CONFIG, DURUM_SIRASI,
@@ -14,16 +17,25 @@ import { useGorevler } from "@/store/gorevler";
 import GorevKarti from "./GorevKarti";
 import GorevModal from "./GorevModal";
 
+/* ── Tarihe göre sırala (en yeni üstte) ── */
+function sirala(liste: Gorev[]) {
+  return [...liste].sort(
+    (a, b) => new Date(b.olusturmaTarih).getTime() - new Date(a.olusturmaTarih).getTime()
+  );
+}
+
+/* ── Droppable sütun ── */
 interface SutunProps {
   durum: GorevDurumu;
   liste: Gorev[];
+  aktifId: string | null;
   onEkle: () => void;
   onDuzenle: (g: Gorev) => void;
   onSil: (g: Gorev) => void;
   onTasi: (id: string, yeni: GorevDurumu) => void;
 }
 
-function KanbanSutun({ durum, liste, onEkle, onDuzenle, onSil, onTasi }: SutunProps) {
+function KanbanSutun({ durum, liste, aktifId, onEkle, onDuzenle, onSil, onTasi }: SutunProps) {
   const cfg = DURUM_CONFIG[durum];
   const { setNodeRef, isOver } = useDroppable({ id: durum });
 
@@ -46,19 +58,21 @@ function KanbanSutun({ durum, liste, onEkle, onDuzenle, onSil, onTasi }: SutunPr
         </button>
       </div>
 
-      <div
-        ref={setNodeRef}
-        className="flex flex-col gap-2 min-h-20 rounded-xl transition-colors"
-        style={{ backgroundColor: isOver ? `${cfg.color}10` : "transparent", padding: isOver ? "4px" : "0" }}
-      >
+      <div ref={setNodeRef}
+        className="flex flex-col gap-2 min-h-20 rounded-xl transition-all duration-150 p-1"
+        style={isOver ? { backgroundColor: `${cfg.color}12`, outline: `2px dashed ${cfg.color}60` } : {}}>
         <AnimatePresence mode="popLayout">
           {liste.length === 0 ? (
             <motion.div key="bos" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="py-8 text-center text-xs text-[#94a3b8] border border-dashed border-[rgba(255,255,255,0.06)] rounded-xl">
+              className="py-8 text-center text-xs border border-dashed rounded-xl transition-colors"
+              style={{
+                color: isOver ? cfg.color : "#94a3b8",
+                borderColor: isOver ? `${cfg.color}60` : "rgba(255,255,255,0.06)",
+              }}>
               {isOver ? "Buraya bırak" : "Görev eklenmedi"}
             </motion.div>
           ) : (
-            liste.map((g, i) => (
+            sirala(liste).map((g, i) => (
               <GorevKarti key={g.id} gorev={g} index={i}
                 onDuzenle={() => onDuzenle(g)}
                 onSil={() => onSil(g)}
@@ -81,6 +95,7 @@ export default function KanbanBoard({ otomatikAcilModal }: Props) {
   const [duzenle, setDuzenle]     = useState<Gorev | null>(null);
   const [silOnayi, setSilOnayi]   = useState<Gorev | null>(null);
   const [yeniDurum, setYeniDurum] = useState<GorevDurumu>("yapilacak");
+  const [aktifId, setAktifId]     = useState<string | null>(null);
 
   useEffect(() => {
     if (otomatikAcilModal) {
@@ -90,20 +105,25 @@ export default function KanbanBoard({ otomatikAcilModal }: Props) {
   }, [otomatikAcilModal, router]);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor,   { activationConstraint: { delay: 200, tolerance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor,   { activationConstraint: { delay: 150, tolerance: 8 } })
   );
+
+  const handleDragStart = (e: DragStartEvent) => setAktifId(e.active.id as string);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    setAktifId(null);
     if (!over) return;
-    const gorevId  = active.id as string;
-    const yeni     = over.id as GorevDurumu;
-    const mevcut   = gorevler.find((g) => g.id === gorevId)?.durum;
+    const gorevId = active.id as string;
+    const yeni    = over.id as GorevDurumu;
+    const mevcut  = gorevler.find((g) => g.id === gorevId)?.durum;
     if (yeni !== mevcut && DURUM_SIRASI.includes(yeni)) {
       durumDegis(gorevId, yeni);
     }
   };
+
+  const aktifGorev = aktifId ? gorevler.find((g) => g.id === aktifId) ?? null : null;
 
   const handleKaydet = (form: Omit<Gorev, "id" | "olusturmaTarih">) => {
     if (duzenle) { guncelle(duzenle.id, { ...form, olusturmaTarih: duzenle.olusturmaTarih }); setDuzenle(null); }
@@ -111,12 +131,12 @@ export default function KanbanBoard({ otomatikAcilModal }: Props) {
   };
 
   return (
-    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}
+      onDragCancel={() => setAktifId(null)}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {DURUM_SIRASI.map((durum) => (
           <KanbanSutun
-            key={durum}
-            durum={durum}
+            key={durum} durum={durum} aktifId={aktifId}
             liste={gorevler.filter((g) => g.durum === durum)}
             onEkle={() => { setYeniDurum(durum); setDuzenle(null); setModalAcik(true); }}
             onDuzenle={(g) => { setDuzenle(g); setModalAcik(true); }}
@@ -125,6 +145,14 @@ export default function KanbanBoard({ otomatikAcilModal }: Props) {
           />
         ))}
       </div>
+
+      {/* Sürüklenirken görünen klon */}
+      <DragOverlay dropAnimation={{ duration: 180, easing: "ease" }}>
+        {aktifGorev && (
+          <GorevKarti gorev={aktifGorev} index={0} isOverlay
+            onDuzenle={() => {}} onSil={() => {}} onTasi={() => {}} />
+        )}
+      </DragOverlay>
 
       <GorevModal open={modalAcik}
         onClose={() => { setModalAcik(false); setDuzenle(null); }}
