@@ -43,7 +43,7 @@ export default function RealtimeProvider() {
         .on("broadcast", { event: "bildirimler" },       ({ payload }) => bildirimSync(payload as Bildirim[]))
         .on("broadcast", { event: "prosedurler" },       ({ payload }) => prosedurSync(payload as any))
         .on("broadcast", { event: "acil-fon" },          ({ payload }) => acilFonSync(payload as any))
-        .on("broadcast", { event: "isletme-giderleri" }, ({ payload }) => giderSync(payload as IsletmeGideri[]))
+        .on("broadcast", { event: "isletme-giderleri" }, ({ payload }) => giderSync(payload as any))
         .subscribe((status) => {
           if (status === "SUBSCRIBED") kanalAyarla(kanal as any);
         });
