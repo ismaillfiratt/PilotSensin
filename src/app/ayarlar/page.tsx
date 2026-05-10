@@ -1,3 +1,4 @@
+import DbTani from "@/components/ayarlar/DbTani";
 import BildirimAyarlari from "@/components/ayarlar/BildirimAyarlari";
 import TemaAyarlari from "@/components/ayarlar/TemaAyarlari";
 import SifreDegistir from "@/components/ayarlar/SifreDegistir";
@@ -29,6 +30,9 @@ export default function AyarlarPage() {
 
       {/* Yasal & KVKK */}
       <YasalBilgiler />
+
+      {/* Veritabanı tanı */}
+      <DbTani />
 
       {/* Tehlike zonu */}
       <TehlikeZonu />

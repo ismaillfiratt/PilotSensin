@@ -1,34 +1,58 @@
 import { createClient } from "@/utils/supabase/client";
 
+const LS_KEY = "pilot_uid";
 let _userId = "";
 
 /**
- * Uygulama başladığında çağrılır. Auth durumu değişince userId önbelleğini günceller.
- * AppLayout veya bir Provider içinde bir kez çağrılmalı.
+ * Uygulama başladığında çağrılır. Auth değişince userId önbelleğini günceller.
  */
 export function authDinle() {
   const client = createClient();
 
-  // Mevcut oturumu hemen al
+  // Önce localStorage'dan al (hızlı, ağsız)
+  if (typeof window !== "undefined") {
+    _userId = localStorage.getItem(LS_KEY) ?? "";
+  }
+
+  // Oturumu doğrula ve güncelle
   client.auth.getSession().then(({ data }) => {
-    _userId = data.session?.user?.id ?? "";
+    const id = data.session?.user?.id ?? "";
+    _userId = id;
+    if (typeof window !== "undefined") {
+      if (id) localStorage.setItem(LS_KEY, id);
+      else localStorage.removeItem(LS_KEY);
+    }
   });
 
-  // Auth durumu değişince (login/logout) güncelle
+  // Auth durumu değişince güncelle (login/logout)
   client.auth.onAuthStateChange((_event, session) => {
-    _userId = session?.user?.id ?? "";
+    const id = session?.user?.id ?? "";
+    _userId = id;
+    if (typeof window !== "undefined") {
+      if (id) localStorage.setItem(LS_KEY, id);
+      else localStorage.removeItem(LS_KEY);
+    }
   });
 }
 
 /**
- * Mevcut kullanıcı ID'sini döner.
- * Önbellek doluysa anında döner; yoksa oturumu Supabase'den çeker.
+ * Mevcut kullanıcı ID'sini döner. Önbellek → localStorage → Supabase sırası.
  */
 export async function getKullaniciId(): Promise<string> {
   if (_userId) return _userId;
 
-  // Önbellek boşsa direkt çek
+  // localStorage fallback
+  if (typeof window !== "undefined") {
+    const cached = localStorage.getItem(LS_KEY);
+    if (cached) { _userId = cached; return cached; }
+  }
+
+  // Son çare: Supabase'den çek
   const { data } = await createClient().auth.getSession();
-  _userId = data.session?.user?.id ?? "";
-  return _userId;
+  const id = data.session?.user?.id ?? "";
+  if (id) {
+    _userId = id;
+    if (typeof window !== "undefined") localStorage.setItem(LS_KEY, id);
+  }
+  return id;
 }
