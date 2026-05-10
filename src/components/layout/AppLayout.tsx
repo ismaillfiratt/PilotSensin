@@ -10,10 +10,14 @@ import MobileNav         from "./MobileNav";
 import RealtimeProvider  from "@/components/providers/RealtimeProvider";
 import DataProvider      from "@/components/providers/DataProvider";
 import { useLayout }     from "@/store/layout";
+import { authDinle }    from "@/lib/auth";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { mobileSidebarAcik, mobileSidebarKapat } = useLayout();
   const pathname = usePathname();
+
+  // Auth dinleyicisini başlat (userId önbelleği)
+  useEffect(() => { authDinle(); }, []);
 
   // Sayfa değişince mobil sidebar'ı kapat
   useEffect(() => { mobileSidebarKapat(); }, [pathname, mobileSidebarKapat]);
