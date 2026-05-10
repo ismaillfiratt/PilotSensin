@@ -2,8 +2,9 @@
 
 import { useSearchParams } from "next/navigation";
 import { useGorevler } from "@/store/gorevler";
-import GorevOzet  from "@/components/gorevler/GorevOzet";
-import KanbanBoard from "@/components/gorevler/KanbanBoard";
+import GorevOzet           from "@/components/gorevler/GorevOzet";
+import KanbanBoard          from "@/components/gorevler/KanbanBoard";
+import GorevTarihselPanel   from "@/components/gorevler/GorevTarihselPanel";
 
 export default function GorevlerContent() {
   const { gorevler } = useGorevler();
@@ -24,6 +25,11 @@ export default function GorevlerContent() {
       <div>
         <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest mb-4">Kanban Tablosu</h2>
         <KanbanBoard otomatikAcilModal={modalParam === "ekle"} />
+      </div>
+
+      <div>
+        <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest mb-4">Tarihsel Analiz</h2>
+        <GorevTarihselPanel />
       </div>
     </div>
   );
