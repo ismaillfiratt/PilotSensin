@@ -7,8 +7,9 @@ import Sidebar           from "./Sidebar";
 import Topbar            from "./Topbar";
 import AlertMarquee      from "./AlertMarquee";
 import MobileNav         from "./MobileNav";
-import RealtimeProvider  from "@/components/providers/RealtimeProvider";
-import DataProvider      from "@/components/providers/DataProvider";
+import RealtimeProvider   from "@/components/providers/RealtimeProvider";
+import DataProvider       from "@/components/providers/DataProvider";
+import BildirimProvider   from "@/components/providers/BildirimProvider";
 import { useLayout }     from "@/store/layout";
 import { authDinle }    from "@/lib/auth";
 
@@ -71,9 +72,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Mobil Alt Navigasyon */}
       <MobileNav />
 
-      {/* Supabase'den veri yükle + Realtime dinle */}
+      {/* Supabase'den veri yükle + Realtime dinle + Akıllı bildirimler */}
       <DataProvider />
       <RealtimeProvider />
+      <BildirimProvider />
     </div>
   );
 }

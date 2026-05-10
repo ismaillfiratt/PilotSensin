@@ -4,23 +4,25 @@ import { yayin } from "@/lib/realtime";
 import { userStoreDB } from "@/lib/db";
 import { getKullaniciId } from "@/lib/auth";
 
-export type BildirimTip = "kritik" | "uyari" | "bilgi";
+export type BildirimTip   = "kritik" | "uyari" | "bilgi";
 export type BildirimModul =
   | "stok" | "nakit-akisi" | "kar-zarar"
   | "gorevler" | "prosedurler" | "acil-fon" | "sistem";
 
 export interface Bildirim {
-  id: string;
-  baslik: string;
-  mesaj: string;
-  tip: BildirimTip;
-  modul: BildirimModul;
-  tarih: string;
-  okundu: boolean;
+  id:          string;
+  baslik:      string;
+  mesaj:       string;
+  tip:         BildirimTip;
+  modul:       BildirimModul;
+  tarih:       string;
+  okundu:      boolean;
+  ilgiliLink?: string; // tıklanınca yönlendirme
 }
 
 interface BildirimStore {
   bildirimler:      Bildirim[];
+  ekle:             (b: Omit<Bildirim, "tarih" | "okundu">) => Promise<void>;
   okunduYap:        (id: string) => void;
   okunduToggle:     (id: string) => void;
   tumunuOkunduYap:  () => void;
@@ -38,6 +40,15 @@ export const useBildirimler = create<BildirimStore>()(
   persist(
     (set, get) => ({
       bildirimler: [],
+
+      ekle: async (b) => {
+        // Aynı ID varsa tekrar ekleme (gruplandırma/dedup)
+        if (get().bildirimler.some((m) => m.id === b.id)) return;
+        const yeni: Bildirim = { ...b, tarih: new Date().toISOString(), okundu: false };
+        set((s) => ({ bildirimler: [yeni, ...s.bildirimler] }));
+        yayin({ tip: "bildirimler", veri: get().bildirimler });
+        await kaydet(get().bildirimler);
+      },
 
       okunduYap: (id) => {
         set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: true } : b) }));

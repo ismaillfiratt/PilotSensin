@@ -224,7 +224,7 @@ export default function Topbar() {
                           <div className="flex items-center gap-1 shrink-0">
                             <span className="text-[10px] text-[#94a3b8]">{zaman(b.tarih)}</span>
                             <Link
-                              href={MODUL_HREF[b.modul] ?? "/dashboard"}
+                              href={b.ilgiliLink ?? MODUL_HREF[b.modul] ?? "/dashboard"}
                               onClick={(e) => { e.stopPropagation(); okunduYap(b.id); setNotifOpen(false); }}
                               className="text-[#94a3b8] hover:text-[#fbc024] transition-colors"
                             >
