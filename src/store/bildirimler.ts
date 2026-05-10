@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { yayin } from "@/lib/realtime";
 import { userStoreDB } from "@/lib/db";
 import { getKullaniciId } from "@/lib/auth";
@@ -33,38 +34,42 @@ async function kaydet(bildirimler: Bildirim[]) {
   if (uid) await userStoreDB.kaydet(uid, "bildirimler", bildirimler);
 }
 
-export const useBildirimler = create<BildirimStore>((set, get) => ({
-  bildirimler: [],
+export const useBildirimler = create<BildirimStore>()(
+  persist(
+    (set, get) => ({
+      bildirimler: [],
 
-  okunduYap: (id) => {
-    set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: true } : b) }));
-    yayin({ tip: "bildirimler", veri: get().bildirimler });
-    kaydet(get().bildirimler);
-  },
+      okunduYap: (id) => {
+        set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: true } : b) }));
+        yayin({ tip: "bildirimler", veri: get().bildirimler });
+        kaydet(get().bildirimler);
+      },
+      okunduToggle: (id) => {
+        set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: !b.okundu } : b) }));
+        yayin({ tip: "bildirimler", veri: get().bildirimler });
+        kaydet(get().bildirimler);
+      },
+      tumunuOkunduYap: () => {
+        set((s) => ({ bildirimler: s.bildirimler.map((b) => ({ ...b, okundu: true })) }));
+        yayin({ tip: "bildirimler", veri: get().bildirimler });
+        kaydet(get().bildirimler);
+      },
+      sil: (id) => {
+        set((s) => ({ bildirimler: s.bildirimler.filter((b) => b.id !== id) }));
+        yayin({ tip: "bildirimler", veri: get().bildirimler });
+        kaydet(get().bildirimler);
+      },
+      tumunuSil: () => {
+        set({ bildirimler: [] });
+        yayin({ tip: "bildirimler", veri: [] });
+        kaydet([]);
+      },
 
-  okunduToggle: (id) => {
-    set((s) => ({ bildirimler: s.bildirimler.map((b) => b.id === id ? { ...b, okundu: !b.okundu } : b) }));
-    yayin({ tip: "bildirimler", veri: get().bildirimler });
-    kaydet(get().bildirimler);
-  },
-
-  tumunuOkunduYap: () => {
-    set((s) => ({ bildirimler: s.bildirimler.map((b) => ({ ...b, okundu: true })) }));
-    yayin({ tip: "bildirimler", veri: get().bildirimler });
-    kaydet(get().bildirimler);
-  },
-
-  sil: (id) => {
-    set((s) => ({ bildirimler: s.bildirimler.filter((b) => b.id !== id) }));
-    yayin({ tip: "bildirimler", veri: get().bildirimler });
-    kaydet(get().bildirimler);
-  },
-
-  tumunuSil: () => {
-    set({ bildirimler: [] });
-    yayin({ tip: "bildirimler", veri: [] });
-    kaydet([]);
-  },
-
-  syncFromRemote: (bildirimler) => set({ bildirimler }),
-}));
+      syncFromRemote: (bildirimler) => set({ bildirimler }),
+    }),
+    {
+      name: "pilot-bildirimler-v1",
+      partialize: (s) => ({ bildirimler: s.bildirimler }),
+    }
+  )
+);
