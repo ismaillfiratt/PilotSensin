@@ -4,8 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Plane, Building2, AlertCircle } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
-import { sirketDB } from "@/lib/db";
 import { useSirket } from "@/store/sirket";
 
 export default function OnboardingPage() {
@@ -21,17 +19,20 @@ export default function OnboardingPage() {
     setHata("");
     setYuk(true);
     try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) { setHata("Oturum bulunamadı."); return; }
-
-      const companyId = await sirketDB.kur(session.user.id, sirketAdi.trim());
-      if (!companyId) { setHata("Şirket oluşturulamadı. Lütfen tekrar deneyin."); return; }
-
-      await yukle(); // store'u güncelle
+      const res = await fetch("/api/sirket/kur", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sirketAdi: sirketAdi.trim() }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.companyId) {
+        setHata(json.error ?? "Şirket oluşturulamadı. Lütfen tekrar deneyin.");
+        return;
+      }
+      await yukle();
       router.replace("/dashboard");
     } catch {
-      setHata("Bir hata oluştu. Lütfen tekrar deneyin.");
+      setHata("Bağlantı hatası. Lütfen tekrar deneyin.");
     } finally {
       setYuk(false);
     }
