@@ -130,12 +130,12 @@ export default function DavetPage() {
               <div className="flex rounded-xl overflow-hidden border border-[rgba(255,255,255,0.08)]">
                 {(["kayit", "giris"] as const).map((m) => (
                   <button key={m} onClick={() => setMod(m)}
-                    className="flex-1 py-2 text-sm font-medium transition-colors"
+                    className="flex-1 py-2.5 text-sm font-medium transition-colors"
                     style={mod === m
                       ? { background: "rgba(251,192,36,0.15)", color: "#fbc024" }
                       : { background: "transparent", color: "#94a3b8" }
                     }>
-                    {m === "kayit" ? "Yeni Hesap" : "Mevcut Hesap"}
+                    {m === "kayit" ? "İlk kez mi geliyorsunuz?" : "Zaten hesabınız var mı?"}
                   </button>
                 ))}
               </div>
@@ -175,7 +175,7 @@ export default function DavetPage() {
                 </div>
                 <button type="submit" disabled={islem}
                   className="w-full py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-60">
-                  {islem ? "İşleniyor..." : mod === "kayit" ? "Hesap Oluştur ve Katıl" : "Giriş Yap ve Katıl"}
+                  {islem ? "İşleniyor..." : mod === "kayit" ? "Hesap Oluştur ve Ekibe Katıl" : "Giriş Yap ve Ekibe Katıl"}
                 </button>
               </form>
             </>
