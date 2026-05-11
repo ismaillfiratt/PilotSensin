@@ -1,6 +1,7 @@
 /**
- * Supabase CRUD — tüm kullanıcı verisi user_store tablosunda JSONB olarak tutulur.
- * RLS sayesinde kullanıcı yalnızca kendi verisini görür/değiştirebilir.
+ * Supabase CRUD — şirket verisi company_store tablosunda JSONB olarak tutulur.
+ * Tüm şirket üyeleri (pilot + copilot) aynı company_store satırını okur/yazar.
+ * Kullanıcıya özel veriler (bildirimler) hâlâ user_store'da kalır.
  */
 import { createClient } from "@/utils/supabase/client";
 import type { Islem }          from "./nakit-data";
@@ -25,8 +26,6 @@ function kontrol(hata: unknown, islem: string) {
 }
 
 declare global { interface Window { __dbHata?: string } }
-
-/* ─── Tip tanımları ─── */
 
 export type GiderItem = IsletmeGideri & { id: string };
 
@@ -54,42 +53,151 @@ const BOŞ: UserStoreData = {
   isletme_giderleri: [],
 };
 
-/* ─── Ana DB nesnesi ─── */
+/* ─── Şirket veri deposu ─── */
 
 export const userStoreDB = {
-  /** Kullanıcının tüm verisini çeker */
   getAll: async (): Promise<UserStoreData> => {
-    const { data, error } = await sb()
+    // Önce company_store'dan çek (şirket üyesi ise)
+    const { data: cs } = await sb()
+      .from("company_store")
+      .select("*")
+      .maybeSingle();
+
+    if (cs) {
+      return {
+        nakit_islemler:    cs.nakit_islemler    ?? [],
+        gorevler:          cs.gorevler          ?? [],
+        stok_urunler:      cs.stok_urunler      ?? [],
+        bildirimler:       [],  // bildirimler kullanıcıya özel: user_store'dan gelir
+        prosedurler:       cs.prosedurler       ?? [],
+        checklist_items:   cs.checklist_items   ?? [],
+        acil_fon_hedefler: cs.acil_fon_hedefler ?? [],
+        acil_fon_islemler: cs.acil_fon_islemler ?? [],
+        isletme_giderleri: cs.isletme_giderleri ?? [],
+      };
+    }
+
+    // Şirket yoksa user_store'a geri düş (eski kullanıcı / onboarding öncesi)
+    const { data: us, error } = await sb()
       .from("user_store")
       .select("*")
       .maybeSingle();
     kontrol(error, "userStore.getAll");
-    if (!data) return { ...BOŞ };
+    if (!us) return { ...BOŞ };
     return {
-      nakit_islemler:    data.nakit_islemler    ?? [],
-      gorevler:          data.gorevler          ?? [],
-      stok_urunler:      data.stok_urunler      ?? [],
-      bildirimler:       data.bildirimler       ?? [],
-      prosedurler:       data.prosedurler       ?? [],
-      checklist_items:   data.checklist_items   ?? [],
-      acil_fon_hedefler: data.acil_fon_hedefler ?? [],
-      acil_fon_islemler: data.acil_fon_islemler ?? [],
-      isletme_giderleri: data.isletme_giderleri ?? [],
+      nakit_islemler:    us.nakit_islemler    ?? [],
+      gorevler:          us.gorevler          ?? [],
+      stok_urunler:      us.stok_urunler      ?? [],
+      bildirimler:       us.bildirimler       ?? [],
+      prosedurler:       us.prosedurler       ?? [],
+      checklist_items:   us.checklist_items   ?? [],
+      acil_fon_hedefler: us.acil_fon_hedefler ?? [],
+      acil_fon_islemler: us.acil_fon_islemler ?? [],
+      isletme_giderleri: us.isletme_giderleri ?? [],
     };
   },
 
-  /** Tek bir alanı günceller (upsert) */
   kaydet: async <K extends keyof UserStoreData>(
-    userId: string,
+    userOrCompanyId: string,
     alan: K,
     veri: UserStoreData[K]
   ): Promise<void> => {
-    const { error } = await sb()
-      .from("user_store")
-      .upsert(
-        { user_id: userId, [alan]: veri },
-        { onConflict: "user_id" }
-      );
-    kontrol(error, `userStore.kaydet(${alan})`);
+    // Bildirimler her zaman user_store'a gider
+    if (alan === "bildirimler") {
+      const { error } = await sb()
+        .from("user_store")
+        .upsert({ user_id: userOrCompanyId, [alan]: veri }, { onConflict: "user_id" });
+      kontrol(error, `userStore.kaydet(${alan})`);
+      return;
+    }
+
+    // Diğer veriler: company_store varsa oraya, yoksa user_store'a
+    const { data: member } = await sb()
+      .from("company_members")
+      .select("company_id")
+      .eq("user_id", userOrCompanyId)
+      .eq("status", "active")
+      .maybeSingle();
+
+    if (member?.company_id) {
+      const { error } = await sb()
+        .from("company_store")
+        .upsert({ company_id: member.company_id, [alan]: veri }, { onConflict: "company_id" });
+      kontrol(error, `companyStore.kaydet(${alan})`);
+    } else {
+      const { error } = await sb()
+        .from("user_store")
+        .upsert({ user_id: userOrCompanyId, [alan]: veri }, { onConflict: "user_id" });
+      kontrol(error, `userStore.kaydet(${alan})`);
+    }
+  },
+};
+
+/* ─── Şirket yönetimi ─── */
+
+export const sirketDB = {
+  /** Şirket kur + owner olarak üye ekle + user_store verisini company_store'a taşı */
+  kur: async (userId: string, sirketAdi: string): Promise<string | null> => {
+    // 1. Şirket oluştur
+    const { data: company, error: ce } = await sb()
+      .from("companies")
+      .insert({ name: sirketAdi, owner_id: userId })
+      .select("id")
+      .single();
+    if (ce || !company) { kontrol(ce, "sirket.kur"); return null; }
+
+    // 2. Owner'ı pilot olarak ekle
+    await sb().from("company_members").insert({
+      company_id: company.id,
+      user_id:    userId,
+      email:      (await sb().auth.getUser()).data.user?.email ?? "",
+      role:       "pilot",
+      status:     "active",
+      joined_at:  new Date().toISOString(),
+    });
+
+    // 3. Eski user_store verisini company_store'a taşı
+    const { data: us } = await sb().from("user_store").select("*").maybeSingle();
+    if (us) {
+      await sb().from("company_store").upsert({
+        company_id:        company.id,
+        nakit_islemler:    us.nakit_islemler    ?? [],
+        gorevler:          us.gorevler          ?? [],
+        stok_urunler:      us.stok_urunler      ?? [],
+        prosedurler:       us.prosedurler       ?? [],
+        checklist_items:   us.checklist_items   ?? [],
+        acil_fon_hedefler: us.acil_fon_hedefler ?? [],
+        acil_fon_islemler: us.acil_fon_islemler ?? [],
+        isletme_giderleri: us.isletme_giderleri ?? [],
+      }, { onConflict: "company_id" });
+    }
+
+    return company.id;
+  },
+
+  /** Davet token'ı ile üye oluştur */
+  davetKabul: async (token: string, userId: string, email: string): Promise<boolean> => {
+    const { data: inv } = await sb()
+      .from("invitations")
+      .select("*")
+      .eq("token", token)
+      .is("accepted_at", null)
+      .gte("expires_at", new Date().toISOString())
+      .maybeSingle();
+    if (!inv) return false;
+
+    // Üye ekle
+    await sb().from("company_members").upsert({
+      company_id: inv.company_id,
+      user_id:    userId,
+      email,
+      role:       inv.role,
+      status:     "active",
+      joined_at:  new Date().toISOString(),
+    }, { onConflict: "company_id,email" });
+
+    // Daveti kapat
+    await sb().from("invitations").update({ accepted_at: new Date().toISOString() }).eq("id", inv.id);
+    return true;
   },
 };

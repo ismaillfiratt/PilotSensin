@@ -10,6 +10,7 @@ import MobileNav         from "./MobileNav";
 import RealtimeProvider   from "@/components/providers/RealtimeProvider";
 import DataProvider       from "@/components/providers/DataProvider";
 import BildirimProvider   from "@/components/providers/BildirimProvider";
+import SirketProvider     from "@/components/providers/SirketProvider";
 import { useLayout }     from "@/store/layout";
 import { authDinle }    from "@/lib/auth";
 
@@ -72,7 +73,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Mobil Alt Navigasyon */}
       <MobileNav />
 
-      {/* Supabase'den veri yükle + Realtime dinle + Akıllı bildirimler */}
+      {/* Şirket bağlamı + veri + realtime + bildirimler */}
+      <SirketProvider />
       <DataProvider />
       <RealtimeProvider />
       <BildirimProvider />
