@@ -23,7 +23,10 @@ interface Davet {
   accepted_at: string | null;
 }
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+function getSiteUrl() {
+  if (typeof window !== "undefined") return window.location.origin;
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://pilotsensin.com";
+}
 
 export default function EkipPage() {
   const { companyId, maxUye } = useSirket();
@@ -93,7 +96,7 @@ export default function EkipPage() {
   };
 
   const kopyala = (token: string) => {
-    const link = `${SITE_URL}/davet/${token}`;
+    const link = `${getSiteUrl()}/davet/${token}`;
     navigator.clipboard.writeText(link);
     setKop(token);
     setTimeout(() => setKop(null), 2000);
