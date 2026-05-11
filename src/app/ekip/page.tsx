@@ -19,14 +19,15 @@ interface Rol {
 }
 
 interface Uye {
-  id:         string;
-  email:      string;
-  full_name:  string | null;
-  role:       string;
-  role_id:    string | null;
-  status:     "active" | "inactive" | "pending" | "suspended";
-  joined_at:  string | null;
-  invited_at: string;
+  id:            string;
+  email:         string;
+  full_name:     string | null;
+  role:          string;
+  role_id:       string | null;
+  status:        "active" | "inactive" | "pending" | "suspended";
+  joined_at:     string | null;
+  invited_at:    string;
+  company_roles: { name: string } | null;
 }
 
 interface Davet {
@@ -71,7 +72,7 @@ export default function EkipPage() {
     if (!companyId) return;
     const sb = createClient();
     const [{ data: m }, { data: d }, { data: r }] = await Promise.all([
-      sb.from("company_members").select("*").eq("company_id", companyId).order("invited_at"),
+      sb.from("company_members").select("*, company_roles(name)").eq("company_id", companyId).order("invited_at"),
       sb.from("invitations").select("*").eq("company_id", companyId).is("accepted_at", null).order("created_at", { ascending: false }),
       sb.from("company_roles").select("*").eq("company_id", companyId).order("created_at"),
     ]);
@@ -291,9 +292,19 @@ export default function EkipPage() {
                     {u.role === "pilot" ? <Crown className="w-4 h-4 text-[#fbc024]" /> : <ShieldCheck className="w-4 h-4 text-[#94a3b8]" />}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">
-                      {u.full_name ?? u.email}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-white truncate">
+                        {u.full_name ?? u.email}
+                      </p>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full shrink-0"
+                        style={{
+                          background: u.role === "pilot" ? "rgba(251,192,36,0.12)" : "rgba(148,163,184,0.1)",
+                          color:      u.role === "pilot" ? "#fbc024" : "#94a3b8",
+                          border:     u.role === "pilot" ? "1px solid rgba(251,192,36,0.25)" : "1px solid rgba(148,163,184,0.15)",
+                        }}>
+                        {u.company_roles?.name ?? (u.role === "pilot" ? "Pilot" : "Co-Pilot")}
+                      </span>
+                    </div>
                     {u.full_name && <p className="text-xs text-[#64748b] truncate">{u.email}</p>}
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-xs font-medium" style={{ color: durum.color }}>{durum.label}</span>
