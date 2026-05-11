@@ -6,9 +6,6 @@ const KORUMASIZ_ROTALAR = [
   "/onboarding", "/davet", "/politikalar",
 ];
 
-// Co-Pilot'un erişemeyeceği finansal rotalar
-const SADECE_PILOT = ["/nakit-akisi", "/kar-zarar", "/acil-fon", "/ekip"];
-
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -25,16 +22,30 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(girisUrl);
   }
 
-  // Co-Pilot RBAC — sadece kısıtlı rotalarda kontrol et
-  if (SADECE_PILOT.some((r) => pathname.startsWith(r))) {
+  // Dashboard ve alt sayfalar için permission kontrolü
+  const routeModule = pathname.split("/")[1]; // "nakit-akisi", "stok" vb.
+  if (routeModule && routeModule !== "api" && routeModule !== "_next") {
     const { data: member } = await supabase
       .from("company_members")
-      .select("role")
+      .select("role, permissions, status")
       .eq("user_id", user.id)
       .eq("status", "active")
       .maybeSingle();
 
-    if (member?.role === "copilot") {
+    if (!member) {
+      // Şirketi yok → onboarding
+      if (pathname !== "/onboarding") {
+        return NextResponse.redirect(new URL("/onboarding", request.url));
+      }
+      return supabaseResponse;
+    }
+
+    // Pilot her şeye erişebilir
+    if (member.role === "pilot") return supabaseResponse;
+
+    // Diğer roller: permissions kontrolü
+    const perms = member.permissions as { modules?: Record<string, boolean> } | null;
+    if (perms?.modules && perms.modules[routeModule] === false) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }

@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { PILOT_PERMISSIONS, COPILOT_PERMISSIONS } from "@/lib/permissions";
 
 export async function POST(req: NextRequest) {
   try {
     const { sirketAdi } = await req.json();
-    if (!sirketAdi?.trim()) {
-      return NextResponse.json({ error: "Şirket adı zorunlu." }, { status: 400 });
-    }
+    if (!sirketAdi?.trim()) return NextResponse.json({ error: "Şirket adı zorunlu." }, { status: 400 });
 
     const supabase = await createClient();
     const { data: { user }, error: authErr } = await supabase.auth.getUser();
-    if (authErr || !user) {
-      return NextResponse.json({ error: "Oturum bulunamadı." }, { status: 401 });
-    }
+    if (authErr || !user) return NextResponse.json({ error: "Oturum bulunamadı." }, { status: 401 });
 
     // Zaten şirketi var mı?
     const { data: existing } = await supabase
@@ -21,9 +18,7 @@ export async function POST(req: NextRequest) {
       .eq("user_id", user.id)
       .eq("status", "active")
       .maybeSingle();
-    if (existing) {
-      return NextResponse.json({ companyId: existing.company_id });
-    }
+    if (existing) return NextResponse.json({ companyId: existing.company_id });
 
     // Şirket oluştur
     const { data: company, error: ce } = await supabase
@@ -36,21 +31,38 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: ce?.message ?? "Şirket oluşturulamadı." }, { status: 500 });
     }
 
+    // Varsayılan rolleri oluştur
+    const { data: pilotRol } = await supabase.from("company_roles").insert({
+      company_id:  company.id,
+      name:        "Pilot",
+      is_owner:    true,
+      permissions: PILOT_PERMISSIONS,
+    }).select("id").single();
+
+    const { data: copilotRol } = await supabase.from("company_roles").insert({
+      company_id:  company.id,
+      name:        "Co-Pilot",
+      is_owner:    false,
+      permissions: COPILOT_PERMISSIONS,
+    }).select("id").single();
+
     // Owner'ı pilot üye yap
     const { error: me } = await supabase.from("company_members").insert({
-      company_id: company.id,
-      user_id:    user.id,
-      email:      user.email ?? "",
-      role:       "pilot",
-      status:     "active",
-      joined_at:  new Date().toISOString(),
+      company_id:  company.id,
+      user_id:     user.id,
+      email:       user.email ?? "",
+      role:        "pilot",
+      role_id:     pilotRol?.id ?? null,
+      permissions: PILOT_PERMISSIONS,
+      status:      "active",
+      joined_at:   new Date().toISOString(),
     });
     if (me) console.error("[sirket/kur] company_members insert:", me);
 
     // Eski user_store verisini company_store'a taşı
     const { data: us } = await supabase.from("user_store").select("*").maybeSingle();
     if (us) {
-      const { error: cse } = await supabase.from("company_store").upsert({
+      await supabase.from("company_store").upsert({
         company_id:        company.id,
         nakit_islemler:    us.nakit_islemler    ?? [],
         gorevler:          us.gorevler          ?? [],
@@ -61,9 +73,9 @@ export async function POST(req: NextRequest) {
         acil_fon_islemler: us.acil_fon_islemler ?? [],
         isletme_giderleri: us.isletme_giderleri ?? [],
       }, { onConflict: "company_id" });
-      if (cse) console.error("[sirket/kur] company_store upsert:", cse);
     }
 
+    console.log("[sirket/kur] created:", company.id, "copilot role:", copilotRol?.id);
     return NextResponse.json({ companyId: company.id });
   } catch (err) {
     console.error("[sirket/kur] unexpected:", err);

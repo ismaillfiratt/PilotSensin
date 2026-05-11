@@ -11,33 +11,31 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSirket } from "@/store/sirket";
+import { MODULLER } from "@/lib/permissions";
 
-const PILOT_MODULES = [
-  { href: "/dashboard",   icon: LayoutDashboard, label: "Dashboard"        },
-  { href: "/nakit-akisi", icon: TrendingUp,       label: "Nakit Akışı"     },
-  { href: "/kar-zarar",   icon: BarChart3,        label: "Kar-Zarar"       },
-  { href: "/stok",        icon: Package,          label: "Stok Yönetimi"   },
-  { href: "/gorevler",    icon: CheckSquare,      label: "Görevler"        },
-  { href: "/prosedurler", icon: ClipboardList,    label: "Prosedürler"     },
-  { href: "/acil-fon",    icon: Shield,           label: "Acil Durum Fonu" },
-  { href: "/ekip",        icon: Users,            label: "Ekip Yönetimi"   },
-];
-
-const COPILOT_MODULES = [
-  { href: "/dashboard",   icon: LayoutDashboard, label: "Dashboard"       },
-  { href: "/stok",        icon: Package,         label: "Stok Yönetimi"  },
-  { href: "/gorevler",    icon: CheckSquare,     label: "Görevler"       },
-  { href: "/prosedurler", icon: ClipboardList,   label: "Prosedürler"    },
-];
+const MODUL_ICON: Record<string, React.ElementType> = {
+  "dashboard":   LayoutDashboard,
+  "nakit-akisi": TrendingUp,
+  "kar-zarar":   BarChart3,
+  "stok":        Package,
+  "gorevler":    CheckSquare,
+  "prosedurler": ClipboardList,
+  "acil-fon":    Shield,
+  "ekip":        Users,
+};
 
 interface Props { mobile?: boolean; }
 
 export default function Sidebar({ mobile = false }: Props) {
   const [collapsed, setCollapsed] = useState(false);
-  const pathname = usePathname();
-  const { rol } = useSirket();
+  const pathname     = usePathname();
+  const { rol, rolAdi, permissions } = useSirket();
 
-  const modules = rol === "copilot" ? COPILOT_MODULES : PILOT_MODULES;
+  const gorunenModuller = MODULLER.filter(({ key }) => {
+    if (rol === "pilot") return true;
+    return permissions?.modules[key] === true;
+  });
+
   const genislik = mobile ? 256 : collapsed ? 64 : 220;
 
   return (
@@ -60,7 +58,7 @@ export default function Sidebar({ mobile = false }: Props) {
       </Link>
 
       {/* Rol rozeti */}
-      {(!collapsed || mobile) && rol && (
+      {(!collapsed || mobile) && rolAdi && (
         <div className="px-4 pt-3 pb-1">
           <span
             className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide"
@@ -70,18 +68,20 @@ export default function Sidebar({ mobile = false }: Props) {
                 : { background: "rgba(148,163,184,0.1)", color: "#94a3b8", border: "1px solid rgba(148,163,184,0.2)" }
             }
           >
-            {rol === "pilot" ? "✈ Pilot" : "🧭 Co-Pilot"}
+            {rol === "pilot" ? "✈" : "🧭"} {rolAdi}
           </span>
         </div>
       )}
 
       {/* Nav */}
       <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto overflow-x-hidden">
-        {modules.map(({ href, icon: Icon, label }) => {
+        {gorunenModuller.map(({ key, label }) => {
+          const Icon   = MODUL_ICON[key] ?? LayoutDashboard;
+          const href   = `/${key}`;
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link
-              key={href}
+              key={key}
               href={href}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group",

@@ -3,16 +3,15 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Plane, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Plane, Mail, Lock, Eye, EyeOff, User, AlertCircle, CheckCircle2 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
-import { sirketDB } from "@/lib/db";
 import { useSirket } from "@/store/sirket";
 
 interface DavetBilgi {
-  email:       string;
-  role:        string;
+  email:        string;
+  role:         string;
   company_name: string;
-  gecersiz:    boolean;
+  gecersiz:     boolean;
 }
 
 export default function DavetPage() {
@@ -21,12 +20,14 @@ export default function DavetPage() {
   const { yukle }              = useSirket();
   const [davet, setDavet]      = useState<DavetBilgi | null>(null);
   const [yukleniyor, setYuk]   = useState(true);
-  const [form, setForm]        = useState({ email: "", password: "" });
+  const [form, setForm]        = useState({ email: "", password: "", ad: "", soyad: "" });
   const [goster, setGoster]    = useState(false);
   const [hata, setHata]        = useState("");
   const [islem, setIslem]      = useState(false);
   const [basarili, setBasarili] = useState(false);
-  const [mod, setMod]          = useState<"giris" | "kayit">("kayit");
+  const [mod, setMod]          = useState<"kayit" | "giris">("kayit");
+
+  const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   useEffect(() => {
     const sb = createClient();
@@ -35,8 +36,9 @@ export default function DavetPage() {
       .eq("token", token)
       .maybeSingle()
       .then(({ data }) => {
-        if (!data) { setDavet({ email: "", role: "", company_name: "", gecersiz: true }); }
-        else if (data.accepted_at || new Date(data.expires_at) < new Date()) {
+        if (!data) {
+          setDavet({ email: "", role: "", company_name: "", gecersiz: true });
+        } else if (data.accepted_at || new Date(data.expires_at) < new Date()) {
           setDavet({ email: data.email, role: data.role, company_name: "", gecersiz: true });
         } else {
           const c = data.companies as unknown as { name: string } | null;
@@ -53,22 +55,36 @@ export default function DavetPage() {
     setIslem(true);
     try {
       const sb = createClient();
-      let user;
+      let userId = "";
+      let userEmail = form.email;
 
       if (mod === "kayit") {
-        const { data, error } = await sb.auth.signUp({ email: form.email, password: form.password });
+        const { data, error } = await sb.auth.signUp({
+          email:    form.email,
+          password: form.password,
+          options: {
+            data: { ad: form.ad, soyad: form.soyad, full_name: `${form.ad} ${form.soyad}`.trim() },
+          },
+        });
         if (error) { setHata(error.message); return; }
-        user = data.user;
+        userId = data.user?.id ?? "";
       } else {
         const { data, error } = await sb.auth.signInWithPassword({ email: form.email, password: form.password });
         if (error) { setHata("E-posta veya şifre hatalı."); return; }
-        user = data.user;
+        userId    = data.user.id;
+        userEmail = data.user.email ?? form.email;
       }
 
-      if (!user) { setHata("Kullanıcı oluşturulamadı."); return; }
+      if (!userId) { setHata("Kullanıcı oluşturulamadı."); return; }
 
-      const ok = await sirketDB.davetKabul(token, user.id, form.email);
-      if (!ok) { setHata("Davet geçersiz veya süresi dolmuş."); return; }
+      // Davet kabul API
+      const res = await fetch("/api/davet/kabul", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ token, userId, email: userEmail, fullName: `${form.ad} ${form.soyad}`.trim() }),
+      });
+      const json = await res.json();
+      if (!res.ok) { setHata(json.error ?? "Davet kabul edilemedi."); return; }
 
       await yukle();
       setBasarili(true);
@@ -113,7 +129,7 @@ export default function DavetPage() {
           ) : basarili ? (
             <div className="text-center space-y-3 py-4">
               <CheckCircle2 className="w-10 h-10 text-[#22c55e] mx-auto" />
-              <p className="text-white font-semibold">Katıldınız!</p>
+              <p className="text-white font-semibold">Ekibe katıldınız!</p>
               <p className="text-sm text-[#94a3b8]">Dashboard&apos;a yönlendiriliyorsunuz...</p>
             </div>
           ) : (
@@ -135,7 +151,7 @@ export default function DavetPage() {
                       ? { background: "rgba(251,192,36,0.15)", color: "#fbc024" }
                       : { background: "transparent", color: "#94a3b8" }
                     }>
-                    {m === "kayit" ? "İlk kez mi geliyorsunuz?" : "Zaten hesabınız var mı?"}
+                    {m === "kayit" ? "Hesap Oluştur" : "Giriş Yap"}
                   </button>
                 ))}
               </div>
@@ -147,32 +163,53 @@ export default function DavetPage() {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-3">
+                {/* Ad/Soyad — sadece kayıt modunda */}
+                {mod === "kayit" && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs text-[#94a3b8] font-medium block mb-1">Ad *</label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#94a3b8]" />
+                        <input required value={form.ad} onChange={(e) => set("ad", e.target.value)}
+                          placeholder="Adınız"
+                          className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-sm" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs text-[#94a3b8] font-medium block mb-1">Soyad *</label>
+                      <input required value={form.soyad} onChange={(e) => set("soyad", e.target.value)}
+                        placeholder="Soyadınız"
+                        className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-sm" />
+                    </div>
+                  </div>
+                )}
+
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">E-posta</label>
+                  <label className="text-xs text-[#94a3b8] font-medium block mb-1">E-posta</label>
                   <div className="relative">
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
                     <input type="email" required value={form.email}
-                      onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm"
-                    />
+                      onChange={(e) => set("email", e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-sm" />
                   </div>
                 </div>
+
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Şifre</label>
+                  <label className="text-xs text-[#94a3b8] font-medium block mb-1">Şifre</label>
                   <div className="relative">
                     <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
                     <input type={goster ? "text" : "password"} required
-                      value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                      value={form.password} onChange={(e) => set("password", e.target.value)}
                       placeholder="••••••••" minLength={6}
-                      className="w-full pl-10 pr-11 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm"
-                    />
+                      className="w-full pl-10 pr-11 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-sm" />
                     <button type="button" onClick={() => setGoster(!goster)}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-white transition-colors">
                       {goster ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
+
                 <button type="submit" disabled={islem}
                   className="w-full py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-60">
                   {islem ? "İşleniyor..." : mod === "kayit" ? "Hesap Oluştur ve Ekibe Katıl" : "Giriş Yap ve Ekibe Katıl"}
