@@ -61,6 +61,7 @@ export default function EkipPage() {
   const [secilenRolId, setSecRol] = useState("");
   const [yukleniyor, setYuk]    = useState(false);
   const [hata, setHata]         = useState("");
+  const [rolHata, setRolHata]   = useState("");
   const [kopyalandi, setKop]    = useState<string | null>(null);
 
   // Yeni rol formu
@@ -146,31 +147,24 @@ export default function EkipPage() {
   };
 
   const rolKaydet = async () => {
-    if (!yeniRolAdi.trim()) { setHata("Rol adı zorunlu."); return; }
-    setHata("");
-    try {
-      const res  = await fetch("/api/sirket/rol", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ name: yeniRolAdi.trim(), permissions: yeniRolPerms }),
-      });
-      const json = await res.json();
-      if (!res.ok) { setHata(json.error ?? "Rol kaydedilemedi."); return; }
-      setYeniRolAdi("");
-      setYeniRolPerms(bosPermissions());
-      setRolFormu(false);
-      await yukle();
-    } catch {
-      setHata("Bağlantı hatası.");
-    }
+    if (!yeniRolAdi.trim()) { setRolHata("Rol adı zorunlu."); return; }
+    if (!companyId) { setRolHata("Şirket bilgisi yüklenemedi, sayfayı yenileyin."); return; }
+    setRolHata("");
+    const sb = createClient();
+    const { error } = await sb.from("company_roles").insert({
+      company_id:  companyId,
+      name:        yeniRolAdi.trim(),
+      permissions: yeniRolPerms,
+    });
+    if (error) { setRolHata(error.message); return; }
+    setYeniRolAdi("");
+    setYeniRolPerms(bosPermissions());
+    setRolFormu(false);
+    await yukle();
   };
 
   const rolSil = async (id: string) => {
-    await fetch("/api/sirket/rol", {
-      method:  "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ rolId: id }),
-    });
+    await createClient().from("company_roles").delete().eq("id", id);
     await yukle();
   };
 
@@ -411,12 +405,18 @@ export default function EkipPage() {
                   <span className="text-sm text-white font-medium">Düzenleme yetkisi (veri ekleyebilir/silebilir)</span>
                 </label>
 
+                {rolHata && (
+                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.25)]">
+                    <AlertCircle className="w-4 h-4 text-[#ef4444] shrink-0" />
+                    <p className="text-sm text-[#ef4444]">{rolHata}</p>
+                  </div>
+                )}
                 <div className="flex gap-3">
                   <button onClick={rolKaydet}
                     className="flex-1 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
                     Kaydet
                   </button>
-                  <button onClick={() => setRolFormu(false)}
+                  <button onClick={() => { setRolFormu(false); setRolHata(""); }}
                     className="px-4 py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm hover:bg-[rgba(255,255,255,0.05)] transition-colors">
                     İptal
                   </button>
