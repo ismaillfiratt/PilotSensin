@@ -9,11 +9,14 @@ const ONBOARDING_YOK = [
   "/sifre-sifirla", "/auth", "/politikalar",
 ];
 
+// Co-Pilot erişemez (client-side koruma)
+const SADECE_PILOT = ["/nakit-akisi", "/kar-zarar", "/acil-fon", "/ekip"];
+
 export default function SirketProvider() {
-  const { yukle, companyId, yuklendi } = useSirket();
-  const router    = useRouter();
-  const pathname  = usePathname();
-  const timerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { yukle, companyId, rol, permissions, yuklendi } = useSirket();
+  const router   = useRouter();
+  const pathname = usePathname();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => { yukle(); }, [yukle]);
 
@@ -23,26 +26,29 @@ export default function SirketProvider() {
     const korumali = !ONBOARDING_YOK.some((p) => pathname.startsWith(p));
     if (!korumali) return;
 
-    if (companyId) {
-      // companyId varsa bekleyen timer'ı iptal et
+    if (!companyId) {
+      // companyId yoksa 1.5sn bekle — davet kabul sonrası DB yayılımı için
       if (timerRef.current) clearTimeout(timerRef.current);
-      return;
+      timerRef.current = setTimeout(async () => {
+        await yukle();
+        if (!useSirket.getState().companyId) {
+          router.replace("/onboarding");
+        }
+      }, 1500);
+      return () => { if (timerRef.current) clearTimeout(timerRef.current); };
     }
 
-    // companyId yoksa 1.2sn bekle — davet kabul sonrası DB yayılımı için
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(async () => {
-      // Son bir kez daha dene
-      await yukle();
-      if (!useSirket.getState().companyId) {
-        router.replace("/onboarding");
-      }
-    }, 1200);
+    // Co-Pilot route koruması
+    if (rol && rol !== "pilot") {
+      const modul = pathname.split("/")[1];
+      const kısıtlı = SADECE_PILOT.some((r) => pathname.startsWith(r));
+      const izinli  = permissions?.modules?.[modul as keyof typeof permissions.modules];
 
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [yuklendi, companyId, pathname, router, yukle]);
+      if (kısıtlı || izinli === false) {
+        router.replace("/dashboard");
+      }
+    }
+  }, [yuklendi, companyId, rol, permissions, pathname, router, yukle]);
 
   return null;
 }

@@ -6,6 +6,7 @@ const KORUMASIZ_ROTALAR = [
   "/onboarding", "/davet", "/politikalar",
 ];
 
+// Sadece auth kontrolü — company/role kontrolü SirketProvider'a bırakıldı
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -20,34 +21,6 @@ export async function proxy(request: NextRequest) {
     const girisUrl = new URL("/giris", request.url);
     girisUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(girisUrl);
-  }
-
-  // Dashboard ve alt sayfalar için permission kontrolü
-  const routeModule = pathname.split("/")[1]; // "nakit-akisi", "stok" vb.
-  if (routeModule && routeModule !== "api" && routeModule !== "_next") {
-    const { data: member } = await supabase
-      .from("company_members")
-      .select("role, permissions, status")
-      .eq("user_id", user.id)
-      .eq("status", "active")
-      .maybeSingle();
-
-    if (!member) {
-      // Şirketi yok → onboarding
-      if (pathname !== "/onboarding") {
-        return NextResponse.redirect(new URL("/onboarding", request.url));
-      }
-      return supabaseResponse;
-    }
-
-    // Pilot her şeye erişebilir
-    if (member.role === "pilot") return supabaseResponse;
-
-    // Diğer roller: permissions kontrolü
-    const perms = member.permissions as { modules?: Record<string, boolean> } | null;
-    if (perms?.modules && perms.modules[routeModule] === false) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
   }
 
   return supabaseResponse;
