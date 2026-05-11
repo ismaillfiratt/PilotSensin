@@ -146,28 +146,38 @@ export default function EkipPage() {
   };
 
   const rolKaydet = async () => {
-    if (!yeniRolAdi.trim() || !companyId) return;
-    const sb = createClient();
-    await sb.from("company_roles").insert({
-      company_id:  companyId,
-      name:        yeniRolAdi.trim(),
-      permissions: yeniRolPerms,
-    });
-    setYeniRolAdi("");
-    setYeniRolPerms(bosPermissions());
-    setRolFormu(false);
-    await yukle();
+    if (!yeniRolAdi.trim()) { setHata("Rol adı zorunlu."); return; }
+    setHata("");
+    try {
+      const res  = await fetch("/api/sirket/rol", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ name: yeniRolAdi.trim(), permissions: yeniRolPerms }),
+      });
+      const json = await res.json();
+      if (!res.ok) { setHata(json.error ?? "Rol kaydedilemedi."); return; }
+      setYeniRolAdi("");
+      setYeniRolPerms(bosPermissions());
+      setRolFormu(false);
+      await yukle();
+    } catch {
+      setHata("Bağlantı hatası.");
+    }
   };
 
   const rolSil = async (id: string) => {
-    await createClient().from("company_roles").delete().eq("id", id);
+    await fetch("/api/sirket/rol", {
+      method:  "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ rolId: id }),
+    });
     await yukle();
   };
 
   const rolPermGuncelle = async (rolId: string, perms: Permissions) => {
-    await createClient().from("company_roles").update({ permissions: perms }).eq("id", rolId);
-    // Bu role sahip aktif üyelerin permissions'ını da güncelle
-    await createClient().from("company_members").update({ permissions: perms }).eq("role_id", rolId);
+    const sb = createClient();
+    await sb.from("company_roles").update({ permissions: perms }).eq("id", rolId);
+    await sb.from("company_members").update({ permissions: perms }).eq("role_id", rolId);
     await yukle();
   };
 
