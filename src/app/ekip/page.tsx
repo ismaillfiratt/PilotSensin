@@ -216,24 +216,40 @@ export default function EkipPage() {
                 <p className="text-sm text-[#ef4444]">{hata}</p>
               </div>
             )}
-            <form onSubmit={davetGonder} className="flex gap-3 flex-col sm:flex-row">
-              <div className="relative flex-1">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
-                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                  placeholder="calisan@isletme.com"
-                  className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.4)] text-sm transition-colors" />
+            {roller.filter((r) => !r.is_owner).length === 0 ? (
+              /* Hiç rol yoksa → Rol Ekle butonu */
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-[rgba(251,192,36,0.06)] border border-[rgba(251,192,36,0.15)]">
+                <AlertCircle className="w-4 h-4 text-[#fbc024] shrink-0" />
+                <p className="text-sm text-[#94a3b8] flex-1">Davet etmek için önce bir rol oluşturun.</p>
+                <button
+                  type="button"
+                  onClick={() => { setSekme("roller"); setRolFormu(true); }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#fbc024] text-[#0e172a] text-xs font-bold hover:bg-[#d9a61f] transition-colors shrink-0"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Rol Ekle
+                </button>
               </div>
-              <select value={secilenRolId} onChange={(e) => setSecRol(e.target.value)}
-                className="px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-sm focus:outline-none focus:border-[rgba(251,192,36,0.4)]">
-                {roller.filter((r) => !r.is_owner).map((r) => (
-                  <option key={r.id} value={r.id} className="bg-[#0e172a]">{r.name}</option>
-                ))}
-              </select>
-              <button type="submit" disabled={yukleniyor}
-                className="px-5 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-60">
-                {yukleniyor ? "..." : "Davet Et"}
-              </button>
-            </form>
+            ) : (
+              <form onSubmit={davetGonder} className="flex gap-3 flex-col sm:flex-row">
+                <div className="relative flex-1">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
+                  <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                    placeholder="calisan@isletme.com"
+                    className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.4)] text-sm transition-colors" />
+                </div>
+                <select value={secilenRolId} onChange={(e) => setSecRol(e.target.value)}
+                  className="px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-sm focus:outline-none focus:border-[rgba(251,192,36,0.4)]">
+                  {roller.filter((r) => !r.is_owner).map((r) => (
+                    <option key={r.id} value={r.id} className="bg-[#0e172a]">{r.name}</option>
+                  ))}
+                </select>
+                <button type="submit" disabled={yukleniyor}
+                  className="px-5 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-60">
+                  {yukleniyor ? "..." : "Davet Et"}
+                </button>
+              </form>
+            )}
           </div>
 
           {/* Bekleyen davetler */}
@@ -399,37 +415,66 @@ export default function EkipPage() {
 }
 
 function RolKart({ rol, onSil, onGuncelle }: { rol: Rol; onSil: (id: string) => void; onGuncelle: (id: string, p: Permissions) => void }) {
-  const [acik, setAcik]     = useState(false);
-  const [perms, setPerms]   = useState<Permissions>(rol.permissions);
+  const [acik, setAcik]   = useState(false);
+  const [perms, setPerms] = useState<Permissions>(rol.permissions);
 
   return (
-    <div className="glass-card rounded-2xl p-5 space-y-3">
-      <div className="flex items-center justify-between">
+    <div className="glass-card rounded-2xl overflow-hidden">
+      {/* Başlık — tıklanınca aç/kapa */}
+      <button
+        type="button"
+        onClick={() => !rol.is_owner && setAcik(!acik)}
+        className={`w-full flex items-center justify-between px-5 py-4 transition-colors ${!rol.is_owner ? "hover:bg-[rgba(255,255,255,0.03)] cursor-pointer" : "cursor-default"}`}
+      >
         <div className="flex items-center gap-2">
           {rol.is_owner ? <Crown className="w-4 h-4 text-[#fbc024]" /> : <ShieldCheck className="w-4 h-4 text-[#94a3b8]" />}
           <span className="text-sm font-semibold text-white">{rol.name}</span>
           {rol.is_owner && <span className="text-[10px] text-[#fbc024] bg-[rgba(251,192,36,0.1)] px-1.5 py-0.5 rounded-full">Sahip</span>}
         </div>
-        <div className="flex gap-1">
+        <div className="flex items-center gap-2">
           {!rol.is_owner && (
             <>
-              <button onClick={() => setAcik(!acik)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-[#fbc024] transition-colors">
-                <Settings className="w-3.5 h-3.5" />
-              </button>
-              <button onClick={() => onSil(rol.id)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-[#ef4444] transition-colors">
+              <motion.div animate={{ rotate: acik ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                <Settings className="w-3.5 h-3.5 text-[#64748b]" />
+              </motion.div>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onSil(rol.id); }}
+                className="w-6 h-6 flex items-center justify-center rounded-lg text-[#64748b] hover:text-[#ef4444] transition-colors"
+              >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </>
           )}
         </div>
-      </div>
+      </button>
 
+      {/* Modül etiketleri — kapalıyken */}
+      {!acik && (
+        <div className="flex flex-wrap gap-1.5 px-5 pb-4">
+          {MODULLER.filter((m) => rol.is_owner || perms.modules?.[m.key]).map(({ key, label }) => (
+            <span key={key} className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(251,192,36,0.08)] text-[#94a3b8] border border-[rgba(255,255,255,0.06)]">
+              {label}
+            </span>
+          ))}
+          {!rol.is_owner && perms.canEdit && (
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(34,197,94,0.08)] text-[#22c55e] border border-[rgba(34,197,94,0.15)]">
+              Düzenleyebilir
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Açık panel — modül ayarları */}
       <AnimatePresence>
         {acik && !rol.is_owner && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-            <div className="pt-3 border-t border-[rgba(255,255,255,0.06)] space-y-3">
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="px-5 pb-5 border-t border-[rgba(255,255,255,0.06)] space-y-4 pt-4">
               <p className="text-xs text-[#94a3b8] font-medium">Modül Erişimi</p>
               <div className="grid grid-cols-2 gap-2">
                 {MODULLER.filter((m) => m.key !== "ekip").map(({ key, label }) => (
@@ -449,32 +494,18 @@ function RolKart({ rol, onSil, onGuncelle }: { rol: Rol; onSil: (id: string) => 
                   onChange={(e) => setPerms((p) => ({ ...p, canEdit: e.target.checked }))}
                   className="w-4 h-4 rounded accent-[#fbc024]"
                 />
-                <span className="text-sm text-white font-medium">Düzenleme yetkisi</span>
+                <span className="text-sm text-white font-medium">Düzenleme yetkisi (veri ekleyebilir/silebilir)</span>
               </label>
-              <button onClick={() => { onGuncelle(rol.id, perms); setAcik(false); }}
-                className="w-full py-2 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+              <button
+                onClick={() => { onGuncelle(rol.id, perms); setAcik(false); }}
+                className="w-full py-2 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors"
+              >
                 Kaydet
               </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Modül etiketleri */}
-      {!acik && (
-        <div className="flex flex-wrap gap-1.5">
-          {MODULLER.filter((m) => rol.is_owner || perms.modules?.[m.key]).map(({ key, label }) => (
-            <span key={key} className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(251,192,36,0.08)] text-[#94a3b8] border border-[rgba(255,255,255,0.06)]">
-              {label}
-            </span>
-          ))}
-          {!rol.is_owner && perms.canEdit && (
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(34,197,94,0.08)] text-[#22c55e] border border-[rgba(34,197,94,0.15)]">
-              Düzenleyebilir
-            </span>
-          )}
-        </div>
-      )}
     </div>
   );
 }
