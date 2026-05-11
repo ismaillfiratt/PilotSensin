@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Plane, Mail, Lock, Eye, EyeOff, User, AlertCircle, CheckCircle2 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
-import { useSirket } from "@/store/sirket";
+import { useSirket, useSirket as sirketStore } from "@/store/sirket";
 
 interface DavetBilgi {
   email:        string;
@@ -77,18 +77,35 @@ export default function DavetPage() {
 
       if (!userId) { setHata("Kullanıcı oluşturulamadı."); return; }
 
-      // Davet kabul API
+      // Davet kabul API (SECURITY DEFINER — RLS atlar)
       const res = await fetch("/api/davet/kabul", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ token, userId, email: userEmail, fullName: `${form.ad} ${form.soyad}`.trim() }),
+        body:    JSON.stringify({
+          token,
+          userId,
+          email:    userEmail,
+          fullName: `${form.ad} ${form.soyad}`.trim(),
+        }),
       });
       const json = await res.json();
       if (!res.ok) { setHata(json.error ?? "Davet kabul edilemedi."); return; }
 
-      await yukle();
+      // DB yazımının yayılmasını bekle, companyId set olana kadar retry
+      let companyBulundu = false;
+      for (let i = 0; i < 8; i++) {
+        await yukle();
+        if (sirketStore.getState().companyId) { companyBulundu = true; break; }
+        await new Promise((r) => setTimeout(r, 500));
+      }
+
+      if (!companyBulundu) {
+        setHata("Şirkete bağlanılamadı. Lütfen tekrar giriş yapın.");
+        return;
+      }
+
       setBasarili(true);
-      setTimeout(() => router.replace("/dashboard"), 1500);
+      setTimeout(() => router.replace("/dashboard"), 1200);
     } catch {
       setHata("Bir hata oluştu. Lütfen tekrar deneyin.");
     } finally {
