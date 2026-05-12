@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSirket } from "@/store/sirket";
+import { MODULLER } from "@/lib/permissions";
 
 const ONBOARDING_YOK = [
   "/onboarding", "/davet", "/giris", "/kayit",
@@ -38,14 +39,23 @@ export default function SirketProvider() {
       return () => { if (timerRef.current) clearTimeout(timerRef.current); };
     }
 
-    // Co-Pilot route koruması
-    if (rol && rol !== "pilot") {
+    // Co-Pilot route koruması + dashboard erişim yoksa ilk izinli modüle yönlendir
+    if (rol && rol !== "pilot" && permissions) {
       const modul = pathname.split("/")[1];
-      const kısıtlı = SADECE_PILOT.some((r) => pathname.startsWith(r));
-      const izinli  = permissions?.modules?.[modul as keyof typeof permissions.modules];
 
+      // Dashboard'a erişim yoksa → ilk izinli modüle git
+      if (pathname === "/dashboard" && !permissions.modules["dashboard"]) {
+        const ilkModul = MODULLER.find((m) => permissions.modules[m.key]);
+        router.replace(ilkModul ? `/${ilkModul.key}` : "/bildirimler");
+        return;
+      }
+
+      // Diğer kısıtlı rotalar
+      const kısıtlı = SADECE_PILOT.some((r) => pathname.startsWith(r));
+      const izinli  = permissions.modules[modul as keyof typeof permissions.modules];
       if (kısıtlı || izinli === false) {
-        router.replace("/dashboard");
+        const ilkModul = MODULLER.find((m) => permissions.modules[m.key]);
+        router.replace(ilkModul ? `/${ilkModul.key}` : "/bildirimler");
       }
     }
   }, [yuklendi, companyId, rol, permissions, pathname, router, yukle]);

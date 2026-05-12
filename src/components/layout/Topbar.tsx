@@ -14,6 +14,7 @@ import { useProsedurler } from "@/store/prosedurler";
 import { useAcilFon }     from "@/store/acilFon";
 import { createClient } from "@/utils/supabase/client";
 import { useBildirimler } from "@/store/bildirimler";
+import { useSirket } from "@/store/sirket";
 import AramaModal from "@/components/arama/AramaModal";
 
 const MODUL_HREF: Record<string, string> = {
@@ -49,6 +50,7 @@ export default function Topbar() {
   const [kullanici, setKullanici]     = useState<KullaniciBilgi | null>(null);
 
   const { bildirimler, okunduYap, okunduToggle, tumunuOkunduYap } = useBildirimler();
+  const { sirketAdi } = useSirket();
   const notifRef = useRef<HTMLDivElement>(null);
   const { islemler }                   = useNakit();
   const { gorevler }                   = useGorevler();
@@ -128,8 +130,8 @@ export default function Topbar() {
         <div className="flex items-center gap-2">
           <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <Store className="w-4 h-4 text-[#94a3b8]" />
-            {kullanici ? (
-              <span className="text-white font-semibold text-sm">{kullanici.businessAd}</span>
+            {sirketAdi ? (
+              <span className="text-white font-semibold text-sm">{sirketAdi}</span>
             ) : (
               <span className="w-28 h-4 rounded bg-[rgba(255,255,255,0.06)] animate-pulse" />
             )}

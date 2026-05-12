@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/client";
 import ProfilAvatar from "@/components/profil/ProfilAvatar";
 import KisiselBilgiler from "@/components/profil/KisiselBilgiler";
 import IsletmeBilgileri from "@/components/profil/IsletmeBilgileri";
+import { useSirket } from "@/store/sirket";
 
 interface UserMeta {
   ad: string;
@@ -19,6 +20,8 @@ interface UserMeta {
 
 export default function ProfilPage() {
   const [user, setUser] = useState<UserMeta | null>(null);
+  const { rol, sirketAdi } = useSirket();
+  const isPilot = rol === "pilot" || !rol;
 
   useEffect(() => {
     const supabase = createClient();
@@ -46,7 +49,7 @@ export default function ProfilPage() {
           <div className="h-64 rounded-2xl bg-[rgba(255,255,255,0.04)] animate-pulse" />
           <div className="lg:col-span-2 space-y-6">
             <div className="h-48 rounded-2xl bg-[rgba(255,255,255,0.04)] animate-pulse" />
-            <div className="h-56 rounded-2xl bg-[rgba(255,255,255,0.04)] animate-pulse" />
+            {isPilot && <div className="h-56 rounded-2xl bg-[rgba(255,255,255,0.04)] animate-pulse" />}
           </div>
         </div>
       </div>
@@ -57,24 +60,26 @@ export default function ProfilPage() {
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Profilim</h1>
-        <p className="text-sm text-[#94a3b8] mt-1">Kişisel ve işletme bilgilerini yönet</p>
+        <p className="text-sm text-[#94a3b8] mt-1">
+          {isPilot ? "Kişisel ve işletme bilgilerini yönet" : `${sirketAdi} ekibinin üyesisin`}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Sol — Avatar */}
         <div className="lg:col-span-1">
           <ProfilAvatar ad={user.ad} soyad={user.soyad} email={user.email} />
         </div>
-
-        {/* Sağ — Formlar */}
         <div className="lg:col-span-2 space-y-6">
           <KisiselBilgiler ad={user.ad} soyad={user.soyad} telefon={user.telefon} />
-          <IsletmeBilgileri
-            businessAd={user.businessAd}
-            sektor={user.sektor}
-            vergiNo={user.vergiNo}
-            adres={user.adres}
-          />
+          {/* İşletme bilgileri sadece pilota gösterilir */}
+          {isPilot && (
+            <IsletmeBilgileri
+              businessAd={user.businessAd}
+              sektor={user.sektor}
+              vergiNo={user.vergiNo}
+              adres={user.adres}
+            />
+          )}
         </div>
       </div>
     </div>
