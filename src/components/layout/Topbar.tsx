@@ -218,7 +218,7 @@ export default function Topbar() {
                       <div className="py-8 text-center text-xs text-[#94a3b8]">Bildirim yok</div>
                     ) : (
                       bildirimler.slice(0, 8).map((b) => {
-                        const dotColor = b.tip === "kritik" ? "#ef4444" : b.tip === "uyari" ? "#fbc024" : "#94a3b8";
+                        const dotColor = b.tip === "kritik" ? "#ef4444" : b.tip === "uyari" ? "#fbc024" : "#22c55e";
                         return (
                           <div key={b.id} className="flex items-start gap-3 px-4 py-3 hover:bg-[rgba(251,192,36,0.04)] transition-colors group">
                             {/* Durum noktası */}
@@ -229,7 +229,8 @@ export default function Topbar() {
                               }} />
                             {/* İçerik */}
                             <div className="flex-1 min-w-0 cursor-pointer" onClick={() => okunduYap(b.id)}>
-                              <p className={`text-xs font-semibold truncate ${b.okundu ? "text-[#64748b]" : "text-white"}`}>
+                              <p className="text-xs font-semibold truncate"
+                                style={{ color: b.okundu ? "#64748b" : dotColor }}>
                                 {b.baslik}
                               </p>
                               <p className="text-[11px] text-[#64748b] truncate mt-0.5">{b.mesaj}</p>

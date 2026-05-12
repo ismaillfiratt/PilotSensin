@@ -13,9 +13,9 @@ import { trBugun, trOncekiGun, trGunBaslangici, trGunSonu } from "@/lib/tarih";
 
 /* ── Sabitler ── */
 const TIP_CONFIG: Record<BildirimTip, { renk: string; bg: string; etiket: string }> = {
-  kritik: { renk: "#ef4444", bg: "rgba(239,68,68,0.12)",   etiket: "Kritik" },
-  uyari:  { renk: "#fbc024", bg: "rgba(251,192,36,0.12)",  etiket: "Uyarı"  },
-  bilgi:  { renk: "#94a3b8", bg: "rgba(148,163,184,0.12)", etiket: "Bilgi"  },
+  kritik: { renk: "#ef4444", bg: "rgba(239,68,68,0.10)",  etiket: "Kritik"      },
+  uyari:  { renk: "#fbc024", bg: "rgba(251,192,36,0.10)", etiket: "Yapılacak"   },
+  bilgi:  { renk: "#22c55e", bg: "rgba(34,197,94,0.10)",  etiket: "Tamamlandı"  },
 };
 
 const MODUL_ETIKET: Record<BildirimModul, string> = {
@@ -230,7 +230,7 @@ export default function BildirimlerPage() {
               { v: "tumu",   label: "Tümü",   count: bildirimler.length },
               { v: "kritik", label: "Kritik",  count: bildirimler.filter((b) => b.tip === "kritik").length, renk: "#ef4444" },
               { v: "uyari",  label: "Uyarı",   count: bildirimler.filter((b) => b.tip === "uyari").length,  renk: "#fbc024" },
-              { v: "bilgi",  label: "Bilgi",   count: bildirimler.filter((b) => b.tip === "bilgi").length,  renk: "#94a3b8" },
+              { v: "bilgi",  label: "Tamamlandı", count: bildirimler.filter((b) => b.tip === "bilgi").length, renk: "#22c55e" },
             ] as { v: "tumu" | BildirimTip; label: string; count: number; renk?: string }[]).map(({ v, label, count, renk }) => {
               const r = renk ?? "#94a3b8";
               return (
@@ -359,7 +359,7 @@ export default function BildirimlerPage() {
                   exit={{ opacity: 0, x: -20, height: 0, marginBottom: 0 }}
                   transition={{ duration: 0.2, delay: i * 0.03 }}
                   className="glass-card rounded-xl overflow-hidden"
-                  style={{ borderColor: !b.okundu ? `${cfg.renk}30` : undefined }}>
+                  style={{ borderColor: !b.okundu ? `${cfg.renk}40` : undefined, borderLeftWidth: !b.okundu ? "3px" : undefined }}>
                   <div className="flex items-start gap-4 px-5 py-4">
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
                       style={{ backgroundColor: cfg.bg }}>
@@ -368,10 +368,12 @@ export default function BildirimlerPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <p className={`text-sm font-semibold ${b.okundu ? "text-[#64748b]" : "text-white"}`}>
+                          <p className="text-sm font-semibold"
+                            style={{ color: b.okundu ? "#64748b" : cfg.renk }}>
                             {b.baslik}
                           </p>
-                          {!b.okundu && <span className="w-2 h-2 rounded-full bg-[#fbc024] animate-pulse" />}
+                          {!b.okundu && <span className="w-2 h-2 rounded-full animate-pulse shrink-0"
+                            style={{ backgroundColor: cfg.renk }} />}
                           <span className="text-[10px] font-bold px-1.5 py-0.5 rounded"
                             style={{ color: cfg.renk, backgroundColor: cfg.bg }}>{cfg.etiket}</span>
                           <span className="text-[10px] text-[#64748b] px-1.5 py-0.5 rounded bg-[rgba(255,255,255,0.04)]">
