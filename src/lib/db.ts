@@ -64,11 +64,13 @@ export const userStoreDB = {
       .maybeSingle();
 
     if (cs) {
+      // Bildirimler kullanıcıya özel → user_store'dan ayrıca çek
+      const { data: us } = await sb().from("user_store").select("bildirimler").maybeSingle();
       return {
         nakit_islemler:    cs.nakit_islemler    ?? [],
         gorevler:          cs.gorevler          ?? [],
         stok_urunler:      cs.stok_urunler      ?? [],
-        bildirimler:       [],  // bildirimler kullanıcıya özel: user_store'dan gelir
+        bildirimler:       us?.bildirimler      ?? [],
         prosedurler:       cs.prosedurler       ?? [],
         checklist_items:   cs.checklist_items   ?? [],
         acil_fon_hedefler: cs.acil_fon_hedefler ?? [],
