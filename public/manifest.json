@@ -1,0 +1,51 @@
+{
+  "name": "PilotSensin – İşletme Yönetim Platformu",
+  "short_name": "PilotSensin",
+  "description": "KOBİ'ler için nakit akışı, stok, görev ve risk yönetim platformu",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e172a",
+  "theme_color": "#0e172a",
+  "lang": "tr",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "finance", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Nakit Akışı",
+      "short_name": "Nakit",
+      "description": "Gelir ve gider takibi",
+      "url": "/nakit-akisi",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Stok Yönetimi",
+      "short_name": "Stok",
+      "description": "Ürün ve stok takibi",
+      "url": "/stok",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Görevler",
+      "short_name": "Görevler",
+      "description": "Ekip görev takibi",
+      "url": "/gorevler",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

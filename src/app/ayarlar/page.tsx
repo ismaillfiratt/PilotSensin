@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { Trash2, ChevronRight } from "lucide-react";
 import DbTani from "@/components/ayarlar/DbTani";
 import BildirimAyarlari from "@/components/ayarlar/BildirimAyarlari";
 import TemaAyarlari from "@/components/ayarlar/TemaAyarlari";
@@ -15,6 +17,21 @@ export default function AyarlarPage() {
           Bildirim, güvenlik ve uygulama tercihlerini yönet
         </p>
       </div>
+
+      {/* Çöp Kutusu */}
+      <Link
+        href="/ayarlar/cop-kutusu"
+        className="flex items-center gap-4 px-5 py-4 glass-card rounded-2xl hover:bg-white/3 transition-colors group"
+      >
+        <div className="w-9 h-9 rounded-xl bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] flex items-center justify-center shrink-0">
+          <Trash2 className="w-4 h-4 text-[#ef4444]" />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-white">Çöp Kutusu</p>
+          <p className="text-xs text-[#64748b]">Silinen kayıtları görüntüle ve geri yükle</p>
+        </div>
+        <ChevronRight className="w-4 h-4 text-[#475569] group-hover:text-[#94a3b8] transition-colors" />
+      </Link>
 
       {/* Bildirimler */}
       <BildirimAyarlari />

@@ -2,8 +2,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { type Gorev, type GorevDurumu } from "@/lib/gorev-data";
 import { yayin } from "@/lib/realtime";
-import { userStoreDB } from "@/lib/db";
-import { getKullaniciId } from "@/lib/auth";
+import { storeKaydet } from "@/lib/db";
+import { softDeletePatch, softDeleteTemizle, type SilOpts } from "@/lib/softDelete";
 
 const VARSAYILAN_SORUMLULAR = ["İsmail", "Ayşe", "Mehmet", "Ali", "Fatma"];
 
@@ -15,13 +15,15 @@ interface GorevStore {
   ekle:           (gorev: Omit<Gorev, "id" | "olusturmaTarih">) => Promise<void>;
   guncelle:       (id: string, gorev: Partial<Gorev>) => Promise<void>;
   durumDegis:     (id: string, durum: GorevDurumu) => Promise<void>;
-  sil:            (id: string) => Promise<void>;
+  sil:            (id: string, opts?: SilOpts) => Promise<void>;
+  geriAl:         (id: string) => Promise<void>;
+  kaliciSil:      (id: string) => Promise<void>;
+  silinenler:     () => Gorev[];
   syncFromRemote: (gorevler: Gorev[]) => void;
 }
 
 async function kaydet(gorevler: Gorev[]) {
-  const uid = await getKullaniciId();
-  if (uid) await userStoreDB.kaydet(uid, "gorevler", gorevler);
+  await storeKaydet("gorevler", gorevler);
 }
 
 export const useGorevler = create<GorevStore>()(
@@ -41,7 +43,7 @@ export const useGorevler = create<GorevStore>()(
       },
 
       ekle: async (gorev) => {
-        const yeni: Gorev = { ...gorev, id: Date.now().toString(), olusturmaTarih: new Date().toISOString() };
+        const yeni: Gorev = { ...gorev, id: crypto.randomUUID(), olusturmaTarih: new Date().toISOString() };
         set((s) => ({ gorevler: [yeni, ...s.gorevler] }));
         yayin({ tip: "gorevler", veri: get().gorevler });
         await kaydet(get().gorevler);
@@ -71,11 +73,26 @@ export const useGorevler = create<GorevStore>()(
         await kaydet(get().gorevler);
       },
 
-      sil: async (id) => {
+      sil: async (id, opts) => {
+        const patch = await softDeletePatch(opts);
+        set((s) => ({ gorevler: s.gorevler.map((g) => g.id === id ? { ...g, ...patch } : g) }));
+        yayin({ tip: "gorevler", veri: get().gorevler });
+        await kaydet(get().gorevler);
+      },
+
+      geriAl: async (id) => {
+        set((s) => ({ gorevler: s.gorevler.map((g) => g.id === id ? { ...g, ...softDeleteTemizle() } : g) }));
+        yayin({ tip: "gorevler", veri: get().gorevler });
+        await kaydet(get().gorevler);
+      },
+
+      kaliciSil: async (id) => {
         set((s) => ({ gorevler: s.gorevler.filter((g) => g.id !== id) }));
         yayin({ tip: "gorevler", veri: get().gorevler });
         await kaydet(get().gorevler);
       },
+
+      silinenler: () => get().gorevler.filter((g) => g.silindi === true),
 
       syncFromRemote: (gorevler) => set({ gorevler }),
     }),

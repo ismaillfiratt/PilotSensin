@@ -60,8 +60,8 @@ export default function BugunYapilacaklar() {
 
     // ── Negatif nakit akışı ──────────────────────────────────────────────
     if (islemler.length > 0) {
-      const gelir = islemler.filter(i => i.tip === "gelir").reduce((s, i) => s + i.tutar, 0);
-      const gider = islemler.filter(i => i.tip === "gider").reduce((s, i) => s + i.tutar, 0);
+      const gelir = islemler.filter(i => i.tip === "gelir").reduce((s, i) => s + i.tutarKurus, 0);
+      const gider = islemler.filter(i => i.tip === "gider").reduce((s, i) => s + i.tutarKurus, 0);
       if (gelir - gider < 0)
         liste.push({ id: "nakit-negatif", mesaj: "Nakit akışı negatif — giderleri incele", tip: "uyari", href: "/nakit-akisi" });
     }
@@ -82,13 +82,13 @@ export default function BugunYapilacaklar() {
             const t = new Date(i.tarih);
             return t.getMonth() === bugun.getMonth() && t.getFullYear() === bugun.getFullYear();
           })
-          .reduce((s, i) => s + i.tutar, 0);
+          .reduce((s, i) => s + i.tutarKurus, 0);
 
-        const kalan = hedef.aylikOdeme - buAyOdendi;
+        const kalan = hedef.aylikOdemeKurus - buAyOdendi;
         if (kalan > 0) {
           liste.push({
             id:    `acil-fon-odeme-${hedef.id}`,
-            mesaj: `"${hedef.ad}" için bugün aylık ₺${kalan.toLocaleString("tr-TR")} ödeme günü`,
+            mesaj: `"${hedef.ad}" için bugün aylık ₺${(kalan / 100).toLocaleString("tr-TR")} ödeme günü`,
             tip:   "uyari",
             href:  "/acil-fon",
           });
@@ -99,8 +99,8 @@ export default function BugunYapilacaklar() {
       hedefler.forEach(hedef => {
         if (trBugünGun === hedef.odemeGunu) return; // zaten yukarıda işlendi
         const hMevcut = mevcutBirikim(fonIslemler, hedef.id);
-        const oran = hedef.toplamHedef > 0 ? hMevcut / hedef.toplamHedef : 0;
-        if (oran < 0.25 && hedef.toplamHedef > 0) {
+        const oran = hedef.toplamHedefKurus > 0 ? hMevcut / hedef.toplamHedefKurus : 0;
+        if (oran < 0.25 && hedef.toplamHedefKurus > 0) {
           liste.push({
             id:    `acil-fon-dusuk-${hedef.id}`,
             mesaj: `"${hedef.ad}" hedefi çok düşük (%${Math.round(oran * 100)}) — fon yatırmayı düşün`,
@@ -134,47 +134,81 @@ export default function BugunYapilacaklar() {
     return liste;
   }, [gorevler, urunler, islemler, fonIslemler, hedefler, checklist, gunSayaci]);
 
+  const mobilGoster   = gorevListesi.slice(0, 3);
+  const kalan         = gorevListesi.length - 3;
+
   return (
-    <div className="glass-card rounded-2xl p-5 flex flex-col h-full">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-7 h-7 rounded-lg bg-[rgba(251,192,36,0.15)] flex items-center justify-center">
-          <Zap className="w-4 h-4 text-[#fbc024]" />
+    <div className="glass-card rounded-2xl p-4 md:p-5 flex flex-col h-full">
+      <div className="flex items-center justify-between gap-2 mb-3 md:mb-4">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-[rgba(251,192,36,0.15)] flex items-center justify-center">
+            <Zap className="w-4 h-4 text-[#fbc024]" />
+          </div>
+          <h2 className="text-xs md:text-sm font-semibold text-white">Bugün Ne Yapmalısın?</h2>
         </div>
-        <h2 className="text-sm font-semibold text-white">Bugün Ne Yapmalısın?</h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+      <div className="flex-1 overflow-y-auto space-y-2">
         <AnimatePresence>
           {gorevListesi.length === 0 ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center py-8 gap-2">
-              <CheckCircle2 className="w-10 h-10 text-[#22c55e]" />
+              className="flex flex-col items-center justify-center py-6 gap-2">
+              <CheckCircle2 className="w-8 h-8 md:w-10 md:h-10 text-[#22c55e]" />
               <p className="text-sm text-white font-medium">Her şey yolunda!</p>
               <p className="text-xs text-[#64748b] text-center">Bugün için bekleyen önemli bir görev yok.</p>
             </motion.div>
           ) : (
-            gorevListesi.map((item, i) => {
-              const cfg  = tipConfig[item.tip];
-              const Icon = cfg.icon;
-              return (
-                <motion.div key={item.id}
-                  initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 8 }} transition={{ delay: i * 0.05 }}>
-                  <Link href={item.href}
-                    className="flex items-start gap-2.5 p-3 rounded-xl border transition-all hover:scale-[1.01] active:scale-[0.99]"
-                    style={{ borderColor: `${cfg.renk}30`, backgroundColor: cfg.bg }}>
-                    <Icon className="w-4 h-4 mt-0.5 shrink-0" style={{ color: cfg.renk }} />
-                    <span className="text-xs leading-relaxed" style={{ color: cfg.renk }}>{item.mesaj}</span>
+            <>
+              {/* Mobile: ilk 3 öge */}
+              {mobilGoster.map((item, i) => {
+                const cfg  = tipConfig[item.tip];
+                const Icon = cfg.icon;
+                return (
+                  <motion.div key={item.id}
+                    initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 8 }} transition={{ delay: i * 0.05 }}>
+                    <Link href={item.href}
+                      className="flex items-start gap-2.5 p-3 rounded-xl border transition-all active:scale-[0.99]"
+                      style={{ borderColor: `${cfg.renk}30`, backgroundColor: cfg.bg }}>
+                      <Icon className="w-4 h-4 mt-0.5 shrink-0" style={{ color: cfg.renk }} />
+                      <span className="text-xs leading-relaxed" style={{ color: cfg.renk }}>{item.mesaj}</span>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+
+              {/* Mobile'da kalan öge sayısı / Desktop'ta gizli ögeler */}
+              {kalan > 0 && (
+                <div className="md:hidden">
+                  <Link href="/gorevler" className="block text-center text-xs text-[#fbc024] py-2">
+                    +{kalan} daha →
                   </Link>
-                </motion.div>
-              );
-            })
+                </div>
+              )}
+              {gorevListesi.slice(3).map((item, i) => {
+                const cfg  = tipConfig[item.tip];
+                const Icon = cfg.icon;
+                return (
+                  <motion.div key={item.id}
+                    className="hidden md:block"
+                    initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 8 }} transition={{ delay: (i + 3) * 0.05 }}>
+                    <Link href={item.href}
+                      className="flex items-start gap-2.5 p-3 rounded-xl border transition-all hover:scale-[1.01] active:scale-[0.99]"
+                      style={{ borderColor: `${cfg.renk}30`, backgroundColor: cfg.bg }}>
+                      <Icon className="w-4 h-4 mt-0.5 shrink-0" style={{ color: cfg.renk }} />
+                      <span className="text-xs leading-relaxed" style={{ color: cfg.renk }}>{item.mesaj}</span>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </>
           )}
         </AnimatePresence>
       </div>
 
       {gorevListesi.length > 0 && (
-        <p className="text-[10px] text-[#64748b] mt-3 text-center">Görevler tamamlandıkça otomatik olarak silinir</p>
+        <p className="hidden md:block text-[10px] text-[#64748b] mt-3 text-center">Görevler tamamlandıkça otomatik olarak silinir</p>
       )}
     </div>
   );

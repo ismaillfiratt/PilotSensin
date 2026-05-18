@@ -1,17 +1,22 @@
+import type { Kurus } from "@/lib/para";
+import type { Silinebilir } from "@/lib/silinebilir";
+
 export type StokDurumu = "normal" | "uyari" | "kritik" | "olu";
 
-export interface StokHareketi {
-  id:       string;
-  tip:      "giris" | "cikis" | "sayim";
-  miktar:   number;
-  onceki:   number;
-  sonraki:  number;
-  tarih:    string;
-  aciklama: string;
-  kimin:    string;
+export interface StokHareketi extends Silinebilir {
+  id:        string;
+  tip:       "giris" | "cikis" | "sayim";
+  miktar:    number;
+  onceki:    number;
+  sonraki:   number;
+  tarih:     string;
+  aciklama:  string;
+  kimin:     string;
+  /** Atomik iş olayı bağlantısı */
+  islemId?:  string;
 }
 
-export interface Urun {
+export interface Urun extends Silinebilir {
   id:            string;
   ad:            string;
   sku:           string;
@@ -19,11 +24,12 @@ export interface Urun {
   mevcutAdet:    number;
   emniyetStogu:  number;
   kritikStok:    number;
+  /** @deprecated selectors/stok.ts::gunlukOrtalamaSatis() kullanın */
   gunlukSatis:   number;
   birim:         string;
-  birimMaliyet?: number;
+  birimMaliyetKurus?: Kurus;
   sonHareket:    string;
-  hareketler?:   StokHareketi[];
+  hareketler:    StokHareketi[];
 }
 
 export function stokDurumu(urun: Urun): StokDurumu {
@@ -47,4 +53,3 @@ export const VARSAYILAN_KATEGORILER = [
   "Bakliyat", "Temizlik", "Meyve & Sebze", "Diğer",
 ];
 
-export const MOCK_URUNLER: Urun[] = [];

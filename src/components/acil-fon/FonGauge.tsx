@@ -2,21 +2,22 @@
 
 import { motion } from "framer-motion";
 import { formatTL } from "@/lib/acil-fon-data";
+import type { Kurus } from "@/lib/para";
 
 interface Props {
   ad:           string;   // hedef adı veya "Tüm Hedefler"
   mevcut:       number;
-  toplamHedef:  number;
-  aylikOdeme:   number;
+  toplamHedefKurus:  number;
+  aylikOdemeKurus:   number;
 }
 
-export default function FonGauge({ ad, mevcut, toplamHedef, aylikOdeme }: Props) {
-  const hedef = toplamHedef > 0 ? toplamHedef : 1;
+export default function FonGauge({ ad, mevcut, toplamHedefKurus, aylikOdemeKurus }: Props) {
+  const hedef = toplamHedefKurus > 0 ? toplamHedefKurus : 1;
   const oran  = Math.min(mevcut / hedef, 1);
   const yuzde = Math.round(oran * 100);
-  const kalan = Math.max(toplamHedef - mevcut, 0);
+  const kalan = Math.max(toplamHedefKurus - mevcut, 0);
   const renk  = yuzde >= 75 ? "#22c55e" : yuzde >= 50 ? "#fbc024" : "#ef4444";
-  const durum = yuzde >= 75 ? "İyi Durumda" : yuzde >= 50 ? "Gelişiyor" : toplamHedef === 0 ? "Hedef Yok" : "Kritik";
+  const durum = yuzde >= 75 ? "İyi Durumda" : yuzde >= 50 ? "Gelişiyor" : toplamHedefKurus === 0 ? "Hedef Yok" : "Kritik";
 
   const R = 78, SW = 12, CX = 100, CY = 100;
   const endAngle = 180 - 180 * oran;
@@ -57,10 +58,10 @@ export default function FonGauge({ ad, mevcut, toplamHedef, aylikOdeme }: Props)
 
       <div className="w-full grid grid-cols-2 gap-3 mt-4">
         {[
-          { label: "Mevcut Birikim", value: formatTL(mevcut),                                     color: renk         },
-          { label: "Toplam Hedef",   value: toplamHedef > 0 ? formatTL(toplamHedef) : "—",         color: "#94a3b8"    },
-          { label: "Kalan",          value: toplamHedef > 0 ? formatTL(kalan) : "—",               color: kalan > 0 ? "#fbc024" : "#22c55e" },
-          { label: "Aylık Ödeme",    value: aylikOdeme > 0 ? formatTL(aylikOdeme) : "—",           color: "#94a3b8"    },
+          { label: "Mevcut Birikim", value: formatTL(mevcut),                                         color: renk         },
+          { label: "Toplam Hedef",   value: toplamHedefKurus > 0 ? formatTL(toplamHedefKurus) : "—",           color: "#94a3b8"    },
+          { label: "Kalan",          value: toplamHedefKurus > 0 ? formatTL(kalan) : "—",                 color: kalan > 0 ? "#fbc024" : "#22c55e" },
+          { label: "Aylık Ödeme",    value: aylikOdemeKurus > 0 ? formatTL(aylikOdemeKurus) : "—",             color: "#94a3b8"    },
         ].map(({ label, value, color }) => (
           <div key={label} className="bg-[rgba(255,255,255,0.04)] rounded-xl p-3">
             <p className="text-[10px] text-[#94a3b8] mb-1">{label}</p>

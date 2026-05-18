@@ -1,69 +1,88 @@
-import { MOCK_URUNLER as STOK_URUNLER } from "./stok-data";
-import { MOCK_ISLEMLER as NAKIT_ISLEMLER } from "./nakit-data";
-import { MOCK_GOREVLER } from "./gorev-data";
-import { MOCK_PROSEDURLER } from "./prosedur-data";
-import { MOCK_URUNLER as KZ_URUNLER } from "./kar-zarar-data";
+/**
+ * Uygulama geneli arama altyapısı.
+ * Mock bağımlılığı yok; store verisini dışarıdan alır.
+ */
+
+import type { Urun }     from "./stok-data";
+import type { Islem }    from "./nakit-data";
+import type { Gorev }    from "./gorev-data";
+import type { Prosedur } from "./prosedur-data";
+import type { SatisKaydi } from "@/store/satislar";
 
 export type AramaSonucTip = "stok" | "nakit" | "gorev" | "prosedur" | "urun";
 
 export interface AramaSonucu {
-  id: string;
-  tip: AramaSonucTip;
-  baslik: string;
+  id:       string;
+  tip:      AramaSonucTip;
+  baslik:   string;
   altBilgi: string;
-  href: string;
+  href:     string;
 }
 
-const TUM_SONUCLAR: AramaSonucu[] = [
-  ...STOK_URUNLER.map((u) => ({
-    id: `stok-${u.id}`,
-    tip: "stok" as const,
-    baslik: u.ad,
-    altBilgi: `Stok → ${u.kategori} · ${u.mevcutAdet} ${u.birim}`,
-    href: "/stok",
-  })),
+export interface AramaVeri {
+  stokUrunler:  Urun[];
+  nakitIslemler: Islem[];
+  gorevler:     Gorev[];
+  prosedurler:  Prosedur[];
+  satisKayitlari: SatisKaydi[];
+}
 
-  ...NAKIT_ISLEMLER.map((i) => ({
-    id: `nakit-${i.id}`,
-    tip: "nakit" as const,
-    baslik: i.aciklama || i.kategori,
-    altBilgi: `Nakit Akışı → ${i.tip === "gelir" ? "Gelir" : "Gider"} · ₺${i.tutar.toLocaleString("tr-TR")}`,
-    href: "/nakit-akisi",
-  })),
+/** Verilen store verilerinden arama indeksi oluşturur. */
+export function aramaIndeksiOlustur(veri: AramaVeri): AramaSonucu[] {
+  return [
+    ...veri.stokUrunler.map((u) => ({
+      id:       `stok-${u.id}`,
+      tip:      "stok" as const,
+      baslik:   u.ad,
+      altBilgi: `Stok → ${u.kategori} · ${u.mevcutAdet} ${u.birim}`,
+      href:     "/stok",
+    })),
 
-  ...MOCK_GOREVLER.map((g) => ({
-    id: `gorev-${g.id}`,
-    tip: "gorev" as const,
-    baslik: g.baslik,
-    altBilgi: `Görevler → ${g.sorumlu} · ${g.durum === "tamamlandi" ? "Tamamlandı" : g.durum === "devam" ? "Devam Ediyor" : "Yapılacak"}`,
-    href: "/gorevler",
-  })),
+    ...veri.nakitIslemler.slice(0, 100).map((i) => ({
+      id:       `nakit-${i.id}`,
+      tip:      "nakit" as const,
+      baslik:   i.aciklama || i.kategori,
+      altBilgi: `Nakit → ${i.tip === "gelir" ? "Gelir" : "Gider"} · ${i.tutarKurus.toLocaleString("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 })}`,
+      href:     "/nakit-akisi",
+    })),
 
-  ...MOCK_PROSEDURLER.map((p: import("./prosedur-data").Prosedur) => ({
-    id: `prosedur-${p.id}`,
-    tip: "prosedur" as const,
-    baslik: p.baslik,
-    altBilgi: `Prosedürler → ${p.kategori} · ${p.adimlar.length} adım`,
-    href: "/prosedurler",
-  })),
+    ...veri.gorevler.map((g) => ({
+      id:       `gorev-${g.id}`,
+      tip:      "gorev" as const,
+      baslik:   g.baslik,
+      altBilgi: `Görevler → ${g.sorumlu} · ${g.durum === "tamamlandi" ? "Tamamlandı" : g.durum === "devam" ? "Devam Ediyor" : "Yapılacak"}`,
+      href:     "/gorevler",
+    })),
 
-  ...KZ_URUNLER.map((u) => ({
-    id: `kz-${u.id}`,
-    tip: "urun" as const,
-    baslik: u.ad,
-    altBilgi: `Kar-Zarar → ${u.kategori} · ₺${u.satisFiyati} satış`,
-    href: "/kar-zarar",
-  })),
-];
+    ...veri.prosedurler.map((p) => ({
+      id:       `prosedur-${p.id}`,
+      tip:      "prosedur" as const,
+      baslik:   p.baslik,
+      altBilgi: `Prosedürler → ${p.kategori} · ${p.adimlar.length} adım`,
+      href:     "/prosedurler",
+    })),
 
-export function ara(sorgu: string): AramaSonucu[] {
+    ...veri.satisKayitlari.slice(0, 100).map((k) => ({
+      id:       `satis-${k.id}`,
+      tip:      "urun" as const,
+      baslik:   k.urunAd,
+      altBilgi: `Satış → ${k.kategori} · ${k.adet} adet · ${k.toplamCiroKurus.toLocaleString("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 })}`,
+      href:     "/kar-zarar",
+    })),
+  ];
+}
+
+/**
+ * Verilen indeks içinde sorgu ile eşleşen sonuçları döner.
+ * @param sorgu   Kullanıcının yazdığı metin
+ * @param indeks  aramaIndeksiOlustur() çıktısı
+ */
+export function ara(sorgu: string, indeks: AramaSonucu[]): AramaSonucu[] {
   if (!sorgu || sorgu.trim().length < 2) return [];
   const k = sorgu.toLowerCase().trim();
-  return TUM_SONUCLAR.filter(
-    (s) =>
-      s.baslik.toLowerCase().includes(k) ||
-      s.altBilgi.toLowerCase().includes(k)
-  ).slice(0, 12);
+  return indeks
+    .filter((s) => s.baslik.toLowerCase().includes(k) || s.altBilgi.toLowerCase().includes(k))
+    .slice(0, 12);
 }
 
 export const TIP_ETIKET: Record<AramaSonucTip, string> = {
@@ -71,7 +90,7 @@ export const TIP_ETIKET: Record<AramaSonucTip, string> = {
   nakit:    "Nakit Akışı",
   gorev:    "Görev",
   prosedur: "Prosedür",
-  urun:     "Ürün",
+  urun:     "Satış",
 };
 
 export const TIP_RENK: Record<AramaSonucTip, string> = {

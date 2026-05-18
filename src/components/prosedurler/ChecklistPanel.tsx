@@ -13,6 +13,8 @@ import { useGorevler } from "@/store/gorevler";
 import { useStok }     from "@/store/stok";
 import { stokDurumu }  from "@/lib/stok-data";
 import { useProsedurler, tumKategoriler, tumSorumlular } from "@/store/prosedurler";
+import { onaylaSil } from "@/lib/onay";
+import { useGeriAl } from "@/store/geriAl";
 import KomboSecici from "./KomboSecici";
 
 // ── Sekmeler: Günlük | Haftalık | Aylık | Özel ──────────────────────────
@@ -31,8 +33,8 @@ function OtomatikBadge({ tip }: { tip: OtomatikKontrol }) {
 
   let aktif = false; let label = "";
   if (tip === "nakit_negatif") {
-    const gelir = islemler.filter(i => i.tip === "gelir").reduce((s, i) => s + i.tutar, 0);
-    const gider = islemler.filter(i => i.tip === "gider").reduce((s, i) => s + i.tutar, 0);
+    const gelir = islemler.filter(i => i.tip === "gelir").reduce((s, i) => s + i.tutarKurus, 0);
+    const gider = islemler.filter(i => i.tip === "gider").reduce((s, i) => s + i.tutarKurus, 0);
     aktif = gelir - gider < 0 && islemler.length > 0;
     label = aktif ? "Negatif nakit akışı" : "Nakit akışı sağlıklı";
   } else if (tip === "kritik_stok") {
@@ -99,6 +101,17 @@ export default function ChecklistPanel() {
   const tarihFormat = (iso?: string) => iso
     ? new Date(iso).toLocaleDateString("tr-TR", { day: "2-digit", month: "short" })
     : "—";
+
+  const handleChecklistSil = async (item: { id: string; baslik: string }) => {
+    const { onaylandi } = await onaylaSil({ tip: "checklistMaddesi", isim: item.baslik });
+    if (!onaylandi) return;
+    await checklistSil(item.id);
+    useGeriAl.getState().goster({
+      mesaj: `"${item.baslik}" silindi.`,
+      sureMs: 10000,
+      geriAlFn: async () => useProsedurler.getState().checklistGeriAl(item.id),
+    });
+  };
 
   const handleEkle = () => {
     if (!yeni.baslik.trim()) return;
@@ -201,7 +214,7 @@ export default function ChecklistPanel() {
                   <p className="text-[10px] text-[#94a3b8]">{item.sorumlu}</p>
                 </div>
                 {item.otomatikKontrol && <OtomatikBadge tip={item.otomatikKontrol} />}
-                <button onClick={() => checklistSil(item.id)}
+                <button onClick={() => handleChecklistSil(item)}
                   className="w-6 h-6 flex items-center justify-center rounded text-[#64748b] hover:text-[#ef4444] transition-colors shrink-0">
                   <Trash2 className="w-3 h-3" />
                 </button>
@@ -267,7 +280,7 @@ export default function ChecklistPanel() {
                 </span>
 
                 {/* Sil */}
-                <button onClick={() => checklistSil(item.id)}
+                <button onClick={() => handleChecklistSil(item)}
                   className="w-6 h-6 flex items-center justify-center rounded text-[#475569] hover:text-[#ef4444] transition-colors shrink-0">
                   <Trash2 className="w-3 h-3" />
                 </button>

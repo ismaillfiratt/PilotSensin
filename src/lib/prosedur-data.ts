@@ -1,3 +1,5 @@
+import type { Silinebilir } from "@/lib/silinebilir";
+
 // ProsedurKategori artık string — kullanıcılar özel kategori ekleyebilir
 export type ProsedurKategori = string;
 
@@ -10,7 +12,7 @@ export type Kritiklik = "dusuk" | "orta" | "yuksek" | "kritik";
 
 export interface ProsedurAdim { sira: number; aciklama: string; }
 
-export interface Prosedur {
+export interface Prosedur extends Silinebilir {
   id: string;
   baslik: string;
   kategori: string;
@@ -20,7 +22,7 @@ export interface Prosedur {
   sonGuncelleme: string;
 }
 
-export interface ChecklistItem {
+export interface ChecklistItem extends Silinebilir {
   id: string;
   baslik: string;
   kategori: string;
@@ -260,8 +262,6 @@ export const SOP_SABLON_GRUPLARI: SabloGrubu[] = [
   },
 ];
 
-// Geriye dönük uyumluluk
-export const MOCK_PROSEDURLER: Prosedur[] = [];
 
 // ── SOP Belge Şablon tipleri ────────────────────────────────────────────
 export interface SopBelgeSablon {

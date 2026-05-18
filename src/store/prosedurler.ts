@@ -51,12 +51,18 @@ interface ProsedurStore {
   prosedurEkle:     (p: Omit<Prosedur, "id" | "sonGuncelleme">) => void;
   prosedurGuncelle: (id: string, p: Partial<Prosedur>) => void;
   prosedurSil:      (id: string) => void;
+  prosedurGeriAl:   (id: string) => void;
+  prosedurKaliciSil:(id: string) => void;
+  prosedurSilinenler:() => Prosedur[];
 
   // Checklist CRUD
   checklistEkle:    (item: Omit<ChecklistItem, "id">) => void;
   checklistToggle:  (id: string) => void;
   checklistSifirla: (sikligi: ChecklistSikligi) => void;
   checklistSil:     (id: string) => void;
+  checklistGeriAl:  (id: string) => void;
+  checklistKaliciSil:(id: string) => void;
+  checklistSilinenler:() => ChecklistItem[];
 
   // Özel kategoriler & sorumlular
   ozelKategoriEkle: (k: string) => void;
@@ -124,11 +130,27 @@ export const useProsedurler = create<ProsedurStore>()(
         if (kulId) await userStoreDB.kaydet(kulId, "prosedurler", get().prosedurler);
       },
       prosedurSil: async (id) => {
+        const { softDeletePatch } = await import("@/lib/softDelete");
+        const patch = await softDeletePatch();
+        set(s => ({ prosedurler: s.prosedurler.map(x => x.id === id ? { ...x, ...patch } : x) }));
+        yayinla(get);
+        const kulId = await getKullaniciId();
+        if (kulId) await userStoreDB.kaydet(kulId, "prosedurler", get().prosedurler);
+      },
+      prosedurGeriAl: async (id) => {
+        const { softDeleteTemizle } = await import("@/lib/softDelete");
+        set(s => ({ prosedurler: s.prosedurler.map(x => x.id === id ? { ...x, ...softDeleteTemizle() } : x) }));
+        yayinla(get);
+        const kulId = await getKullaniciId();
+        if (kulId) await userStoreDB.kaydet(kulId, "prosedurler", get().prosedurler);
+      },
+      prosedurKaliciSil: async (id) => {
         set(s => ({ prosedurler: s.prosedurler.filter(x => x.id !== id) }));
         yayinla(get);
         const kulId = await getKullaniciId();
         if (kulId) await userStoreDB.kaydet(kulId, "prosedurler", get().prosedurler);
       },
+      prosedurSilinenler: () => get().prosedurler.filter(p => p.silindi === true),
 
       checklistEkle: async (item) => {
         const yeni = { ...item, id: uid(), tamamlanmaGecmisi: [] };
@@ -163,11 +185,27 @@ export const useProsedurler = create<ProsedurStore>()(
         if (kulId) await userStoreDB.kaydet(kulId, "checklist_items", get().checklist);
       },
       checklistSil: async (id) => {
+        const { softDeletePatch } = await import("@/lib/softDelete");
+        const patch = await softDeletePatch();
+        set(s => ({ checklist: s.checklist.map(x => x.id === id ? { ...x, ...patch } : x) }));
+        yayinla(get);
+        const kulId = await getKullaniciId();
+        if (kulId) await userStoreDB.kaydet(kulId, "checklist_items", get().checklist);
+      },
+      checklistGeriAl: async (id) => {
+        const { softDeleteTemizle } = await import("@/lib/softDelete");
+        set(s => ({ checklist: s.checklist.map(x => x.id === id ? { ...x, ...softDeleteTemizle() } : x) }));
+        yayinla(get);
+        const kulId = await getKullaniciId();
+        if (kulId) await userStoreDB.kaydet(kulId, "checklist_items", get().checklist);
+      },
+      checklistKaliciSil: async (id) => {
         set(s => ({ checklist: s.checklist.filter(x => x.id !== id) }));
         yayinla(get);
         const kulId = await getKullaniciId();
         if (kulId) await userStoreDB.kaydet(kulId, "checklist_items", get().checklist);
       },
+      checklistSilinenler: () => get().checklist.filter(c => c.silindi === true),
 
       ozelKategoriEkle: (k) => {
         const k2 = k.trim();
@@ -249,7 +287,11 @@ export const useProsedurler = create<ProsedurStore>()(
         }));
       },
 
-      syncFromRemote: (data) => set(data),
+      syncFromRemote: (data) => set((s) => ({
+        ...s,
+        prosedurler: data.prosedurler,
+        checklist:   data.checklist,
+      })),
     }),
     { name: "pilot-prosedurler" }
   )

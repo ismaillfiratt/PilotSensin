@@ -3,11 +3,13 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Plus, Pencil, Trash2, AlertTriangle, Search,
+  Plus, Pencil, Trash2, Search,
   ChevronDown, ChevronRight, Clock, User, List,
 } from "lucide-react";
 import { getKategoriRenk, prosedurDurumu, type Prosedur } from "@/lib/prosedur-data";
 import { useProsedurler } from "@/store/prosedurler";
+import { onaylaSil } from "@/lib/onay";
+import { useGeriAl } from "@/store/geriAl";
 import ProsedurModal from "./ProsedurModal";
 
 export default function ProsedurListesi() {
@@ -16,14 +18,26 @@ export default function ProsedurListesi() {
   const [acik,      setAcik]      = useState<string | null>(null);
   const [modalAcik, setModalAcik] = useState(false);
   const [duzenle,   setDuzenle]   = useState<Prosedur | null>(null);
-  const [silOnayi,  setSilOnayi]  = useState<Prosedur | null>(null);
 
   const filtrelenmis = useMemo(() =>
     prosedurler.filter(p =>
-      arama === "" ||
-      p.baslik.toLowerCase().includes(arama.toLowerCase()) ||
-      p.kategori.toLowerCase().includes(arama.toLowerCase())
+      !p.silindi && (
+        arama === "" ||
+        p.baslik.toLowerCase().includes(arama.toLowerCase()) ||
+        p.kategori.toLowerCase().includes(arama.toLowerCase())
+      )
     ), [prosedurler, arama]);
+
+  const handleProsedurSil = async (p: Prosedur) => {
+    const { onaylandi } = await onaylaSil({ tip: "prosedur", isim: p.baslik });
+    if (!onaylandi) return;
+    await prosedurSil(p.id);
+    useGeriAl.getState().goster({
+      mesaj: `"${p.baslik}" silindi.`,
+      sureMs: 10000,
+      geriAlFn: async () => useProsedurler.getState().prosedurGeriAl(p.id),
+    });
+  };
 
   const handleKaydet = (form: Omit<Prosedur, "id" | "sonGuncelleme">) => {
     if (duzenle) { prosedurGuncelle(duzenle.id, form); setDuzenle(null); }
@@ -110,7 +124,7 @@ export default function ProsedurListesi() {
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        onClick={() => setSilOnayi(p)}
+                        onClick={() => handleProsedurSil(p)}
                         title="Sil"
                         className="w-7 h-7 flex items-center justify-center rounded-lg text-[#475569] border border-[rgba(255,255,255,0.06)] hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] hover:bg-[rgba(239,68,68,0.06)] transition-all"
                       >
@@ -201,46 +215,6 @@ export default function ProsedurListesi() {
         onKaydet={handleKaydet}
       />
 
-      {/* Silme onayı */}
-      <AnimatePresence>
-        {silOnayi && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={e => e.target === e.currentTarget && setSilOnayi(null)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 16 }}
-              transition={{ duration: 0.18 }}
-              className="w-full max-w-sm glass-card rounded-2xl p-6"
-            >
-              <div className="w-12 h-12 rounded-xl bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.25)] flex items-center justify-center mb-4">
-                <AlertTriangle className="w-6 h-6 text-[#ef4444]" />
-              </div>
-              <h3 className="text-base font-bold text-white mb-1">Prosedürü Sil</h3>
-              <p className="text-sm text-[#94a3b8] mb-6">
-                <span className="text-white font-semibold">{silOnayi.baslik}</span> prosedürünü kalıcı olarak silmek istiyor musunuz?
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setSilOnayi(null)}
-                  className="flex-1 py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors"
-                >
-                  İptal
-                </button>
-                <button
-                  onClick={() => { prosedurSil(silOnayi.id); setSilOnayi(null); }}
-                  className="flex-1 py-2.5 rounded-xl bg-[#ef4444] text-white text-sm font-bold hover:bg-[#dc2626] transition-colors"
-                >
-                  Evet, Sil
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

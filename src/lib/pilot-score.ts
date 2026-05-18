@@ -3,6 +3,8 @@ import type { Gorev }                from "./gorev-data";
 import type { Urun }                 from "./stok-data";
 import type { Prosedur, ChecklistItem } from "./prosedur-data";
 import type { FonIslem, FonHedef }  from "./acil-fon-data";
+import type { SatisKaydi }          from "@/store/satislar";
+import type { GiderItem }           from "@/lib/db";
 import { stokDurumu }                from "./stok-data";
 import { mevcutBirikim }             from "./acil-fon-data";
 import { uyumSkoru, isDue }          from "./prosedur-data";
@@ -23,8 +25,8 @@ export function nakitSkoru(islemler: Islem[]): ModulSkoru {
   if (islemler.length === 0)
     return { baslik: "Nakit Akışı", skor: 100, durum: "ok", metrik: "₺0", metrikLabel: "İşlem eklenmedi", uyariSayisi: 0 };
 
-  const gelir = islemler.filter((i) => i.tip === "gelir").reduce((s, i) => s + i.tutar, 0);
-  const gider = islemler.filter((i) => i.tip === "gider").reduce((s, i) => s + i.tutar, 0);
+  const gelir = islemler.filter((i) => i.tip === "gelir").reduce((s, i) => s + i.tutarKurus, 0);
+  const gider = islemler.filter((i) => i.tip === "gider").reduce((s, i) => s + i.tutarKurus, 0);
   const net   = gelir - gider;
   let skor = 50;
   if (gelir > 0) skor = Math.round(Math.min(100, Math.max(0, 50 + (net / gelir) * 50)));
@@ -112,17 +114,51 @@ export function acilFonSkoru(islemler: FonIslem[], hedefler: FonHedef[]): ModulS
   if (islemler.length === 0)
     return { baslik: "Acil Durum Fonu", skor: 0, durum: "critical", metrik: "₺0", metrikLabel: "Birikim eklenmedi", uyariSayisi: 1 };
 
-  const toplamHedef = hedefler.reduce((s, h) => s + h.toplamHedef, 0);
+  const toplamHedefKurus = hedefler.reduce((s, h) => s + h.toplamHedefKurus, 0);
   const mevcut = mevcutBirikim(islemler);
-  const oran   = toplamHedef > 0 ? Math.min(1, mevcut / toplamHedef) : 0;
+  const oran   = toplamHedefKurus > 0 ? Math.min(1, mevcut / toplamHedefKurus) : 0;
   const skor   = Math.round(oran * 100);
   return {
     baslik:      "Acil Durum Fonu",
     skor,
     durum:       skor >= 80 ? "ok" : skor >= 40 ? "warning" : "critical",
     metrik:      fmt(mevcut),
-    metrikLabel: `Toplam hedef: ${fmt(toplamHedef)}`,
+    metrikLabel: `Toplam hedef: ${fmt(toplamHedefKurus)}`,
     uyariSayisi: skor < 40 ? 1 : 0,
+  };
+}
+
+/* ── Kâr-Zarar ── */
+export function karZararSkoru(kayitlar: SatisKaydi[], giderler: GiderItem[]): ModulSkoru {
+  const simdi  = new Date();
+  const ayBasi = new Date(simdi.getFullYear(), simdi.getMonth(), 1);
+
+  const buAy = kayitlar.filter((k) => !k.iadeEdildi && new Date(k.tarih) >= ayBasi);
+
+  if (buAy.length === 0 && giderler.length === 0)
+    return { baslik: "Kâr-Zarar", skor: 100, durum: "ok", metrik: "—", metrikLabel: "Veri girilmedi", uyariSayisi: 0 };
+
+  const ciro        = buAy.reduce((t, k) => t + k.toplamCiroKurus, 0);
+  const smm         = buAy.reduce((t, k) => t + k.birimAlisFiyatiKurus * k.adet, 0);
+  const brutKarKurus     = ciro - smm;
+  const toplamGider = giderler.reduce((t, g) => t + g.tutarKurus, 0);
+  const netKar      = brutKarKurus - toplamGider;
+  const netMarj     = ciro > 0 ? netKar / ciro : 0;
+
+  // Skor: %25 marj = 100 puan, 0% = 50, negatif = 0–50 arası
+  const skor = ciro === 0
+    ? (netKar >= 0 ? 50 : 20)
+    : Math.round(Math.min(100, Math.max(0, 50 + netMarj * 200)));
+
+  return {
+    baslik:      "Kâr-Zarar",
+    skor,
+    durum:       skor >= 70 ? "ok" : skor >= 40 ? "warning" : "critical",
+    metrik:      fmt(netKar),
+    metrikLabel: ciro > 0
+      ? `%${(netMarj * 100).toFixed(1)} net marj`
+      : netKar < 0 ? "Zarar" : "Veri az",
+    uyariSayisi: netKar < 0 ? 2 : netMarj < 0.05 ? 1 : 0,
   };
 }
 
@@ -130,11 +166,12 @@ export function acilFonSkoru(islemler: FonIslem[], hedefler: FonHedef[]): ModulS
 export function pilotSkoru(modüller: ModulSkoru[]): number {
   if (modüller.length === 0) return 100;
   const agirliklar: Record<string, number> = {
-    "Nakit Akışı":     0.30,
-    "Görevler":        0.20,
-    "Stok Yönetimi":   0.20,
-    "Prosedürler":     0.15,
-    "Acil Durum Fonu": 0.15,
+    "Nakit Akışı":     0.25,
+    "Kâr-Zarar":       0.25,
+    "Görevler":        0.15,
+    "Stok Yönetimi":   0.15,
+    "Prosedürler":     0.10,
+    "Acil Durum Fonu": 0.10,
   };
   let toplam = 0; let agirlik = 0;
   modüller.forEach((m) => {

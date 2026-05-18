@@ -11,21 +11,26 @@ import type { Bildirim }       from "@/store/bildirimler";
 import type { Prosedur, ChecklistItem } from "./prosedur-data";
 import type { FonIslem, FonHedef }      from "./acil-fon-data";
 import type { IsletmeGideri }           from "./kar-zarar-data";
+import type { PlanlananKalem, TekrarlayanKayit } from "@/store/nakitAkis";
+import type { SatisKaydi }              from "@/store/satislar";
 
 const sb = () => createClient();
 
-function kontrol(hata: unknown, islem: string) {
-  if (hata) {
-    const err = hata as { message?: string; code?: string; details?: string };
-    const mesaj = err.message ?? String(hata);
-    console.error(`[DB Hatası] ${islem}:`, mesaj, { code: err.code, details: err.details });
-    if (typeof window !== "undefined") {
-      window.__dbHata = `[${islem}] ${mesaj}${err.code ? ` (${err.code})` : ""}`;
-    }
+async function kontrol(hata: unknown, islem: string) {
+  if (!hata) return;
+  const err   = hata as { message?: string; code?: string; details?: string };
+  const mesaj = err.message ?? String(hata);
+  console.error(`[DB Hatası] ${islem}:`, mesaj, { code: err.code, details: err.details });
+
+  // Kullanıcıya bildirim gönder (lazy import — döngüsel bağımlılığı önler)
+  try {
+    const { sistemHatasiBildirim } = await import("@/lib/bildirimler/anlik");
+    const { useBildirimler }       = await import("@/store/bildirimler");
+    await useBildirimler.getState().ekle(sistemHatasiBildirim(islem, mesaj));
+  } catch {
+    // bildirim store'u henüz hazır değilse sessizce geç
   }
 }
-
-declare global { interface Window { __dbHata?: string } }
 
 export type GiderItem = IsletmeGideri & { id: string };
 
@@ -39,6 +44,9 @@ export interface UserStoreData {
   acil_fon_hedefler: FonHedef[];
   acil_fon_islemler: FonIslem[];
   isletme_giderleri: GiderItem[];
+  nakit_planlanan:   PlanlananKalem[];
+  nakit_tekrarlayan: TekrarlayanKayit[];
+  satislar:          SatisKaydi[];
 }
 
 const BOŞ: UserStoreData = {
@@ -51,6 +59,9 @@ const BOŞ: UserStoreData = {
   acil_fon_hedefler: [],
   acil_fon_islemler: [],
   isletme_giderleri: [],
+  nakit_planlanan:   [],
+  nakit_tekrarlayan: [],
+  satislar:          [],
 };
 
 /* ─── Şirket veri deposu ─── */
@@ -76,6 +87,9 @@ export const userStoreDB = {
         acil_fon_hedefler: cs.acil_fon_hedefler ?? [],
         acil_fon_islemler: cs.acil_fon_islemler ?? [],
         isletme_giderleri: cs.isletme_giderleri ?? [],
+        nakit_planlanan:   cs.nakit_planlanan   ?? [],
+        nakit_tekrarlayan: cs.nakit_tekrarlayan ?? [],
+        satislar:          cs.satislar          ?? [],
       };
     }
 
@@ -96,6 +110,9 @@ export const userStoreDB = {
       acil_fon_hedefler: us.acil_fon_hedefler ?? [],
       acil_fon_islemler: us.acil_fon_islemler ?? [],
       isletme_giderleri: us.isletme_giderleri ?? [],
+      nakit_planlanan:   us.nakit_planlanan   ?? [],
+      nakit_tekrarlayan: us.nakit_tekrarlayan ?? [],
+      satislar:          us.satislar          ?? [],
     };
   },
 
@@ -135,6 +152,26 @@ export const userStoreDB = {
   },
 };
 
+/**
+ * Store'lar için kısa yardımcı — uid alma + kaydetme + hata yakalama.
+ * Tüm store kaydet fonksiyonları bunu kullanır.
+ *
+ * @example await storeKaydet("nakit_islemler", islemler);
+ */
+export async function storeKaydet<K extends keyof UserStoreData>(
+  alan: K,
+  veri: UserStoreData[K],
+): Promise<void> {
+  const { getKullaniciId } = await import("./auth");
+  const uid = await getKullaniciId();
+  if (!uid) return;
+  try {
+    await userStoreDB.kaydet(uid, alan, veri);
+  } catch (e) {
+    console.error(`[Store] ${alan} kayıt hatası:`, e);
+  }
+}
+
 /* ─── Şirket yönetimi ─── */
 
 export const sirketDB = {
@@ -171,7 +208,10 @@ export const sirketDB = {
         acil_fon_hedefler: us.acil_fon_hedefler ?? [],
         acil_fon_islemler: us.acil_fon_islemler ?? [],
         isletme_giderleri: us.isletme_giderleri ?? [],
-      }, { onConflict: "company_id" });
+        nakit_planlanan:   us.nakit_planlanan   ?? [],
+        nakit_tekrarlayan: us.nakit_tekrarlayan ?? [],
+        satislar:          us.satislar          ?? [],
+        }, { onConflict: "company_id" });
     }
 
     return company.id;

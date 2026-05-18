@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { kategoriDagilimi, formatTL, type IslemTipi } from "@/lib/nakit-data";
+import type { Kurus } from "@/lib/para";
 import { useNakit } from "@/store/nakit";
 
 const RENKLER_GELIR = ["#22c55e", "#4ade80", "#86efac", "#bbf7d0", "#dcfce7"];
@@ -49,24 +50,27 @@ export default function KategoriGrafik() {
       </div>
 
       {/* Pasta grafik */}
-      <ResponsiveContainer width="100%" height={160}>
-        <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius={45}
-            outerRadius={72}
-            paddingAngle={2}
-            dataKey="value"
-          >
-            {data.map((_, i) => (
-              <Cell key={i} fill={renkler[i % renkler.length]} />
-            ))}
-          </Pie>
-          <Tooltip content={<CustomTooltip />} />
-        </PieChart>
-      </ResponsiveContainer>
+      <div className="h-[160px] md:h-[180px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={45}
+              outerRadius={70}
+              paddingAngle={2}
+              dataKey="value"
+              labelLine={false}
+            >
+              {data.map((_, i) => (
+                <Cell key={i} fill={renkler[i % renkler.length]} />
+              ))}
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
 
       {/* Kategori listesi */}
       <div className="space-y-2 mt-2">

@@ -71,26 +71,32 @@ export default function GorevModal({ open, onClose, gorev, varsayilanDurum, onKa
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        onClick={(e) => e.target === e.currentTarget && onClose()}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+        onClick={onClose}
+      />
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 40 }}
+        drag="y" dragConstraints={{ top: 0 }} dragElastic={{ top: 0, bottom: 0.3 }}
+        onDragEnd={(_, info) => { if (info.velocity.y > 300 || info.offset.y > 120) onClose(); }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+        className="fixed z-50 bg-[#0e172a] glass-card bottom-0 inset-x-0 rounded-t-2xl border-t border-white/10 max-h-[92vh] overflow-y-auto md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-md md:w-full"
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ duration: 0.2 }}
-          className="w-full max-w-md glass-card rounded-2xl p-6 max-h-[90vh] overflow-y-auto"
-        >
-          <div className="flex items-start justify-between mb-6">
-            <h2 className="text-lg font-bold text-white">
-              {duzenlemeModu ? "Görevi Düzenle" : "Yeni Görev"}
-            </h2>
-            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+        <div className="md:hidden flex justify-center pt-3 pb-1">
+          <div className="w-12 h-1 rounded-full bg-white/20" />
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex items-start justify-between px-6 pt-4 pb-2 md:pt-6 md:pb-0">
+          <h2 className="text-lg font-bold text-white">
+            {duzenlemeModu ? "Görevi Düzenle" : "Yeni Görev"}
+          </h2>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <form id="gorev-modal-form" onSubmit={handleSubmit} className="space-y-4 px-6 pt-4 pb-2">
             <div>
               <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Görev Başlığı *</label>
               <input required value={form.baslik} onChange={(e) => set("baslik", e.target.value)}
@@ -125,7 +131,7 @@ export default function GorevModal({ open, onClose, gorev, varsayilanDurum, onKa
               <div>
                 <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Son Tarih *</label>
                 <input type="date" required value={form.sonTarih} onChange={(e) => set("sonTarih", e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm [color-scheme:dark]" />
+                  className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm scheme-dark" />
               </div>
             </div>
 
@@ -197,18 +203,20 @@ export default function GorevModal({ open, onClose, gorev, varsayilanDurum, onKa
               </div>
             </div>
 
-            <div className="flex gap-3 pt-2">
-              <button type="button" onClick={onClose}
-                className="flex-1 py-3 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
-                İptal
-              </button>
-              <button type="submit"
-                className="flex-1 py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
-                {duzenlemeModu ? "Kaydet" : "Oluştur"}
-              </button>
-            </div>
-          </form>
-        </motion.div>
+        </form>
+        <div className="sticky bottom-0 bg-[#0e172a] px-6 pt-3 pb-4 border-t border-white/10 md:relative md:border-0 md:pt-2"
+          style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 16px)" }}>
+          <div className="flex gap-3">
+            <button type="button" onClick={onClose}
+              className="flex-1 min-h-12 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+              İptal
+            </button>
+            <button type="submit" form="gorev-modal-form"
+              className="flex-1 min-h-12 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+              {duzenlemeModu ? "Kaydet" : "Oluştur"}
+            </button>
+          </div>
+        </div>
       </motion.div>
     </AnimatePresence>
   );

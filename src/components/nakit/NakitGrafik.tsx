@@ -7,6 +7,7 @@ import {
 } from "recharts";
 import { BarChart2, TrendingUp, CalendarRange, X } from "lucide-react";
 import { saatlikOzet, haftalikOzet, aylikOzet, ozelAralikOzet, formatTL } from "@/lib/nakit-data";
+import type { Kurus } from "@/lib/para";
 import { useNakit } from "@/store/nakit";
 
 type Periyot  = "gunluk" | "haftalik" | "aylik" | "ozel";
@@ -167,12 +168,13 @@ export default function NakitGrafik() {
       )}
 
       {/* Grafik */}
-      <ResponsiveContainer width="100%" height={240}>
+      <div className="h-[220px] md:h-[300px]">
+      <ResponsiveContainer width="100%" height="100%">
         {grafikTip === "bar" ? (
           <ComposedChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
             <XAxis dataKey="etiket" tick={{ fill: "#94a3b8", fontSize: tickFontSize }} axisLine={false} tickLine={false} interval={tickInterval} />
-            <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₺${(v / 1000).toFixed(0)}K`} width={44} />
+            <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₺${(v / 100000).toFixed(0)}K`} width={44} />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
             <Legend wrapperStyle={{ fontSize: 11, color: "#94a3b8", paddingTop: 10 }} formatter={legendFormatter} />
             <Bar dataKey="gelir" name="Gelir" fill="rgba(34,197,94,0.75)"  radius={[4,4,0,0]} maxBarSize={maxBarSize} />
@@ -197,7 +199,7 @@ export default function NakitGrafik() {
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
             <XAxis dataKey="etiket" tick={{ fill: "#94a3b8", fontSize: tickFontSize }} axisLine={false} tickLine={false} interval={tickInterval} />
-            <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₺${(v / 1000).toFixed(0)}K`} width={44} />
+            <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₺${(v / 100000).toFixed(0)}K`} width={44} />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ fontSize: 11, color: "#94a3b8", paddingTop: 10 }} formatter={legendFormatter} />
             <Area type="monotone" dataKey="gelir" name="Gelir" stroke="#22c55e" strokeWidth={2} fill="url(#gelirGrad)" dot={false} activeDot={{ r: 4 }} />
@@ -206,6 +208,7 @@ export default function NakitGrafik() {
           </AreaChart>
         )}
       </ResponsiveContainer>
+      </div>
     </div>
   );
 }

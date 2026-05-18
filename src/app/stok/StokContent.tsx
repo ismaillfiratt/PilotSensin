@@ -1,8 +1,10 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import StokOzet from "@/components/stok/StokOzet";
-import StokTablosu from "@/components/stok/StokTablosu";
+import StokOzet          from "@/components/stok/StokOzet";
+import StokTablosu       from "@/components/stok/StokTablosu";
+import StokDegerTablosu  from "@/components/stok/StokDegerTablosu";
+import KdvYonetimBolumu  from "@/components/stok/KdvYonetimBolumu";
 
 export default function StokContent() {
   const params     = useSearchParams();
@@ -10,17 +12,17 @@ export default function StokContent() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Stok Yönetimi</h1>
-          <p className="text-sm text-[#94a3b8] mt-1">
-            Ürün envanterini takip et, kritik seviyeleri yönet
-          </p>
-        </div>
+      <div>
+        <h1 className="text-xl md:text-2xl font-bold text-white">Stok Yönetimi</h1>
+        <p className="text-xs md:text-sm text-[#94a3b8] mt-1">
+          Ürün envanterini takip et, kritik seviyeleri yönet
+        </p>
       </div>
 
       <StokOzet />
       <StokTablosu otomatikAcilModal={modalParam === "urun-ekle"} />
+      <StokDegerTablosu />
+      <KdvYonetimBolumu />
     </div>
   );
 }

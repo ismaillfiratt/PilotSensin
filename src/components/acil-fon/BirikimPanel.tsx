@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { Calendar } from "lucide-react";
 import { aylikGrafikAralik, formatTL } from "@/lib/acil-fon-data";
+import type { Kurus } from "@/lib/para";
 import { useAcilFon } from "@/store/acilFon";
 
 type Aralik = "1" | "3" | "6" | "ozel";
@@ -110,8 +111,8 @@ export default function BirikimPanel() {
     });
   }, [islemler, gBas, gSayisi, filtreId]);
 
-  const totalYatirma = grafikIslemler.filter(i => i.tip === "yatirma").reduce((s, i) => s + i.tutar, 0);
-  const totalCekme   = grafikIslemler.filter(i => i.tip === "cekme").reduce((s, i) => s + i.tutar, 0);
+  const totalYatirma = grafikIslemler.filter(i => i.tip === "yatirma").reduce((s, i) => s + i.tutarKurus, 0);
+  const totalCekme   = grafikIslemler.filter(i => i.tip === "cekme").reduce((s, i) => s + i.tutarKurus, 0);
   const pieData = [
     { name: "Yatırılan", value: totalYatirma, color: "#22c55e" },
     { name: "Çekilen",   value: totalCekme,   color: "#ef4444" },

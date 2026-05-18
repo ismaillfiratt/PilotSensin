@@ -79,15 +79,20 @@ export default function ProsedurModal({ open, onClose, prosedur, onKaydet }: Pro
   const kRenk = getKategoriRenk(kategori);
 
   return (
-    <AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        onClick={e => e.target === e.currentTarget && onClose()}>
-        <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }} transition={{ duration: 0.2 }}
-          className="w-full max-w-lg glass-card rounded-2xl p-6 max-h-[90vh] overflow-y-auto">
+    <>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+        onClick={onClose} />
+      <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
+        drag="y" dragConstraints={{ top: 0 }} dragElastic={{ top: 0, bottom: 0.3 }}
+        onDragEnd={(_, info) => { if (info.velocity.y > 300 || info.offset.y > 120) onClose(); }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+        className="fixed z-50 bg-[#0e172a] bottom-0 inset-x-0 rounded-t-2xl border-t border-white/10 max-h-[90vh] overflow-y-auto md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-lg md:w-full">
+        <div className="md:hidden flex justify-center pt-3 pb-1">
+          <div className="w-12 h-1 rounded-full bg-white/20" />
+        </div>
 
-          <div className="flex items-start justify-between mb-6">
+          <div className="flex items-start justify-between px-5 pt-4 pb-2">
             <div>
               <h2 className="text-lg font-bold text-white">{prosedur ? "Prosedürü Düzenle" : "Yeni Prosedür"}</h2>
               <p className="text-xs text-[#94a3b8] mt-0.5">Adım adım talimat belgesi</p>
@@ -97,7 +102,7 @@ export default function ProsedurModal({ open, onClose, prosedur, onKaydet }: Pro
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form id="prosedur-form" onSubmit={handleSubmit} className="px-5 pb-3 space-y-4">
             <div>
               <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Prosedür Başlığı *</label>
               <input required value={baslik} onChange={e => setBaslik(e.target.value)}
@@ -170,19 +175,22 @@ export default function ProsedurModal({ open, onClose, prosedur, onKaydet }: Pro
               </div>
             )}
 
-            <div className="flex gap-3 pt-2">
+          </form>
+          {/* Sticky footer */}
+          <div className="sticky bottom-0 bg-[#0e172a] px-5 pt-3 border-t border-white/10"
+            style={{ paddingBottom: "max(env(safe-area-inset-bottom), 16px)" }}>
+            <div className="flex gap-3">
               <button type="button" onClick={onClose}
-                className="flex-1 py-3 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                className="flex-1 min-h-12 rounded-xl border border-white/10 text-[#94a3b8] text-sm font-medium active:bg-white/5 transition-colors">
                 İptal
               </button>
-              <button type="submit"
-                className="flex-1 py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+              <button form="prosedur-form" type="submit"
+                className="flex-1 min-h-12 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold active:bg-[#d9a61f] transition-colors">
                 {prosedur ? "Kaydet" : "Oluştur"}
               </button>
             </div>
-          </form>
-        </motion.div>
+          </div>
       </motion.div>
-    </AnimatePresence>
+    </>
   );
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Banknote, ArrowUpFromLine } from "lucide-react";
 import { type FonIslem, type IslemTipi } from "@/lib/acil-fon-data";
+import { kurus } from "@/lib/para";
 import { useAcilFon } from "@/store/acilFon";
 
 interface Props {
@@ -33,7 +34,7 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
   useEffect(() => {
     if (open) {
       setTip(mevcutIslem?.tip ?? "yatirma");
-      setTutar(mevcutIslem?.tutar ? fmt(mevcutIslem.tutar) : "");
+      setTutar(mevcutIslem?.tutarKurus ? fmt(Math.round(mevcutIslem.tutarKurus / 100)) : "");
       setAcikl(mevcutIslem?.aciklama ?? "");
       setTarih(mevcutIslem ? localDateStr(mevcutIslem.tarih) : localDateStr());
       setHedefId(mevcutIslem?.hedefId ?? defaultHedefId ?? hedefler[0]?.id ?? undefined);
@@ -50,36 +51,39 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
     const tutarVal = parse(tutar);
     if (tutarVal <= 0) return;
     const [y, m, d] = tarih.split("-").map(Number);
-    onKaydet({ tip, tutar: tutarVal, aciklama, tarih: new Date(y, m - 1, d, 12).toISOString(), hedefId });
+    onKaydet({ tip, tutarKurus: kurus(tutarVal), aciklama, tarih: new Date(y, m - 1, d, 12).toISOString(), hedefId });
     onClose();
   };
 
   if (!open) return null;
 
   return (
-    <AnimatePresence>
+    <>
       <motion.div
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        onClick={(e) => e.target === e.currentTarget && onClose()}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+        onClick={onClose}
+      />
+      <motion.div
+        initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
+        drag="y" dragConstraints={{ top: 0 }} dragElastic={{ top: 0, bottom: 0.3 }}
+        onDragEnd={(_, info) => { if (info.velocity.y > 300 || info.offset.y > 120) onClose(); }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+        className="fixed z-50 bg-[#0e172a] bottom-0 inset-x-0 rounded-t-2xl border-t border-white/10 max-h-[90vh] overflow-y-auto md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-sm md:w-full"
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ duration: 0.2 }}
-          className="w-full max-w-sm glass-card rounded-2xl p-6"
-        >
-          <div className="flex items-start justify-between mb-6">
-            <h2 className="text-lg font-bold text-white">
+        <div className="md:hidden flex justify-center pt-3 pb-1">
+          <div className="w-12 h-1 rounded-full bg-white/20" />
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="px-5 pt-4 pb-1 flex items-start justify-between">
+            <h2 className="text-base font-bold text-white">
               {mevcutIslem ? "Hareketi Düzenle" : "Fon Hareketi"}
             </h2>
-            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors">
+            <button type="button" onClick={onClose} className="min-w-11 min-h-11 flex items-center justify-center rounded-xl text-[#94a3b8] active:bg-white/5 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="px-5 pb-3 space-y-4">
             {/* Hedef seçimi — birden fazla hedef varsa */}
             {hedefler.length > 0 && (
               <div>
@@ -141,19 +145,23 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
                 className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm" />
             </div>
 
-            <div className="flex gap-3 pt-2">
+          </div>
+          {/* Sticky footer */}
+          <div className="sticky bottom-0 bg-[#0e172a] px-5 pt-3 border-t border-white/10"
+            style={{ paddingBottom: "max(env(safe-area-inset-bottom), 16px)" }}>
+            <div className="flex gap-3">
               <button type="button" onClick={onClose}
-                className="flex-1 py-3 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                className="flex-1 min-h-12 rounded-xl border border-white/10 text-[#94a3b8] text-sm font-medium active:bg-white/5 transition-colors">
                 İptal
               </button>
               <button type="submit"
-                className="flex-1 py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+                className="flex-1 min-h-12 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold active:bg-[#d9a61f] transition-colors">
                 {mevcutIslem ? "Güncelle" : "Kaydet"}
               </button>
             </div>
-          </form>
-        </motion.div>
+          </div>
+        </form>
       </motion.div>
-    </AnimatePresence>
+    </>
   );
 }

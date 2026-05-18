@@ -11,10 +11,10 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // Profil kaydı — DB trigger zaten yapıyor; bu fallback/güncelleme içindir
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
+          // Profil upsert (fallback/güncelleme)
           await supabase.from("profiles").upsert(
             {
               id:         user.id,
@@ -25,6 +25,17 @@ export async function GET(request: Request) {
             },
             { onConflict: "id" }
           );
+
+          // system_admin ise /admin'e yönlendir
+          const { data: profil } = await supabase
+            .from("profiles")
+            .select("system_admin")
+            .eq("id", user.id)
+            .maybeSingle();
+
+          if (profil?.system_admin) {
+            return NextResponse.redirect(`${origin}/admin`);
+          }
         }
       } catch {
         // Profil hatası kritik değil; dashboard'a devam et

@@ -10,6 +10,7 @@ import {
 import { createClient } from "@/utils/supabase/client";
 import { useSirket } from "@/store/sirket";
 import { MODULLER, bosPermissions, COPILOT_PERMISSIONS, type Permissions } from "@/lib/permissions";
+import { onaylaSil } from "@/lib/onay";
 
 interface Rol {
   id:          string;
@@ -131,11 +132,17 @@ export default function EkipPage() {
   };
 
   const uyeSil = async (id: string) => {
+    const uye = uyeler.find(u => u.id === id);
+    const { onaylandi } = await onaylaSil({ tip: "ekipUye", isim: uye?.full_name ?? uye?.email ?? "Üye" });
+    if (!onaylandi) return;
     await createClient().from("company_members").delete().eq("id", id);
     await yukle();
   };
 
   const davetSil = async (id: string) => {
+    const davet = davetler.find(d => d.id === id);
+    const { onaylandi } = await onaylaSil({ tip: "davet", isim: davet?.email ?? "Davet" });
+    if (!onaylandi) return;
     await createClient().from("invitations").delete().eq("id", id);
     await yukle();
   };
@@ -164,6 +171,9 @@ export default function EkipPage() {
   };
 
   const rolSil = async (id: string) => {
+    const rol = roller.find(r => r.id === id);
+    const { onaylandi } = await onaylaSil({ tip: "ekipUye", isim: `${rol?.name ?? "Rol"} rolü` });
+    if (!onaylandi) return;
     await createClient().from("company_roles").delete().eq("id", id);
     await yukle();
   };
@@ -180,7 +190,7 @@ export default function EkipPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Başlık */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-[rgba(251,192,36,0.12)] border border-[rgba(251,192,36,0.25)] flex items-center justify-center">
             <Users className="w-5 h-5 text-[#fbc024]" />
@@ -195,7 +205,7 @@ export default function EkipPage() {
         <div className="flex rounded-xl overflow-hidden border border-[rgba(255,255,255,0.08)]">
           {(["uyeler", "roller"] as const).map((s) => (
             <button key={s} onClick={() => setSekme(s)}
-              className="px-4 py-2 text-sm font-medium transition-colors"
+              className="px-4 py-2.5 min-h-11 text-sm font-medium transition-colors"
               style={sekme === s
                 ? { background: "rgba(251,192,36,0.15)", color: "#fbc024" }
                 : { background: "transparent", color: "#94a3b8" }

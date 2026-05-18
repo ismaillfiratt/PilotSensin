@@ -13,8 +13,8 @@ export default function ProsedurlerPage() {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Standart Operasyon Prosedürleri</h1>
-        <p className="text-sm text-[#94a3b8] mt-1">
+        <h1 className="text-xl md:text-2xl font-bold text-white">Standart Operasyon Prosedürleri</h1>
+        <p className="text-xs md:text-sm text-[#94a3b8] mt-1">
           SOP belgeleri · kontrol listeleri · hazır şablonlar
         </p>
       </div>

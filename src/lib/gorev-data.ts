@@ -1,9 +1,10 @@
 import { trGunFarki, trGoster } from "./tarih";
+import type { Silinebilir } from "@/lib/silinebilir";
 
 export type GorevDurumu  = "yapilacak" | "devam" | "tamamlandi";
 export type Oncelik      = "acil" | "yuksek" | "normal" | "dusuk";
 
-export interface Gorev {
+export interface Gorev extends Silinebilir {
   id: string;
   baslik: string;
   aciklama: string;
@@ -16,26 +17,6 @@ export interface Gorev {
   devamaTarihi?:    string; // devam ediyor'a alındığı an
 }
 
-function tarih(gunFark: number) {
-  return new Date(Date.now() + gunFark * 86400000).toISOString();
-}
-
-export const MOCK_GOREVLER: Gorev[] = [
-  // Yapılacak
-  { id: "g1",  baslik: "Haftalık tedarikçi siparişi ver",      aciklama: "Süt ve süt ürünleri için sipariş ver",               sorumlu: "İsmail",  sonTarih: tarih(1),   oncelik: "acil",   durum: "yapilacak",   olusturmaTarih: tarih(-3)  },
-  { id: "g2",  baslik: "Fatura ödemelerini kontrol et",         aciklama: "Elektrik ve doğalgaz faturalarını öde",              sorumlu: "İsmail",  sonTarih: tarih(3),   oncelik: "yuksek", durum: "yapilacak",   olusturmaTarih: tarih(-1)  },
-  { id: "g3",  baslik: "Yeni personel eğitimi planla",          aciklama: "Kasa kullanımı ve müşteri hizmetleri eğitimi",       sorumlu: "Ayşe",    sonTarih: tarih(7),   oncelik: "normal", durum: "yapilacak",   olusturmaTarih: tarih(-2)  },
-  { id: "g4",  baslik: "Market girişini yenile",                aciklama: "Tabela ve vitrin düzenlemesi",                       sorumlu: "Mehmet",  sonTarih: tarih(14),  oncelik: "dusuk",  durum: "yapilacak",   olusturmaTarih: tarih(-5)  },
-  { id: "g5",  baslik: "SGK primlerini öde",                    aciklama: "Aylık SGK primi son günü",                           sorumlu: "İsmail",  sonTarih: tarih(-1),  oncelik: "acil",   durum: "yapilacak",   olusturmaTarih: tarih(-7)  },
-  // Devam ediyor
-  { id: "g6",  baslik: "Stok sayımı yap",                       aciklama: "Tüm ürünler için fiziksel sayım",                    sorumlu: "Ayşe",    sonTarih: tarih(2),   oncelik: "yuksek", durum: "devam",       olusturmaTarih: tarih(-4)  },
-  { id: "g7",  baslik: "Sosyal medya içeriği hazırla",          aciklama: "Bu haftanın Instagram gönderileri",                  sorumlu: "Mehmet",  sonTarih: tarih(4),   oncelik: "normal", durum: "devam",       olusturmaTarih: tarih(-2)  },
-  { id: "g8",  baslik: "Yaz kampanyası fiyatlandırması",        aciklama: "Sezonluk ürünler için indirim oranlarını belirle",   sorumlu: "İsmail",  sonTarih: tarih(5),   oncelik: "yuksek", durum: "devam",       olusturmaTarih: tarih(-6)  },
-  // Tamamlandı
-  { id: "g9",  baslik: "Kasanın bakımını yaptır",               aciklama: "Yıllık kasa bakımı",                                 sorumlu: "Mehmet",  sonTarih: tarih(-5),  oncelik: "normal", durum: "tamamlandi",  olusturmaTarih: tarih(-14) },
-  { id: "g10", baslik: "Nisan ayı muhasebe kapatma",            aciklama: "Aylık hesap özeti muhasebeciye gönder",              sorumlu: "İsmail",  sonTarih: tarih(-3),  oncelik: "yuksek", durum: "tamamlandi",  olusturmaTarih: tarih(-10) },
-  { id: "g11", baslik: "Temizlik şirketi ile sözleşme yenile",  aciklama: "Yıllık temizlik sözleşmesi",                         sorumlu: "Ayşe",    sonTarih: tarih(-8),  oncelik: "normal", durum: "tamamlandi",  olusturmaTarih: tarih(-20) },
-];
 
 export const SORUMLULAR = ["İsmail", "Ayşe", "Mehmet", "Ali", "Fatma"];
 

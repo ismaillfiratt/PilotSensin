@@ -8,14 +8,17 @@ datasource db {
 }
 
 model Business {
-  id        String   @id @default(cuid())
-  ad        String
-  sektor    String?
-  vergiNo   String?
-  adres     String?
-  users     User[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String    @id @default(cuid())
+  ad            String
+  sektor        String?
+  vergiNo       String?
+  adres         String?
+  users         User[]
+  trialStartsAt DateTime?
+  trialEndsAt   DateTime?
+  isPremium     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model User {

@@ -6,6 +6,7 @@ import { X, Plus, Trash2 } from "lucide-react";
 import { type Urun } from "@/lib/stok-data";
 import { useStokAyarlar } from "@/store/stokAyarlar";
 import { useSirket } from "@/store/sirket";
+import { kurus } from "@/lib/para";
 
 interface Props {
   open: boolean;
@@ -16,7 +17,7 @@ interface Props {
 
 const bosForm = {
   ad: "", sku: "", kategori: "", birim: "",
-  mevcutAdet: "", emniyetStogu: "", kritikStok: "", gunlukSatis: "", birimMaliyet: "",
+  mevcutAdet: "", emniyetStogu: "", kritikStok: "", gunlukSatis: "", birimMaliyetKurus: "",
 };
 
 export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) {
@@ -47,7 +48,7 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
         emniyetStogu: String(urun.emniyetStogu),
         kritikStok:   String(urun.kritikStok),
         gunlukSatis:  String(urun.gunlukSatis),
-        birimMaliyet: urun.birimMaliyet ? String(urun.birimMaliyet) : "",
+        birimMaliyetKurus: urun.birimMaliyetKurus ? String(urun.birimMaliyetKurus / 100) : "",
       });
     } else {
       setForm({ ...bosForm, birim: birimler[0] ?? "", kategori: kategoriler[0] ?? "" });
@@ -68,15 +69,15 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
       emniyetStogu:  Number(form.emniyetStogu),
       kritikStok:    Number(form.kritikStok),
       gunlukSatis:   Number(form.gunlukSatis),
-      birimMaliyet:  form.birimMaliyet ? Number(form.birimMaliyet) : undefined,
+      birimMaliyetKurus:  form.birimMaliyetKurus ? kurus(Number(form.birimMaliyetKurus)) : undefined,
       sonHareket:    new Date().toISOString(),
       hareketler:    urun?.hareketler ?? [],
     });
     onClose();
   };
 
-  const toplamDeger = form.mevcutAdet && form.birimMaliyet
-    ? (Number(form.mevcutAdet) * Number(form.birimMaliyet)).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })
+  const toplamDeger = form.mevcutAdet && form.birimMaliyetKurus
+    ? (Number(form.mevcutAdet) * Number(form.birimMaliyetKurus)).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })
     : null;
 
   return (
@@ -113,7 +114,7 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
               </div>
               <div>
                 <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Birim Alış Fiyatı (₺)</label>
-                <input type="number" min="0" step="0.01" value={form.birimMaliyet} onChange={(e) => set("birimMaliyet", e.target.value)}
+                <input type="number" min="0" step="0.01" value={form.birimMaliyetKurus} onChange={(e) => set("birimMaliyetKurus", e.target.value)}
                   placeholder="0.00"
                   className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-sm" />
               </div>

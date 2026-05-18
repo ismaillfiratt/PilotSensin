@@ -104,21 +104,21 @@ export default function GorevKarti({ gorev, index, onDuzenle, onSil, onTasi, isO
         <div className="flex items-center gap-1.5 pt-2 border-t border-[rgba(255,255,255,0.05)]">
           <button onClick={() => solDurum && onTasi(solDurum)} disabled={!solDurum}
             title={solDurum ? DURUM_CONFIG[solDurum].label : ""}
-            className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] disabled:opacity-20 hover:enabled:border-[rgba(251,192,36,0.4)] hover:enabled:text-[#fbc024] transition-all">
+            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] disabled:opacity-20 hover:enabled:border-[rgba(251,192,36,0.4)] hover:enabled:text-[#fbc024] transition-all">
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
           <button onClick={() => sagDurum && onTasi(sagDurum)} disabled={!sagDurum}
             title={sagDurum ? DURUM_CONFIG[sagDurum].label : ""}
-            className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] disabled:opacity-20 hover:enabled:border-[rgba(34,197,94,0.4)] hover:enabled:text-[#22c55e] transition-all">
+            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] disabled:opacity-20 hover:enabled:border-[rgba(34,197,94,0.4)] hover:enabled:text-[#22c55e] transition-all">
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
           <div className="flex-1" />
           <button onClick={onDuzenle}
-            className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] transition-all">
+            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] transition-all">
             <Pencil className="w-3.5 h-3.5" />
           </button>
           <button onClick={onSil}
-            className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] transition-all">
+            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] transition-all">
             <Trash2 className="w-3.5 h-3.5" />
           </button>
         </div>

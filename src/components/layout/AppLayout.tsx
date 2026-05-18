@@ -11,8 +11,11 @@ import RealtimeProvider   from "@/components/providers/RealtimeProvider";
 import DataProvider       from "@/components/providers/DataProvider";
 import BildirimProvider   from "@/components/providers/BildirimProvider";
 import SirketProvider     from "@/components/providers/SirketProvider";
+import TitleBadgeProvider from "@/components/providers/TitleBadgeProvider";
 import { useLayout }     from "@/store/layout";
 import { authDinle }    from "@/lib/auth";
+import SistemBildirimBand from "@/components/admin/SistemBildirimBand";
+import TrialBanner        from "@/components/TrialBanner";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { mobileSidebarAcik, mobileSidebarKapat } = useLayout();
@@ -60,6 +63,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* İçerik */}
       <div className="flex flex-col flex-1 overflow-hidden">
+        <TrialBanner />
         <Topbar />
         <main
           className="flex-1 overflow-y-auto p-3 sm:p-6 pb-20 md:pb-6"
@@ -78,6 +82,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <DataProvider />
       <RealtimeProvider />
       <BildirimProvider />
+      <TitleBadgeProvider />
+
+      {/* Sistem geneli gerçek zamanlı bildirimler */}
+      <SistemBildirimBand />
     </div>
   );
 }

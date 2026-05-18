@@ -14,6 +14,8 @@ import {
   useProsedurler, tumKategoriler, tumSorumlular,
   type OzelSopSablonMaddesi, type OzelGrubu,
 } from "@/store/prosedurler";
+import { onaylaSil } from "@/lib/onay";
+import { useGeriAl } from "@/store/geriAl";
 import KomboSecici from "./KomboSecici";
 
 const ICONS: Record<string, React.ElementType> = {
@@ -106,10 +108,18 @@ export default function SopSablonPanel() {
     return [...filtered, ...custom];
   };
 
-  const handleToggle = (sablon: SopBelgeSablon | OzelSopSablonMaddesi) => {
+  const handleToggle = async (sablon: SopBelgeSablon | OzelSopSablonMaddesi) => {
     if (ekliBasliklar.has(sablon.baslik)) {
       const p = prosedurler.find(x => x.baslik === sablon.baslik);
-      if (p) prosedurSil(p.id);
+      if (!p) return;
+      const { onaylandi } = await onaylaSil({ tip: "prosedur", isim: sablon.baslik });
+      if (!onaylandi) return;
+      prosedurSil(p.id);
+      useGeriAl.getState().goster({
+        mesaj: `"${sablon.baslik}" kaldırıldı.`,
+        sureMs: 10000,
+        geriAlFn: async () => useProsedurler.getState().prosedurGeriAl(p.id),
+      });
     } else {
       prosedurEkle({
         baslik:   sablon.baslik,

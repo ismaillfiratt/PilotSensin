@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, Search, User, Settings, LogOut, ChevronDown, Store, CheckCheck, ExternalLink, Menu, CheckCircle2, Circle } from "lucide-react";
+import { Bell, Search, User, Settings, LogOut, ChevronDown, Store, CheckCheck, ExternalLink, ChevronLeft, Menu, CheckCircle2, Circle } from "lucide-react";
 import { useLayout } from "@/store/layout";
 import { useNakit }    from "@/store/nakit";
 import { useGorevler } from "@/store/gorevler";
@@ -43,7 +43,8 @@ interface KullaniciBilgi {
 }
 
 export default function Topbar() {
-  const router = useRouter();
+  const router   = useRouter();
+  const pathname = usePathname();
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifOpen, setNotifOpen]     = useState(false);
   const [aramaAcik, setAramaAcik]     = useState(false);
@@ -118,15 +119,53 @@ export default function Topbar() {
 
   return (
     <>
-      <header className="flex items-center justify-between px-3 sm:px-6 py-3 shrink-0" style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-subtle)", transition: "background 0.25s ease" }}>
-        {/* Sol: hamburger (mobil) + işletme adı */}
-        <button
-          onClick={mobileSidebarToggle}
-          className="md:hidden mr-3 w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white transition-colors"
-          aria-label="Menüyü aç"
+      {/* ── Mobile header (md:hidden) ── */}
+      <header
+        className="md:hidden flex items-center justify-between h-14 px-4 shrink-0"
+        style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-subtle)" }}
+      >
+        {/* Sol: geri butonu (dashboard dışı) veya spacer */}
+        {pathname !== "/dashboard" ? (
+          <button
+            onClick={() => router.back()}
+            className="min-w-11 min-h-11 flex items-center justify-center -ml-1 rounded-xl text-[#94a3b8] active:bg-white/5 transition-colors"
+            aria-label="Geri"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+        ) : (
+          <button
+            onClick={mobileSidebarToggle}
+            className="min-w-11 min-h-11 flex items-center justify-center -ml-1 rounded-xl text-[#94a3b8] active:bg-white/5 transition-colors"
+            aria-label="Menüyü aç"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        )}
+
+        {/* Orta: işletme adı */}
+        <Link href="/dashboard" className="flex items-center gap-1.5">
+          <Store className="w-4 h-4 text-[#94a3b8]" />
+          <span className="text-white font-semibold text-sm">{sirketAdi || "PilotSensin"}</span>
+        </Link>
+
+        {/* Sağ: bildirim */}
+        <Link
+          href="/bildirimler"
+          className="min-w-11 min-h-11 flex items-center justify-center -mr-1 rounded-xl text-[#94a3b8] active:bg-white/5 transition-colors relative"
         >
-          <Menu className="w-5 h-5" />
-        </button>
+          <Bell className="w-5 h-5" />
+          {okunmamis.length > 0 && (
+            <span className="absolute top-2 right-2 min-w-4.5 h-4.5 flex items-center justify-center rounded-full bg-[#ef4444] text-white text-[10px] font-bold px-1">
+              {okunmamis.length > 9 ? "9+" : okunmamis.length}
+            </span>
+          )}
+        </Link>
+      </header>
+
+      {/* ── Desktop header (hidden md:flex) ── */}
+      <header className="hidden md:flex items-center justify-between px-6 py-3 shrink-0" style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-subtle)", transition: "background 0.25s ease" }}>
+        {/* Sol: işletme adı */}
         <div className="flex items-center gap-2">
           <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <Store className="w-4 h-4 text-[#94a3b8]" />
@@ -178,7 +217,7 @@ export default function Topbar() {
             >
               <Bell className="w-4 h-4" />
               {okunmamis.length > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-[#ef4444] text-white text-[10px] font-bold px-1 pulse-yellow">
+                <span className="absolute -top-0.5 -right-0.5 min-w-4.5 h-4.5 flex items-center justify-center rounded-full bg-[#ef4444] text-white text-[10px] font-bold px-1 pulse-yellow">
                   {okunmamis.length > 9 ? "9+" : okunmamis.length}
                 </span>
               )}

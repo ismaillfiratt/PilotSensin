@@ -21,9 +21,18 @@ export async function POST(req: NextRequest) {
     if (existing) return NextResponse.json({ companyId: existing.company_id });
 
     // Şirket oluştur
+    const trialStartsAt = new Date();
+    const trialEndsAt   = new Date(trialStartsAt.getTime() + 7 * 24 * 60 * 60 * 1000);
+
     const { data: company, error: ce } = await supabase
       .from("companies")
-      .insert({ name: sirketAdi.trim(), owner_id: user.id })
+      .insert({
+        name:            sirketAdi.trim(),
+        owner_id:        user.id,
+        trial_starts_at: trialStartsAt.toISOString(),
+        trial_ends_at:   trialEndsAt.toISOString(),
+        is_premium:      false,
+      })
       .select("id")
       .single();
     if (ce || !company) {

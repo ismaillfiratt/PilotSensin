@@ -1,32 +1,42 @@
+import type { Kurus } from "@/lib/para";
+import type { Silinebilir } from "@/lib/silinebilir";
+export { formatTL } from "@/lib/para";
+
 export type IslemTipi = "yatirma" | "cekme";
 
-export interface FonHedef {
-  id:               string;
-  ad:               string;   // "Makine Alımı", "İşletme Güvenliği" vb.
-  toplamHedef:      number;   // ₺50.000
-  aylikOdeme:       number;   // ₺2.000
-  odemeGunu:        number;   // 1-31 — her ayın X'inde hatırlatma
-  aciklama?:        string;
-  olusturmaTarih:   string;
+export interface FonHedef extends Silinebilir {
+  id:             string;
+  ad:             string;
+  /** Kuruş cinsinden toplam hedef */
+  toplamHedefKurus:    Kurus;
+  /** Kuruş cinsinden aylık ödeme planı */
+  aylikOdemeKurus:     Kurus;
+  odemeGunu:      number;   // 1-31
+  aciklama?:      string;
+  olusturmaTarih: string;
 }
 
-export interface FonIslem {
+export interface FonIslem extends Silinebilir {
   id:       string;
-  hedefId?: string;   // hangi hedefe bağlı
+  hedefId?: string;
   tip:      IslemTipi;
-  tutar:    number;
+  /** Kuruş cinsinden tutar */
+  tutarKurus:    Kurus;
   aciklama: string;
-  tarih:    string;   // ISO
+  tarih:    string;
 }
 
-/** Mevcut birikimi hesapla — opsiyonel hedefId ile filtrele */
-export function mevcutBirikim(islemler: FonIslem[], hedefId?: string): number {
+/** Mevcut birikimi hesapla (kuruş cinsinden). */
+export function mevcutBirikim(islemler: FonIslem[], hedefId?: string): Kurus {
   const list = hedefId ? islemler.filter(i => i.hedefId === hedefId) : islemler;
-  return list.reduce((s, i) => i.tip === "yatirma" ? s + i.tutar : s - i.tutar, 0);
+  return list.reduce(
+    (s, i) => (i.tip === "yatirma" ? s + i.tutarKurus : s - i.tutarKurus),
+    0,
+  );
 }
 
-/** Bu ay yapılan yatırmalar */
-export function buAyYatirma(islemler: FonIslem[], hedefId?: string): number {
+/** Bu ay yapılan yatırmalar (kuruş). */
+export function buAyYatirma(islemler: FonIslem[], hedefId?: string): Kurus {
   const bugun = new Date();
   const list  = hedefId ? islemler.filter(i => i.hedefId === hedefId) : islemler;
   return list
@@ -34,24 +44,24 @@ export function buAyYatirma(islemler: FonIslem[], hedefId?: string): number {
       const t = new Date(i.tarih);
       return i.tip === "yatirma" && t.getMonth() === bugun.getMonth() && t.getFullYear() === bugun.getFullYear();
     })
-    .reduce((s, i) => s + i.tutar, 0);
+    .reduce((s, i) => (s + i.tutarKurus), 0);
 }
 
-/** Aylık grafik/tablo verisi — seçili dönem + opsiyonel hedef filtresi */
+/** Aylık grafik verisi — değerler kuruş cinsinden. */
 export function aylikGrafikAralik(
-  islemler: FonIslem[],
+  islemler:  FonIslem[],
   baslangic: Date,
-  aySayisi: number,
-  hedefId?: string,
-): { ay: string; yatirma: number; cekme: number; bakiye: number }[] {
-  const list      = hedefId ? islemler.filter(i => i.hedefId === hedefId) : islemler;
+  aySayisi:  number,
+  hedefId?:  string,
+): { ay: string; yatirma: Kurus; cekme: Kurus; bakiye: Kurus }[] {
+  const list       = hedefId ? islemler.filter(i => i.hedefId === hedefId) : islemler;
   const rangeStart = new Date(baslangic.getFullYear(), baslangic.getMonth(), 1);
 
   let birikimli = list
     .filter(i => new Date(i.tarih) < rangeStart)
-    .reduce((s, i) => i.tip === "yatirma" ? s + i.tutar : s - i.tutar, 0);
+    .reduce((s, i) => (i.tip === "yatirma" ? s + i.tutarKurus : s - i.tutarKurus), 0);
 
-  const aylar: { ay: string; yatirma: number; cekme: number; bakiye: number }[] = [];
+  const aylar: { ay: string; yatirma: Kurus; cekme: Kurus; bakiye: Kurus }[] = [];
 
   for (let a = 0; a < aySayisi; a++) {
     const d    = new Date(baslangic.getFullYear(), baslangic.getMonth() + a, 1);
@@ -64,15 +74,15 @@ export function aylikGrafikAralik(
       return t.getMonth() === ayNo && t.getFullYear() === yil;
     });
 
-    const yatirma = ayIslemler.filter(i => i.tip === "yatirma").reduce((s, i) => s + i.tutar, 0);
-    const cekme   = ayIslemler.filter(i => i.tip === "cekme").reduce((s, i) => s + i.tutar, 0);
-    birikimli += yatirma - cekme;
+    const yatirma = ayIslemler
+      .filter(i => i.tip === "yatirma")
+      .reduce((s, i) => (s + i.tutarKurus), 0);
+    const cekme = ayIslemler
+      .filter(i => i.tip === "cekme")
+      .reduce((s, i) => (s + i.tutarKurus), 0);
 
-    aylar.push({ ay: ayAd, yatirma, cekme, bakiye: Math.max(birikimli, 0) });
+    birikimli = (birikimli + yatirma - cekme);
+    aylar.push({ ay: ayAd, yatirma, cekme, bakiye: (Math.max(birikimli, 0)) });
   }
   return aylar;
-}
-
-export function formatTL(n: number) {
-  return "₺" + Math.abs(n).toLocaleString("tr-TR", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }

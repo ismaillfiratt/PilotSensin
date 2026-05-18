@@ -46,13 +46,13 @@ export default function ModuleCard({
       whileHover={{ y: -4 }}
     >
       <Link href={href}>
-        <div className="glass-card rounded-xl p-5 cursor-pointer hover:border-[rgba(251,192,36,0.4)] transition-all duration-200 h-full">
-          <div className="flex items-start justify-between mb-4">
+        <div className="glass-card rounded-xl p-3.5 md:p-5 cursor-pointer hover:border-[rgba(251,192,36,0.4)] active:border-[rgba(251,192,36,0.3)] transition-all duration-200 h-full">
+          <div className="flex items-start justify-between mb-3 md:mb-4">
             <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center"
+              className="w-9 h-9 md:w-10 md:h-10 rounded-lg flex items-center justify-center"
               style={{ backgroundColor: cfg.bg, border: `1px solid ${cfg.border}` }}
             >
-              <Icon className="w-5 h-5" style={{ color: cfg.color }} />
+              <Icon className="w-4 h-4 md:w-5 md:h-5" style={{ color: cfg.color }} />
             </div>
             {alertCount > 0 && (
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)]">
@@ -62,9 +62,9 @@ export default function ModuleCard({
             )}
           </div>
 
-          <h3 className="text-sm font-semibold text-white mb-1">{title}</h3>
-          <p className="text-2xl font-bold text-white mb-0.5">{metric}</p>
-          <p className="text-xs text-[#94a3b8] mb-4">{metricLabel}</p>
+          <h3 className="text-xs md:text-sm font-semibold text-white mb-1">{title}</h3>
+          <p className="text-xl md:text-2xl font-bold text-white mb-0.5">{metric}</p>
+          <p className="text-[10px] md:text-xs text-[#94a3b8] mb-3 md:mb-4">{metricLabel}</p>
 
           <div className="space-y-1">
             <div className="flex justify-between items-center">

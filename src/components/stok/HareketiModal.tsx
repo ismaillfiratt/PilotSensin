@@ -1,22 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState }            from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowDownCircle, ArrowUpCircle, RefreshCw, Clock } from "lucide-react";
-import { Urun, StokHareketi } from "@/lib/stok-data";
-import { useStok } from "@/store/stok";
-import { createClient } from "@/utils/supabase/client";
+import { X, ArrowDownCircle, ArrowUpCircle, RefreshCw, Clock, AlertTriangle } from "lucide-react";
+import { type Urun, type StokHareketi } from "@/lib/stok-data";
+import { alimYap, stokDuzelt } from "@/lib/islemler";
+import { kurus } from "@/lib/para";
 
 interface Props {
-  urun: Urun | null;
+  urun:    Urun | null;
   onClose: () => void;
 }
 
 const tipler = [
-  { value: "giris", label: "Stok Girişi",     icon: ArrowDownCircle, color: "#22c55e" },
-  { value: "cikis", label: "Stok Çıkışı",      icon: ArrowUpCircle,   color: "#ef4444" },
-  { value: "sayim", label: "Sayım Düzeltmesi", icon: RefreshCw,       color: "#fbc024" },
+  { value: "giris", label: "Stok Girişi",      icon: ArrowDownCircle, color: "#22c55e",  aciklama: "Tedarikten gelen ürün — maliyet ve nakit güncellenir" },
+  { value: "cikis", label: "Stok Çıkışı",       icon: ArrowUpCircle,   color: "#ef4444",  aciklama: "Fire, hasar, iç tüketim — sadece stok düzeltme" },
+  { value: "sayim", label: "Sayım Düzeltmesi",  icon: RefreshCw,       color: "#fbc024",  aciklama: "Fiziksel sayım sonucu fiili miktara göre düzelt" },
 ] as const;
+
+const KDV_ORANLARI = [0, 1, 10, 20];
 
 function zaman(iso: string) {
   return new Date(iso).toLocaleString("tr-TR", {
@@ -26,57 +28,79 @@ function zaman(iso: string) {
 }
 
 export default function HareketiModal({ urun, onClose }: Props) {
-  const { guncelle } = useStok();
-  const [tip, setTip]           = useState<"giris" | "cikis" | "sayim">("giris");
-  const [miktar, setMiktar]     = useState("");
-  const [aciklama, setAciklama] = useState("");
-  const [sekme, setSekme]       = useState<"yeni" | "log">("yeni");
+  const varsayilanFiyat = urun?.birimMaliyetKurus ? String(urun.birimMaliyetKurus / 100) : "";
+
+  const [tip,        setTip]        = useState<"giris" | "cikis" | "sayim">("giris");
+  const [miktar,     setMiktar]     = useState("");
+  const [birimFiyat, setBirimFiyat] = useState(varsayilanFiyat);
+  const [kdvOrani,   setKdvOrani]   = useState(20);
+  const [aciklama,   setAciklama]   = useState("");
+  const [sekme,      setSekme]      = useState<"yeni" | "log">("yeni");
+  const [yukleniyor, setYukleniyor] = useState(false);
+  const [hata,       setHata]       = useState<string | null>(null);
 
   if (!urun) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const m        = Number(miktar)     || 0;
+  const fiyat    = Number(birimFiyat) || 0;
+  const yeniAdet = tip === "giris" ? urun.mevcutAdet + m
+                 : tip === "cikis" ? Math.max(0, urun.mevcutAdet - m)
+                 : m;
+
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const m = Number(miktar);
     if (!m || m < 0) return;
+    setYukleniyor(true);
+    setHata(null);
 
-    const supabase = createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    const kimin = session?.user?.email ?? "Bilinmiyor";
+    let sonuc: Awaited<ReturnType<typeof alimYap | typeof stokDuzelt>>;
 
-    const onceki  = urun.mevcutAdet;
-    const sonraki = tip === "giris" ? onceki + m
-                  : tip === "cikis" ? Math.max(0, onceki - m)
-                  : m;
+    if (tip === "giris") {
+      sonuc = await alimYap({
+        urunId:          urun.id,
+        adet:            m,
+        birimAlisFiyatiKurus: kurus(fiyat),
+        kdvOrani:        kdvOrani / 100,
+        odemeYontemi:    "havale",
+        aciklama:        aciklama.trim() || `${urun.ad} — ${m} ${urun.birim} alımı`,
+      });
+    } else {
+      sonuc = await stokDuzelt({
+        urunId:   urun.id,
+        yeniAdet,
+        sebep:    tip === "sayim" ? "sayim-farki" : "diger",
+        aciklama: aciklama.trim() || undefined,
+      });
+    }
 
-    const yeniHareket: StokHareketi = {
-      id:       Date.now().toString(),
-      tip, miktar: m, onceki, sonraki,
-      tarih:    new Date().toISOString(),
-      aciklama: aciklama.trim() || (tip === "giris" ? "Stok girişi" : tip === "cikis" ? "Stok çıkışı" : "Sayım düzeltmesi"),
-      kimin,
-    };
+    setYukleniyor(false);
 
-    await guncelle(urun.id, {
-      mevcutAdet: sonraki,
-      sonHareket: new Date().toISOString(),
-      hareketler: [yeniHareket, ...(urun.hareketler ?? [])].slice(0, 50),
-    });
-
-    setMiktar(""); setAciklama("");
-    onClose();
+    if (sonuc.basarili) {
+      setMiktar(""); setAciklama("");
+      onClose();
+    } else {
+      setHata(sonuc.hata ?? "Bilinmeyen hata");
+    }
   };
 
-  const hareketler = urun.hareketler ?? [];
+  const hareketler = urun.hareketler;
+  const tipKonfig  = tipler.find((t) => t.value === tip)!;
 
   return (
     <AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        onClick={(e) => e.target === e.currentTarget && onClose()}>
-        <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }} transition={{ duration: 0.2 }}
-          className="w-full max-w-md glass-card rounded-2xl overflow-hidden">
-
+        onClick={(e) => e.target === e.currentTarget && onClose()}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ duration: 0.2 }}
+          className="w-full max-w-md glass-card rounded-2xl overflow-hidden"
+        >
+          {/* Başlık */}
           <div className="flex items-start justify-between px-6 pt-6 pb-4">
             <div>
               <h2 className="text-lg font-bold text-white">Stok Hareketi</h2>
@@ -84,16 +108,20 @@ export default function HareketiModal({ urun, onClose }: Props) {
                 {urun.ad} — Mevcut: <span className="text-white font-medium">{urun.mevcutAdet} {urun.birim}</span>
               </p>
             </div>
-            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors">
+            <button onClick={onClose}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
 
+          {/* Sekmeler */}
           <div className="flex border-b border-[rgba(255,255,255,0.06)] px-6">
             {(["yeni", "log"] as const).map((s) => (
               <button key={s} onClick={() => setSekme(s)}
                 className="pb-3 pr-5 text-sm font-medium border-b-2 transition-colors"
-                style={sekme === s ? { borderColor: "#fbc024", color: "#fbc024" } : { borderColor: "transparent", color: "#64748b" }}>
+                style={sekme === s
+                  ? { borderColor: "#fbc024", color: "#fbc024" }
+                  : { borderColor: "transparent", color: "#64748b" }}>
                 {s === "yeni" ? "Yeni Hareket" : `Geçmiş (${hareketler.length})`}
               </button>
             ))}
@@ -102,53 +130,140 @@ export default function HareketiModal({ urun, onClose }: Props) {
           <div className="p-6">
             {sekme === "yeni" ? (
               <form onSubmit={handleSubmit} className="space-y-4">
+
+                {/* Hareket tipi */}
                 <div className="grid grid-cols-3 gap-2">
                   {tipler.map(({ value, label, icon: Icon, color }) => (
                     <button key={value} type="button" onClick={() => setTip(value)}
                       className="flex flex-col items-center gap-2 p-3 rounded-xl border transition-all"
-                      style={{ borderColor: tip === value ? color : "rgba(255,255,255,0.08)", backgroundColor: tip === value ? `${color}15` : "transparent" }}>
+                      style={{
+                        borderColor:     tip === value ? color : "rgba(255,255,255,0.08)",
+                        backgroundColor: tip === value ? `${color}15` : "transparent",
+                      }}>
                       <Icon className="w-5 h-5" style={{ color: tip === value ? color : "#94a3b8" }} />
-                      <span className="text-[11px] text-center leading-tight" style={{ color: tip === value ? color : "#94a3b8" }}>{label}</span>
+                      <span className="text-[11px] text-center leading-tight"
+                        style={{ color: tip === value ? color : "#94a3b8" }}>{label}</span>
                     </button>
                   ))}
                 </div>
+                <p className="text-[10px] text-[#475569] -mt-1">{tipKonfig.aciklama}</p>
 
+                {/* Miktar */}
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-2">
+                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">
                     {tip === "sayim" ? "Gerçek Sayım Miktarı" : "Miktar"} ({urun.birim})
                   </label>
-                  <input type="number" min="0" required value={miktar} onChange={(e) => setMiktar(e.target.value)} placeholder="0"
-                    className="w-full px-4 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-lg font-bold" />
-                  {miktar && (
+                  <input
+                    type="number" min="0" required
+                    value={miktar} onChange={(e) => setMiktar(e.target.value)}
+                    placeholder="0"
+                    className="w-full px-4 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-lg font-bold [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  {m > 0 && (
                     <p className="text-xs text-[#fbc024] mt-1.5">
-                      {tip === "giris" && `${urun.mevcutAdet} + ${miktar} = ${urun.mevcutAdet + Number(miktar)} ${urun.birim}`}
-                      {tip === "cikis" && `${urun.mevcutAdet} - ${miktar} = ${Math.max(0, urun.mevcutAdet - Number(miktar))} ${urun.birim}`}
-                      {tip === "sayim" && `Fark: ${Number(miktar) >= urun.mevcutAdet ? "+" : ""}${Number(miktar) - urun.mevcutAdet} ${urun.birim}`}
+                      {tip === "giris" && `${urun.mevcutAdet} + ${m} = ${yeniAdet} ${urun.birim}`}
+                      {tip === "cikis" && `${urun.mevcutAdet} − ${m} = ${yeniAdet} ${urun.birim}`}
+                      {tip === "sayim" && `Fark: ${yeniAdet >= urun.mevcutAdet ? "+" : ""}${yeniAdet - urun.mevcutAdet} ${urun.birim}`}
                     </p>
                   )}
                 </div>
 
+                {/* Birim fiyat + KDV — sadece giris */}
+                {tip === "giris" && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">
+                        Birim Alış Fiyatı (KDV hariç) *
+                      </label>
+                      <input
+                        type="number" min="0" step="0.01" required
+                        value={birimFiyat} onChange={(e) => setBirimFiyat(e.target.value)}
+                        placeholder="0.00"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(34,197,94,0.5)] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Alış KDV Oranı</label>
+                      <div className="flex gap-2">
+                        {KDV_ORANLARI.map((r) => (
+                          <button key={r} type="button" onClick={() => setKdvOrani(r)}
+                            className="flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-all"
+                            style={{
+                              borderColor:     kdvOrani === r ? "#22c55e" : "rgba(255,255,255,0.08)",
+                              backgroundColor: kdvOrani === r ? "rgba(34,197,94,0.12)" : "transparent",
+                              color:           kdvOrani === r ? "#22c55e" : "#64748b",
+                            }}>
+                            {r === 0 ? "Yok" : `%${r}`}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    {m > 0 && fiyat > 0 && (
+                      <div className="p-3 rounded-xl bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.06)] text-xs space-y-1 text-[#64748b]">
+                        <div className="flex justify-between">
+                          <span>Toplam (KDV hariç)</span>
+                          <span className="text-white">
+                            {(m * fiyat).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>KDV (%{kdvOrani})</span>
+                          <span className="text-[#fbc024]">
+                            {(m * fiyat * kdvOrani / 100).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}
+                          </span>
+                        </div>
+                        <div className="flex justify-between font-semibold border-t border-[rgba(255,255,255,0.06)] pt-1">
+                          <span>Kasadan Çıkış</span>
+                          <span className="text-[#ef4444]">
+                            {(m * fiyat * (1 + kdvOrani / 100)).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Açıklama */}
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-2">Açıklama (opsiyonel)</label>
-                  <input type="text" value={aciklama} onChange={(e) => setAciklama(e.target.value)} placeholder="Tedarikçi, satış, fire..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm" />
+                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">
+                    Açıklama (opsiyonel)
+                  </label>
+                  <input
+                    type="text" value={aciklama} onChange={(e) => setAciklama(e.target.value)}
+                    placeholder="Tedarikçi, fire sebebi..."
+                    className="w-full px-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-sm"
+                  />
                 </div>
 
+                {/* Hata */}
+                {hata && (
+                  <div className="flex items-center gap-2 p-3 rounded-xl bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.2)]">
+                    <AlertTriangle className="w-4 h-4 text-[#ef4444] shrink-0" />
+                    <p className="text-xs text-[#ef4444]">{hata}</p>
+                  </div>
+                )}
+
+                {/* Butonlar */}
                 <div className="flex gap-3">
                   <button type="button" onClick={onClose}
-                    className="flex-1 py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">İptal</button>
-                  <button type="submit"
-                    className="flex-1 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">Kaydet</button>
+                    className="flex-1 py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                    İptal
+                  </button>
+                  <button type="submit" disabled={yukleniyor}
+                    className="flex-1 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-50">
+                    {yukleniyor ? "Kaydediliyor..." : "Kaydet"}
+                  </button>
                 </div>
               </form>
             ) : (
+              /* Geçmiş sekmesi */
               <div className="space-y-2 max-h-72 overflow-y-auto">
                 {hareketler.length === 0 ? (
                   <div className="text-center py-8 text-sm text-[#64748b]">
                     <Clock className="w-8 h-8 mx-auto mb-2 opacity-40" />
                     Henüz hareket kaydı yok
                   </div>
-                ) : hareketler.map((h) => {
+                ) : hareketler.map((h: StokHareketi) => {
                   const renk = h.tip === "giris" ? "#22c55e" : h.tip === "cikis" ? "#ef4444" : "#fbc024";
                   return (
                     <div key={h.id} className="flex items-start gap-3 p-3 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)]">
@@ -156,7 +271,7 @@ export default function HareketiModal({ urun, onClose }: Props) {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-xs font-semibold" style={{ color: renk }}>
-                            {h.tip === "giris" ? "+" : h.tip === "cikis" ? "-" : "="}{h.miktar} {urun.birim}
+                            {h.tip === "giris" ? "+" : h.tip === "cikis" ? "−" : "="}{h.miktar} {urun.birim}
                           </span>
                           <span className="text-[10px] text-[#475569]">{h.onceki} → {h.sonraki}</span>
                         </div>

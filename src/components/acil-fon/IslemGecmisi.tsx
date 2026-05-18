@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-  Plus, Trash2, Pencil, AlertTriangle,
+  Plus, Trash2, Pencil,
   Banknote, ArrowUpFromLine, Search, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { formatTL, type FonIslem } from "@/lib/acil-fon-data";
 import { useAcilFon } from "@/store/acilFon";
+import { onaylaSil } from "@/lib/onay";
+import { useGeriAl } from "@/store/geriAl";
 import IslemModal from "./IslemModal";
 
 type Filtre = "tumu" | "yatirma" | "cekme";
@@ -20,7 +22,6 @@ export default function IslemGecmisi() {
 
   const [modalAcik, setModalAcik] = useState(false);
   const [duzenle,   setDuzenle]   = useState<FonIslem | null>(null);
-  const [silOnayi,  setSilOnayi]  = useState<string | null>(null);
 
   // Filtreler
   const [arama,     setArama]     = useState("");
@@ -28,6 +29,17 @@ export default function IslemGecmisi() {
   const [tarihBas,  setTarihBas]  = useState("");
   const [tarihBit,  setTarihBit]  = useState("");
   const [sayfaNo,   setSayfaNo]   = useState(1);
+
+  const handleIslemSil = async (islem: FonIslem) => {
+    const { onaylandi } = await onaylaSil({ tip: "acilFonIslem", isim: islem.aciklama || formatTL(islem.tutarKurus) });
+    if (!onaylandi) return;
+    await islemSil(islem.id);
+    useGeriAl.getState().goster({
+      mesaj: `İşlem silindi.`,
+      sureMs: 10000,
+      geriAlFn: async () => useAcilFon.getState().islemGeriAl(islem.id),
+    });
+  };
 
   const filtrelenmis = useMemo(() => {
     return [...islemler]
@@ -46,7 +58,6 @@ export default function IslemGecmisi() {
 
   const toplamSayfa  = Math.max(1, Math.ceil(filtrelenmis.length / SAYFA_BOYUTU));
   const sayfaIslemler = filtrelenmis.slice((sayfaNo - 1) * SAYFA_BOYUTU, sayfaNo * SAYFA_BOYUTU);
-  const silOnayiIslem = silOnayi ? islemler.find(i => i.id === silOnayi) : null;
 
   const setFiltreSayfa = (f: Filtre) => { setFiltre(f); setSayfaNo(1); };
   const setAramaSayfa  = (v: string) => { setArama(v); setSayfaNo(1); };
@@ -178,7 +189,7 @@ export default function IslemGecmisi() {
 
                   {/* Tutar */}
                   <p className="text-sm font-bold text-right whitespace-nowrap" style={{ color: yatirmaMi ? "#22c55e" : "#ef4444" }}>
-                    {yatirmaMi ? "+" : "-"}{formatTL(islem.tutar)}
+                    {yatirmaMi ? "+" : "-"}{formatTL(islem.tutarKurus)}
                   </p>
 
                   {/* Aksiyonlar */}
@@ -187,7 +198,7 @@ export default function IslemGecmisi() {
                       className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] border border-[rgba(255,255,255,0.08)] hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] transition-all">
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
-                    <button onClick={() => setSilOnayi(islem.id)}
+                    <button onClick={() => handleIslemSil(islem)}
                       className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] border border-[rgba(255,255,255,0.08)] hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] transition-all">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -243,43 +254,6 @@ export default function IslemGecmisi() {
         defaultHedefId={aktifHedefId}
         onKaydet={handleKaydet}
       />
-
-      {/* Silme onayı */}
-      <AnimatePresence>
-        {silOnayi && silOnayiIslem && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={(e) => e.target === e.currentTarget && setSilOnayi(null)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 16 }}
-              transition={{ duration: 0.18 }}
-              className="w-full max-w-sm glass-card rounded-2xl p-6"
-            >
-              <div className="w-12 h-12 rounded-xl bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.25)] flex items-center justify-center mb-4">
-                <AlertTriangle className="w-6 h-6 text-[#ef4444]" />
-              </div>
-              <h3 className="text-base font-bold text-white mb-1">İşlemi Sil</h3>
-              <p className="text-sm text-[#94a3b8] mb-6">
-                <span className="text-white font-semibold">{formatTL(silOnayiIslem.tutar)}</span> tutarındaki işlemi silmek istediğinizden emin misiniz?
-              </p>
-              <div className="flex gap-3">
-                <button onClick={() => setSilOnayi(null)}
-                  className="flex-1 py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
-                  İptal
-                </button>
-                <button onClick={() => { islemSil(silOnayi); setSilOnayi(null); }}
-                  className="flex-1 py-2.5 rounded-xl bg-[#ef4444] text-white text-sm font-bold hover:bg-[#dc2626] transition-colors">
-                  Evet, Sil
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

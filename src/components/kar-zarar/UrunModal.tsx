@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { KATEGORILER, BIRIMLER, type Urun } from "@/lib/kar-zarar-data";
+import { VARSAYILAN_KATEGORILER as KATEGORILER, VARSAYILAN_BIRIMLER as BIRIMLER } from "@/lib/stok-data";
+
+interface Urun { id: string; ad: string; kategori: string; birim: string; satisFiyati: number; birimMaliyetKurus: number; aylikSatis: number; }
 
 interface Props {
   open: boolean;
@@ -14,7 +16,7 @@ interface Props {
 
 const bosForm = {
   ad: "", kategori: "Diğer", birim: "adet",
-  satisFiyati: "", birimMaliyet: "", aylikSatis: "",
+  satisFiyati: "", birimMaliyetKurus: "", aylikSatis: "",
 };
 
 export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
@@ -26,7 +28,7 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
       setForm({
         ad: urun.ad, kategori: urun.kategori, birim: urun.birim,
         satisFiyati: String(urun.satisFiyati),
-        birimMaliyet: String(urun.birimMaliyet),
+        birimMaliyetKurus: String(urun.birimMaliyetKurus),
         aylikSatis: String(urun.aylikSatis),
       });
     } else {
@@ -37,17 +39,17 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const satisFiyati = Number(form.satisFiyati) || 0;
-  const birimMaliyet = Number(form.birimMaliyet) || 0;
-  const birimKar = satisFiyati - birimMaliyet;
-  const marj = satisFiyati > 0 ? (birimKar / satisFiyati) * 100 : 0;
+  const birimMaliyetKurus = Number(form.birimMaliyetKurus) || 0;
+  const birimKarKurus = satisFiyati - birimMaliyetKurus;
+  const marj = satisFiyati > 0 ? (birimKarKurus / satisFiyati) * 100 : 0;
   const marjRenk = marj >= 30 ? "#22c55e" : marj >= 15 ? "#fbc024" : "#ef4444";
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     onKaydet({
       ad: form.ad, kategori: form.kategori, birim: form.birim,
       satisFiyati: Number(form.satisFiyati),
-      birimMaliyet: Number(form.birimMaliyet),
+      birimMaliyetKurus: Number(form.birimMaliyetKurus),
       aylikSatis: Number(form.aylikSatis),
     });
     onClose();
@@ -56,54 +58,57 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
   if (!open) return null;
 
   return (
-    <AnimatePresence>
+    <>
+      {/* Backdrop */}
       <motion.div
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        onClick={(e) => e.target === e.currentTarget && onClose()}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ duration: 0.2 }}
-          className="w-full max-w-md glass-card rounded-2xl p-6"
-        >
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <h2 className="text-lg font-bold text-white">
-                {duzenlemeModu ? "Ürünü Düzenle" : "Yeni Ürün Ekle"}
-              </h2>
-              <p className="text-xs text-[#94a3b8] mt-0.5">Satış fiyatı ve maliyet gir</p>
-            </div>
-            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+        onClick={onClose}
+      />
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Ad */}
+      {/* Sheet / Dialog */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
+        drag="y" dragConstraints={{ top: 0 }} dragElastic={{ top: 0, bottom: 0.3 }}
+        onDragEnd={(_, info) => { if (info.velocity.y > 300 || info.offset.y > 120) onClose(); }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+        className="fixed z-50 bg-[#0e172a] bottom-0 inset-x-0 rounded-t-2xl border-t border-white/10 max-h-[90vh] overflow-y-auto md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-md md:w-full"
+      >
+        {/* Drag handle */}
+        <div className="md:hidden flex justify-center pt-3 pb-1">
+          <div className="w-12 h-1 rounded-full bg-white/20" />
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="px-5 pt-4 pb-3 space-y-4">
+            <div className="flex items-start justify-between mb-2">
+              <div>
+                <h2 className="text-base font-bold text-white">{duzenlemeModu ? "Ürünü Düzenle" : "Yeni Ürün Ekle"}</h2>
+                <p className="text-xs text-[#94a3b8] mt-0.5">Satış fiyatı ve maliyet gir</p>
+              </div>
+              <button type="button" onClick={onClose} className="min-w-11 min-h-11 flex items-center justify-center rounded-xl text-[#94a3b8] active:bg-white/5 transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
             <div>
               <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Ürün / Hizmet Adı *</label>
-              <input required value={form.ad} onChange={(e) => set("ad", e.target.value)}
-                placeholder="örn. Süt 1L"
-                className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm" />
+              <input required value={form.ad} onChange={(e) => set("ad", e.target.value)} placeholder="örn. Süt 1L"
+                className="w-full px-3 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-base" />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              {/* Kategori */}
               <div>
                 <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Kategori</label>
                 <select value={form.kategori} onChange={(e) => set("kategori", e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm">
+                  className="w-full px-3 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-base">
                   {KATEGORILER.map((k) => <option key={k} value={k} className="bg-[#0e172a]">{k}</option>)}
                 </select>
               </div>
-              {/* Birim */}
               <div>
                 <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Birim</label>
                 <select value={form.birim} onChange={(e) => set("birim", e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm">
+                  className="w-full px-3 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-base">
                   {BIRIMLER.map((b) => <option key={b} value={b} className="bg-[#0e172a]">{b}</option>)}
                 </select>
               </div>
@@ -116,24 +121,20 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
                   <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Satış Fiyatı (₺) *</label>
                   <input type="number" min="0" step="0.01" required value={form.satisFiyati}
                     onChange={(e) => set("satisFiyati", e.target.value)} placeholder="0"
-                    className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm font-bold" />
+                    className="w-full px-3 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-base font-bold" />
                 </div>
                 <div>
                   <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Birim Maliyet (₺) *</label>
-                  <input type="number" min="0" step="0.01" required value={form.birimMaliyet}
-                    onChange={(e) => set("birimMaliyet", e.target.value)} placeholder="0"
-                    className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm font-bold" />
+                  <input type="number" min="0" step="0.01" required value={form.birimMaliyetKurus}
+                    onChange={(e) => set("birimMaliyetKurus", e.target.value)} placeholder="0"
+                    className="w-full px-3 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-base font-bold" />
                 </div>
               </div>
-
-              {/* Anlık marj önizleme */}
-              {satisFiyati > 0 && birimMaliyet > 0 && (
+              {satisFiyati > 0 && birimMaliyetKurus > 0 && (
                 <div className="mt-3 flex items-center justify-between px-4 py-2.5 rounded-xl border"
                   style={{ backgroundColor: `${marjRenk}10`, borderColor: `${marjRenk}30` }}>
                   <span className="text-xs text-[#94a3b8]">Birim kar</span>
-                  <span className="text-sm font-bold" style={{ color: marjRenk }}>
-                    ₺{birimKar.toFixed(2)} · %{marj.toFixed(1)} marj
-                  </span>
+                  <span className="text-sm font-bold" style={{ color: marjRenk }}>₺{birimKarKurus.toFixed(2)} · %{marj.toFixed(1)} marj</span>
                 </div>
               )}
             </div>
@@ -142,22 +143,26 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
               <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Aylık Satış Adedi *</label>
               <input type="number" min="0" required value={form.aylikSatis}
                 onChange={(e) => set("aylikSatis", e.target.value)} placeholder="0"
-                className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm" />
+                className="w-full px-3 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-base" />
             </div>
+          </div>
 
-            <div className="flex gap-3 pt-2">
+          {/* Sticky footer */}
+          <div className="sticky bottom-0 bg-[#0e172a] px-5 pt-3 border-t border-white/10"
+            style={{ paddingBottom: "max(env(safe-area-inset-bottom), 16px)" }}>
+            <div className="flex gap-3">
               <button type="button" onClick={onClose}
-                className="flex-1 py-3 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                className="flex-1 min-h-12 rounded-xl border border-white/10 text-[#94a3b8] text-sm font-medium active:bg-white/5 transition-colors">
                 İptal
               </button>
               <button type="submit"
-                className="flex-1 py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+                className="flex-1 min-h-12 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold active:bg-[#d9a61f] transition-colors">
                 {duzenlemeModu ? "Kaydet" : "Ekle"}
               </button>
             </div>
-          </form>
-        </motion.div>
+          </div>
+        </form>
       </motion.div>
-    </AnimatePresence>
+    </>
   );
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, AlertTriangle } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   DndContext, DragEndEvent, DragStartEvent, DragOverEvent,
   DragOverlay, PointerSensor, TouchSensor, useSensor, useSensors,
@@ -16,6 +16,8 @@ import {
 import { useGorevler } from "@/store/gorevler";
 import GorevKarti from "./GorevKarti";
 import GorevModal from "./GorevModal";
+import { onaylaSil } from "@/lib/onay";
+import { useGeriAl } from "@/store/geriAl";
 
 /* ── Tarihe göre sırala (en yeni üstte) ── */
 function sirala(liste: Gorev[]) {
@@ -93,7 +95,7 @@ export default function KanbanBoard({ otomatikAcilModal }: Props) {
   const { gorevler, durumDegis, ekle, guncelle, sil: storesSil } = useGorevler();
   const [modalAcik, setModalAcik] = useState(false);
   const [duzenle, setDuzenle]     = useState<Gorev | null>(null);
-  const [silOnayi, setSilOnayi]   = useState<Gorev | null>(null);
+  const [, setSilOnayi]   = useState<Gorev | null>(null);
   const [yeniDurum, setYeniDurum] = useState<GorevDurumu>("yapilacak");
   const [aktifId, setAktifId]     = useState<string | null>(null);
 
@@ -125,9 +127,25 @@ export default function KanbanBoard({ otomatikAcilModal }: Props) {
 
   const aktifGorev = aktifId ? gorevler.find((g) => g.id === aktifId) ?? null : null;
 
-  const handleKaydet = (form: Omit<Gorev, "id" | "olusturmaTarih">) => {
-    if (duzenle) { guncelle(duzenle.id, { ...form, olusturmaTarih: duzenle.olusturmaTarih }); setDuzenle(null); }
-    else         { ekle(form); }
+  const handleKaydet = async (form: Omit<Gorev, "id" | "olusturmaTarih">) => {
+    if (duzenle) {
+      await guncelle(duzenle.id, { ...form, olusturmaTarih: duzenle.olusturmaTarih });
+      setDuzenle(null);
+    } else {
+      await ekle(form);
+    }
+  };
+
+  const handleSil = async (g: Gorev) => {
+    const { onaylandi } = await onaylaSil({ tip: "gorev", isim: g.baslik });
+    if (!onaylandi) return;
+    await storesSil(g.id);
+    setSilOnayi(null);
+    useGeriAl.getState().goster({
+      mesaj: `"${g.baslik}" silindi.`,
+      sureMs: 10000,
+      geriAlFn: async () => useGorevler.getState().geriAl(g.id),
+    });
   };
 
   return (
@@ -137,16 +155,15 @@ export default function KanbanBoard({ otomatikAcilModal }: Props) {
         {DURUM_SIRASI.map((durum) => (
           <KanbanSutun
             key={durum} durum={durum} aktifId={aktifId}
-            liste={gorevler.filter((g) => g.durum === durum)}
+            liste={gorevler.filter((g) => g.durum === durum && !g.silindi)}
             onEkle={() => { setYeniDurum(durum); setDuzenle(null); setModalAcik(true); }}
             onDuzenle={(g) => { setDuzenle(g); setModalAcik(true); }}
-            onSil={(g) => setSilOnayi(g)}
+            onSil={(g) => handleSil(g)}
             onTasi={(id, yeni) => durumDegis(id, yeni)}
           />
         ))}
       </div>
 
-      {/* Sürüklenirken görünen klon */}
       <DragOverlay dropAnimation={{ duration: 180, easing: "ease" }}>
         {aktifGorev && (
           <GorevKarti gorev={aktifGorev} index={0} isOverlay
@@ -157,36 +174,6 @@ export default function KanbanBoard({ otomatikAcilModal }: Props) {
       <GorevModal open={modalAcik}
         onClose={() => { setModalAcik(false); setDuzenle(null); }}
         gorev={duzenle} varsayilanDurum={yeniDurum} onKaydet={handleKaydet} />
-
-      <AnimatePresence>
-        {silOnayi && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={(e) => e.target === e.currentTarget && setSilOnayi(null)}>
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 16 }} transition={{ duration: 0.18 }}
-              className="w-full max-w-sm glass-card rounded-2xl p-6">
-              <div className="w-12 h-12 rounded-xl bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.25)] flex items-center justify-center mb-4">
-                <AlertTriangle className="w-6 h-6 text-[#ef4444]" />
-              </div>
-              <h3 className="text-base font-bold text-white mb-1">Görevi Sil</h3>
-              <p className="text-sm text-[#94a3b8] mb-6">
-                <span className="text-white font-semibold">{silOnayi.baslik}</span> görevini silmek istediğinizden emin misiniz?
-              </p>
-              <div className="flex gap-3">
-                <button onClick={() => setSilOnayi(null)}
-                  className="flex-1 py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
-                  İptal
-                </button>
-                <button onClick={() => { storesSil(silOnayi.id); setSilOnayi(null); }}
-                  className="flex-1 py-2.5 rounded-xl bg-[#ef4444] text-white text-sm font-bold hover:bg-[#dc2626] transition-colors">
-                  Evet, Sil
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </DndContext>
   );
 }

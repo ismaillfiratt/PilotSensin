@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Plane, Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
+import { GirisAlani, Buton } from "@/components/form";
 
 function GoogleIcon() {
   return (
@@ -26,12 +27,28 @@ function getRedirectUrl() {
 }
 
 export default function GirisPage() {
-  const router = useRouter();
+  return (
+    <Suspense>
+      <GirisIcerik />
+    </Suspense>
+  );
+}
+
+function GirisIcerik() {
+  const router       = useRouter();
+  const searchParams = useSearchParams();
   const [form, setForm]         = useState({ email: "", password: "" });
   const [goster, setGoster]     = useState(false);
   const [hata, setHata]         = useState("");
   const [yukleniyor, setYuk]    = useState(false);
   const [googleYuk, setGoogleYuk] = useState(false);
+
+  // URL'de ?erisim=reddedildi varsa uyarı göster
+  useEffect(() => {
+    if (searchParams.get("erisim") === "reddedildi") {
+      setHata("Bu sayfaya erişim yetkiniz yok. Lütfen yetkili bir hesapla giriş yapın.");
+    }
+  }, [searchParams]);
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -49,7 +66,22 @@ export default function GirisPage() {
       if (error) {
         setHata("E-posta veya şifre hatalı.");
       } else {
-        router.push("/dashboard");
+        // system_admin kontrolü → /admin veya /dashboard
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profil } = await supabase
+            .from("profiles")
+            .select("system_admin")
+            .eq("id", user.id)
+            .maybeSingle();
+          if (profil?.system_admin) {
+            router.push("/admin");
+          } else {
+            router.push("/dashboard");
+          }
+        } else {
+          router.push("/dashboard");
+        }
         router.refresh();
       }
     } catch {
@@ -122,7 +154,7 @@ export default function GirisPage() {
             type="button"
             onClick={handleGoogle}
             disabled={googleYuk || yukleniyor}
-            className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl border border-[rgba(255,255,255,0.12)] text-white text-sm font-medium hover:bg-[rgba(255,255,255,0.06)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full min-h-12 flex items-center justify-center gap-2.5 px-4 rounded-xl border border-[rgba(255,255,255,0.12)] text-white text-sm font-medium active:bg-white/5 hover:bg-[rgba(255,255,255,0.06)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {googleYuk ? (
               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -140,45 +172,44 @@ export default function GirisPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">E-posta</label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
-                <input
-                  type="email" required autoComplete="email"
-                  value={form.email} onChange={(e) => set("email", e.target.value)}
-                  placeholder="ornek@isletme.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm"
-                />
-              </div>
-            </div>
+            <GirisAlani
+              label="E-posta"
+              type="email"
+              required
+              autoComplete="email"
+              value={form.email}
+              onChange={(e) => set("email", e.target.value)}
+              placeholder="ornek@isletme.com"
+              prefix={<Mail className="w-4 h-4" />}
+            />
 
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs text-[#94a3b8] font-medium">Şifre</label>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-[#94a3b8] font-medium">Şifre</span>
                 <Link href="/sifre-sifirla" className="text-xs text-[#fbc024] hover:underline">
                   Şifremi unuttum
                 </Link>
               </div>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
-                <input
-                  type={goster ? "text" : "password"} required autoComplete="current-password"
-                  value={form.password} onChange={(e) => set("password", e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-11 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm"
-                />
-                <button type="button" onClick={() => setGoster(!goster)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-white transition-colors">
-                  {goster ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
+              <GirisAlani
+                type={goster ? "text" : "password"}
+                required
+                autoComplete="current-password"
+                value={form.password}
+                onChange={(e) => set("password", e.target.value)}
+                placeholder="••••••••"
+                prefix={<Lock className="w-4 h-4" />}
+                suffix={
+                  <button type="button" onClick={() => setGoster(!goster)}
+                    className="min-w-11 min-h-11 flex items-center justify-center rounded-lg text-[#94a3b8] active:text-white transition-colors">
+                    {goster ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                }
+              />
             </div>
 
-            <button type="submit" disabled={yukleniyor || googleYuk}
-              className="w-full py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
-              {yukleniyor ? "Giriş yapılıyor..." : "Giriş Yap"}
-            </button>
+            <Buton type="submit" varyant="primary" yukleniyor={yukleniyor} disabled={googleYuk} className="w-full">
+              Giriş Yap
+            </Buton>
           </form>
 
           <p className="text-center text-sm text-[#94a3b8]">

@@ -3,24 +3,25 @@
 import { motion } from "framer-motion";
 import { Target } from "lucide-react";
 import { buAyYatirma, formatTL, type FonIslem, type FonHedef } from "@/lib/acil-fon-data";
+import type { Kurus } from "@/lib/para";
 
 interface Props {
   islemler:    FonIslem[];
   hedef:       FonHedef | null;   // null = tüm hedefler (aggregate)
   mevcut:      number;
-  toplamHedef: number;
+  toplamHedefKurus: number;
 }
 
-export default function RiskPanel({ islemler, hedef, mevcut, toplamHedef }: Props) {
+export default function RiskPanel({ islemler, hedef, mevcut, toplamHedefKurus }: Props) {
   const hedefId    = hedef?.id;
-  const aylikOdeme = hedef?.aylikOdeme ?? 0;
+  const aylikOdemeKurus = hedef?.aylikOdemeKurus ?? 0;
   const varVeri    = islemler.length > 0;
 
   const buAy      = buAyYatirma(islemler, hedefId);
-  const buAyOran  = aylikOdeme > 0 ? Math.min(buAy / aylikOdeme, 1) : 0;
-  const buAyEksik = aylikOdeme > 0 ? Math.max(aylikOdeme - buAy, 0) : 0;
-  const kalan     = toplamHedef > 0 ? Math.max(toplamHedef - mevcut, 0) : 0;
-  const ayKaldi   = aylikOdeme > 0 && kalan > 0 ? Math.ceil(kalan / aylikOdeme) : 0;
+  const buAyOran  = aylikOdemeKurus > 0 ? Math.min(buAy / aylikOdemeKurus, 1) : 0;
+  const buAyEksik = aylikOdemeKurus > 0 ? Math.max(aylikOdemeKurus - buAy, 0) : 0;
+  const kalan     = toplamHedefKurus > 0 ? Math.max(toplamHedefKurus - mevcut, 0) : 0;
+  const ayKaldi   = aylikOdemeKurus > 0 && kalan > 0 ? Math.ceil(kalan / aylikOdemeKurus) : 0;
 
   return (
     <div className="space-y-4">
@@ -28,14 +29,14 @@ export default function RiskPanel({ islemler, hedef, mevcut, toplamHedef }: Prop
       <div className="glass-card rounded-2xl p-5">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-white">Bu Ay Birikimi</h3>
-          {varVeri && aylikOdeme > 0 && (
-            <span className="text-xs text-[#94a3b8]">{formatTL(buAy)} / {formatTL(aylikOdeme)}</span>
+          {varVeri && aylikOdemeKurus > 0 && (
+            <span className="text-xs text-[#94a3b8]">{formatTL(buAy)} / {formatTL(aylikOdemeKurus)}</span>
           )}
         </div>
 
-        {!varVeri || aylikOdeme === 0 ? (
+        {!varVeri || aylikOdemeKurus === 0 ? (
           <p className="text-xs text-[#94a3b8]">
-            {aylikOdeme === 0 && !hedef
+            {aylikOdemeKurus === 0 && !hedef
               ? "Hedef belirlenmedi."
               : "Henüz işlem eklenmedi."}
           </p>
@@ -66,7 +67,7 @@ export default function RiskPanel({ islemler, hedef, mevcut, toplamHedef }: Prop
           <p className="text-sm font-semibold text-white">Hedefim</p>
         </div>
 
-        {toplamHedef === 0 ? (
+        {toplamHedefKurus === 0 ? (
           <p className="text-xs text-[#94a3b8]">Hedef belirlenmedi. Sağ üstten hedef ekleyebilirsin.</p>
         ) : kalan === 0 ? (
           <p className="text-sm text-[#22c55e] font-semibold">Hedefe ulaşıldı!</p>

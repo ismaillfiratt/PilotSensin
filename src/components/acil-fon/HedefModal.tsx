@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { type FonHedef } from "@/lib/acil-fon-data";
+import { kurus } from "@/lib/para";
 
 interface Props {
   open:         boolean;
@@ -34,8 +35,8 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
   useEffect(() => {
     if (open) {
       setAd(mevcutHedef?.ad ?? "");
-      toplam.setDisplay(fmt(mevcutHedef?.toplamHedef ?? 0));
-      aylik.setDisplay(fmt(mevcutHedef?.aylikOdeme ?? 0));
+      toplam.setDisplay(fmt(Math.round((mevcutHedef?.toplamHedefKurus ?? 0) / 100)));
+      aylik.setDisplay(fmt(Math.round((mevcutHedef?.aylikOdemeKurus  ?? 0) / 100)));
       setOdemeGun(String(mevcutHedef?.odemeGunu ?? 1));
       setAciklama(mevcutHedef?.aciklama ?? "");
     }
@@ -52,8 +53,8 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
     if (!ad.trim() || toplam.value <= 0 || aylik.value <= 0) return;
     onKaydet({
       ad:          ad.trim(),
-      toplamHedef: toplam.value,
-      aylikOdeme:  aylik.value,
+      toplamHedefKurus: kurus(toplam.value),
+      aylikOdemeKurus:  kurus(aylik.value),
       odemeGunu:   parseInt(odemeGun, 10) || 1,
       aciklama:    aciklama.trim() || undefined,
     });
@@ -61,30 +62,33 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
   };
 
   return (
-    <AnimatePresence>
+    <>
       <motion.div
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        onClick={(e) => e.target === e.currentTarget && onClose()}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+        onClick={onClose}
+      />
+      <motion.div
+        initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
+        drag="y" dragConstraints={{ top: 0 }} dragElastic={{ top: 0, bottom: 0.3 }}
+        onDragEnd={(_, info) => { if (info.velocity.y > 300 || info.offset.y > 120) onClose(); }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+        className="fixed z-50 bg-[#0e172a] bottom-0 inset-x-0 rounded-t-2xl border-t border-white/10 max-h-[90vh] overflow-y-auto md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-sm md:w-full"
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ duration: 0.2 }}
-          className="w-full max-w-sm glass-card rounded-2xl p-6 max-h-[90vh] overflow-y-auto"
-        >
-          <div className="flex items-start justify-between mb-6">
+        <div className="md:hidden flex justify-center pt-3 pb-1">
+          <div className="w-12 h-1 rounded-full bg-white/20" />
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="px-5 pt-4 pb-1 flex items-start justify-between">
             <div>
-              <h2 className="text-lg font-bold text-white">{duzenleMi ? "Hedefi Düzenle" : "Yeni Hedef Ekle"}</h2>
+              <h2 className="text-base font-bold text-white">{duzenleMi ? "Hedefi Düzenle" : "Yeni Hedef Ekle"}</h2>
               <p className="text-xs text-[#94a3b8] mt-0.5">Tasarruf hedefini tanımla</p>
             </div>
-            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors">
+            <button type="button" onClick={onClose} className="min-w-11 min-h-11 flex items-center justify-center rounded-xl text-[#94a3b8] active:bg-white/5 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="px-5 pt-2 pb-3 space-y-4">
             {/* Hedef adı */}
             <div>
               <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Hedef Adı *</label>
@@ -136,20 +140,24 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
                 placeholder="örn. Depo binası için birikim"
                 className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm" />
             </div>
+          </div>
 
-            <div className="flex gap-3 pt-2">
+          {/* Sticky footer */}
+          <div className="sticky bottom-0 bg-[#0e172a] px-5 pt-3 border-t border-white/10"
+            style={{ paddingBottom: "max(env(safe-area-inset-bottom), 16px)" }}>
+            <div className="flex gap-3">
               <button type="button" onClick={onClose}
-                className="flex-1 py-3 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                className="flex-1 min-h-12 rounded-xl border border-white/10 text-[#94a3b8] text-sm font-medium active:bg-white/5 transition-colors">
                 İptal
               </button>
               <button type="submit"
-                className="flex-1 py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+                className="flex-1 min-h-12 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold active:bg-[#d9a61f] transition-colors">
                 {duzenleMi ? "Güncelle" : "Kaydet"}
               </button>
             </div>
-          </form>
+          </div>
+        </form>
         </motion.div>
-      </motion.div>
-    </AnimatePresence>
+      </>
   );
 }

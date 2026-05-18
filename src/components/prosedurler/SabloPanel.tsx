@@ -14,6 +14,8 @@ import {
   useProsedurler, tumKategoriler, tumSorumlular,
   type OzelSablonMaddesi, type OzelGrubu,
 } from "@/store/prosedurler";
+import { onaylaSil } from "@/lib/onay";
+import { useGeriAl } from "@/store/geriAl";
 import KomboSecici from "./KomboSecici";
 
 const ICONS: Record<string, React.ElementType> = {
@@ -87,10 +89,18 @@ export default function SabloPanel() {
   };
 
   // #1: tıklama ekleme/kaldırma
-  const handleToggle = (madde: ChecklistSablon | OzelSablonMaddesi) => {
+  const handleToggle = async (madde: ChecklistSablon | OzelSablonMaddesi) => {
     if (ekliBasliklar.has(madde.baslik)) {
       const item = checklist.find(c => c.baslik === madde.baslik);
-      if (item) checklistSil(item.id);
+      if (!item) return;
+      const { onaylandi } = await onaylaSil({ tip: "checklistMaddesi", isim: madde.baslik });
+      if (!onaylandi) return;
+      checklistSil(item.id);
+      useGeriAl.getState().goster({
+        mesaj: `"${madde.baslik}" kaldırıldı.`,
+        sureMs: 10000,
+        geriAlFn: async () => useProsedurler.getState().checklistGeriAl(item.id),
+      });
     } else {
       checklistEkle({
         baslik:          madde.baslik,

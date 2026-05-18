@@ -12,9 +12,12 @@ export type SyncEvent =
   | { tip: "gorevler";          veri: unknown }
   | { tip: "stok";              veri: unknown }
   | { tip: "bildirimler";       veri: unknown }
+  | { tip: "bildirim";          veri: unknown }
   | { tip: "prosedurler";       veri: unknown }
   | { tip: "acil-fon";          veri: unknown }
-  | { tip: "isletme-giderleri"; veri: unknown };
+  | { tip: "isletme-giderleri"; veri: unknown }
+  | { tip: "satislar";          veri: unknown }
+  | { tip: "kdv-havuzu";        veri: unknown };
 
 export function yayin(event: SyncEvent) {
   if (!_channel) return;

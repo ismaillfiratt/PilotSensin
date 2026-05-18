@@ -1,37 +1,45 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { plOzeti, formatTL, type Urun } from "@/lib/kar-zarar-data";
+import { useMemo }             from "react";
+import { motion }              from "framer-motion";
+import { useSatislar }         from "@/store/satislar";
 import { useIsletmeGiderleri } from "@/store/isletmeGiderleri";
+import { plTablosu }           from "@/lib/selectors/pl";
+
+const tl = (n: number) =>
+  (n / 100).toLocaleString("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 2 });
+
+const VURGU_RENK = {
+  pozitif: "#22c55e",
+  negatif: "#ef4444",
+  nötr:    "#94a3b8",
+} as const;
 
 function Satir({
-  label, value, indent = false, bold = false, color, bg, delay = 0,
+  label, tutarKurus, indent = false, bold = false, delay = 0, vurgu,
 }: {
-  label: string; value: string | number; indent?: boolean; bold?: boolean;
-  color?: string; bg?: string; delay?: number;
+  label: string; tutarKurus: number; indent?: boolean; bold?: boolean;
+  delay?: number; vurgu?: "pozitif" | "negatif" | "nötr";
 }) {
-  const goster = typeof value === "number"
-    ? (value < 0 ? "-" : "") + formatTL(value)
-    : value;
+  const renk = vurgu ? VURGU_RENK[vurgu] : (bold ? "#ffffff" : "#94a3b8");
+  const bg   = !bold ? undefined
+    : vurgu === "pozitif" ? "rgba(34,197,94,0.08)"
+    : vurgu === "negatif" ? "rgba(239,68,68,0.08)"
+    : undefined;
 
   return (
     <motion.div
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay }}
-      className="flex items-center justify-between px-5 py-2.5 rounded-lg transition-colors"
+      className="flex items-center justify-between px-5 py-2.5 rounded-lg"
       style={{ backgroundColor: bg }}
     >
-      <span
-        className={`text-sm ${bold ? "font-bold text-white" : "text-[#94a3b8]"} ${indent ? "pl-4" : ""}`}
-      >
+      <span className={`text-sm ${bold ? "font-bold text-white" : "text-[#94a3b8]"} ${indent ? "pl-4" : ""}`}>
         {label}
       </span>
-      <span
-        className={`text-sm font-${bold ? "bold" : "medium"}`}
-        style={{ color: color ?? (bold ? "#ffffff" : "#94a3b8") }}
-      >
-        {goster}
+      <span className={`text-sm tabular-nums ${bold ? "font-bold" : "font-medium"}`} style={{ color: renk }}>
+        {tl(tutarKurus)}
       </span>
     </motion.div>
   );
@@ -46,55 +54,77 @@ function Ayrac({ label }: { label: string }) {
   );
 }
 
-export default function PLTablosu({ urunler }: { urunler: Urun[] }) {
+interface Props {
+  baslangic?: string;
+  bitis?:     string;
+}
+
+export default function PLTablosu({ baslangic, bitis }: Props) {
+  const { kayitlar } = useSatislar();
   const { giderler } = useIsletmeGiderleri();
-  const toplamOpGider = giderler.reduce((s, g) => s + g.tutar, 0);
-  const { toplamGelir, toplamSMM, brutKar, brutMarj } = plOzeti(urunler);
-  const netKar  = brutKar - toplamOpGider;
-  const netMarj = toplamGelir > 0 ? (netKar / toplamGelir) * 100 : 0;
+
+  const pl = useMemo(
+    () => plTablosu(kayitlar, giderler, baslangic, bitis),
+    [kayitlar, giderler, baslangic, bitis]
+  );
+
+  const sections = [
+    { ayrac: "Gelir",                    satirlar: [{ label: "Satış Hasılatı",          tutarKurus: pl.ciroKurus,          delay: 0.05, vurgu: "pozitif" as const }] },
+    { ayrac: "Satılan Mal Maliyeti (SMM)", satirlar: [{ label: "Ürün / hammadde maliyeti", tutarKurus: -pl.smmKurus,         delay: 0.10, vurgu: "negatif" as const, indent: true }] },
+    { ayrac: "Brüt Kâr",               satirlar: [{ label: `Brüt Kâr  (%${(pl.brutMarj * 100).toFixed(1)} marj)`, tutarKurus: pl.brutKarKurus, delay: 0.15, vurgu: pl.brutKarKurus >= 0 ? "pozitif" as const : "negatif" as const, bold: true }] },
+  ];
 
   return (
     <div className="glass-card rounded-2xl py-4 w-full lg:w-80 shrink-0">
       <div className="px-5 pb-3 border-b border-[rgba(255,255,255,0.06)]">
-        <h2 className="text-sm font-semibold text-white">Kar & Zarar Özeti</h2>
-        <p className="text-xs text-[#94a3b8] mt-0.5">Aylık dönem</p>
+        <h2 className="text-sm font-semibold text-white">Kâr &amp; Zarar Özeti</h2>
+        <p className="text-xs text-[#94a3b8] mt-0.5">
+          Gerçek satış verisi · {pl.donemBaslangic} – {pl.donemBitis}
+        </p>
       </div>
 
       <div className="py-2 space-y-0.5">
-        <Ayrac label="Gelir" />
-        <Satir label="Toplam Satış Geliri" value={toplamGelir} delay={0.05} />
-
-        <Ayrac label="Satılan Mal Maliyeti (SMM)" />
-        <Satir label="Ürün / hammadde maliyeti" value={-toplamSMM} color="#ef4444" indent delay={0.10} />
-
-        <Ayrac label="Brüt Kar" />
-        <Satir
-          label={`Brüt Kar  (%${brutMarj.toFixed(1)} marj)`}
-          value={brutKar}
-          bold
-          color={brutMarj >= 25 ? "#22c55e" : brutMarj >= 15 ? "#fbc024" : "#ef4444"}
-          bg={brutMarj >= 25 ? "rgba(34,197,94,0.06)" : "rgba(251,192,36,0.06)"}
-          delay={0.15}
-        />
+        {sections.map(({ ayrac, satirlar: ss }) => (
+          <div key={ayrac}>
+            <Ayrac label={ayrac} />
+            {ss.map((s) => (
+              <Satir key={s.label} {...s} />
+            ))}
+          </div>
+        ))}
 
         <Ayrac label="İşletme Giderleri" />
         {giderler.length === 0 ? (
-          <div className="px-5 py-2 text-xs text-[#64748b] italic">Henüz işletme gideri eklenmedi</div>
+          <div className="px-5 py-2 text-xs text-[#64748b] italic">
+            Henüz işletme gideri eklenmedi
+          </div>
         ) : (
-          giderler.map(({ kategori, tutar }: { kategori: string; tutar: number }, i: number) => (
-            <Satir key={kategori} label={kategori} value={-tutar} color="#ef4444" indent delay={0.18 + i * 0.04} />
+          giderler.map((g, i) => (
+            <Satir
+              key={g.id}
+              label={g.kategori}
+              tutarKurus={-g.tutarKurus}
+              vurgu="negatif"
+              indent
+              delay={0.18 + i * 0.04}
+            />
           ))
         )}
-        <Satir label="Toplam İşletme Gideri" value={-toplamOpGider} bold color="#ef4444" delay={0.38} />
+        <Satir
+          label="Toplam İşletme Gideri"
+          tutarKurus={-pl.toplamGiderKurus}
+          vurgu="negatif"
+          bold
+          delay={0.38}
+        />
 
         <div className="mx-5 my-1 h-px bg-[rgba(255,255,255,0.08)]" />
 
         <Satir
-          label={`Net Kar  (%${netMarj.toFixed(1)} marj)`}
-          value={netKar}
+          label={`Net Kâr  (%${(pl.netMarj * 100).toFixed(1)} marj)`}
+          tutarKurus={pl.netKarKurus}
+          vurgu={pl.netKarKurus >= 0 ? "pozitif" : "negatif"}
           bold
-          color={netKar >= 0 ? "#22c55e" : "#ef4444"}
-          bg={netKar >= 0 ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)"}
           delay={0.42}
         />
       </div>
