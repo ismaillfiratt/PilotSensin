@@ -112,10 +112,16 @@ export default function Sidebar({ mobile = false }: Props) {
             <span className="text-[10px] font-semibold uppercase tracking-wider text-[#64748b]">Yasal</span>
           </div>
           <div className="space-y-0.5">
+            <Link href="/politikalar" className="block text-[11px] text-[#fbc024] hover:text-[#d9a61f] transition-colors py-0.5 font-semibold">
+              Tüm Yasal Belgeler →
+            </Link>
             {[
-              { href: "/politikalar/kvkk",              label: "KVKK"              },
-              { href: "/politikalar/gizlilik",           label: "Gizlilik"          },
-              { href: "/politikalar/kullanim-kosullari", label: "Kullanım Koşulları" },
+              { href: "/politikalar/kvkk",               label: "KVKK"               },
+              { href: "/politikalar/gizlilik",            label: "Gizlilik"           },
+              { href: "/politikalar/kullanim-kosullari",  label: "Kullanım Koşulları" },
+              { href: "/politikalar/cerez",               label: "Çerez"              },
+              { href: "/politikalar/iade-iptal",          label: "İade & İptal"       },
+              { href: "/politikalar/sla",                 label: "SLA"                },
             ].map(({ href, label }) => (
               <Link key={href} href={href} className="block text-[11px] text-[#64748b] hover:text-[#94a3b8] transition-colors py-0.5 truncate">
                 {label}
