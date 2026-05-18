@@ -7,7 +7,7 @@ import Link from "next/link";
 import {
   Home, Package, Wallet, CheckSquare, MoreHorizontal,
   ClipboardCheck, TrendingUp, Shield, Bell, User,
-  Settings, Users, LogOut, ChevronRight,
+  Settings, Users, LogOut, ChevronRight, MessageCircle,
   type LucideIcon,
 } from "lucide-react";
 import { useSirket }      from "@/store/sirket";
@@ -30,19 +30,21 @@ interface SayfaItem {
 
 /* ─── Sabitler ─── */
 const PILOT_DAHA: SayfaItem[] = [
-  { label: "Kâr-Zarar",    href: "/kar-zarar",   ikon: TrendingUp     },
-  { label: "Prosedürler",  href: "/prosedurler",  ikon: ClipboardCheck },
-  { label: "Acil Fon",     href: "/acil-fon",     ikon: Shield         },
-  { label: "Bildirimler",  href: "/bildirimler",  ikon: Bell           },
-  { label: "Profil",       href: "/profil",       ikon: User           },
-  { label: "Ayarlar",      href: "/ayarlar",      ikon: Settings       },
-  { label: "Ekip",         href: "/ekip",         ikon: Users          },
+  { label: "Kâr-Zarar",           href: "/kar-zarar",   ikon: TrendingUp     },
+  { label: "Prosedürler",         href: "/prosedurler",  ikon: ClipboardCheck },
+  { label: "Acil Fon",            href: "/acil-fon",     ikon: Shield         },
+  { label: "Bildirimler",         href: "/bildirimler",  ikon: Bell           },
+  { label: "İletişim & Destek",   href: "/iletisim",     ikon: MessageCircle  },
+  { label: "Profil",              href: "/profil",       ikon: User           },
+  { label: "Ayarlar",             href: "/ayarlar",      ikon: Settings       },
+  { label: "Ekip",                href: "/ekip",         ikon: Users          },
 ];
 
 const COPILOT_DAHA: SayfaItem[] = [
-  { label: "Bildirimler",  href: "/bildirimler",  ikon: Bell     },
-  { label: "Profil",       href: "/profil",       ikon: User     },
-  { label: "Ayarlar",      href: "/ayarlar",      ikon: Settings },
+  { label: "Bildirimler",        href: "/bildirimler",  ikon: Bell           },
+  { label: "İletişim & Destek",  href: "/iletisim",     ikon: MessageCircle  },
+  { label: "Profil",             href: "/profil",       ikon: User           },
+  { label: "Ayarlar",            href: "/ayarlar",      ikon: Settings       },
 ];
 
 export default function MobileNav() {

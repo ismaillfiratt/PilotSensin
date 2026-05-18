@@ -43,7 +43,7 @@ interface AdminLog {
   islem: string; detay: Record<string, unknown> | null; olusturma: string;
 }
 
-type TabAdi = "sirketler" | "adminler" | "admin-yonetimi" | "bildirim" | "denetim";
+type TabAdi = "sirketler" | "adminler" | "admin-yonetimi" | "bildirim" | "denetim" | "destek";
 
 /* ─── Şirket filtre ─── */
 type TarihSecim = "tumu" | "bugun" | "dun" | "hafta" | "ay" | "ozel";
@@ -752,6 +752,7 @@ export default function AdminPage() {
         )}
         <TabButon aktif={aktifTab === "bildirim"}      onClick={() => setAktifTab("bildirim")}>Bildirim Gönder</TabButon>
         <TabButon aktif={aktifTab === "denetim"}       onClick={() => setAktifTab("denetim")}>Denetim Kaydı</TabButon>
+        <TabButon aktif={aktifTab === "destek"}        onClick={() => setAktifTab("destek")}>Destek</TabButon>
       </div>
 
       {/* ── Şirketler ── */}
@@ -968,6 +969,11 @@ export default function AdminPage() {
           )}
         </div>
       )}
+
+      {/* ── Destek ── */}
+      {aktifTab === "destek" && <DestekTab />}
     </div>
   );
 }
+
+import DestekTab from "@/components/admin/DestekTab";

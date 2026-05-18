@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Trash2, ChevronRight } from "lucide-react";
+import { Trash2, ChevronRight, MessageCircle } from "lucide-react";
 import DbTani from "@/components/ayarlar/DbTani";
 import BildirimAyarlari from "@/components/ayarlar/BildirimAyarlari";
 import TemaAyarlari from "@/components/ayarlar/TemaAyarlari";
@@ -29,6 +29,21 @@ export default function AyarlarPage() {
         <div className="flex-1">
           <p className="text-sm font-semibold text-white">Çöp Kutusu</p>
           <p className="text-xs text-[#64748b]">Silinen kayıtları görüntüle ve geri yükle</p>
+        </div>
+        <ChevronRight className="w-4 h-4 text-[#475569] group-hover:text-[#94a3b8] transition-colors" />
+      </Link>
+
+      {/* İletişim & Destek */}
+      <Link
+        href="/iletisim"
+        className="flex items-center gap-4 px-5 py-4 glass-card rounded-2xl hover:bg-white/3 transition-colors group"
+      >
+        <div className="w-9 h-9 rounded-xl bg-[rgba(59,130,246,0.1)] border border-[rgba(59,130,246,0.2)] flex items-center justify-center shrink-0">
+          <MessageCircle className="w-4 h-4 text-[#3b82f6]" />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-white">İletişim & Destek</p>
+          <p className="text-xs text-[#64748b]">Soru, hata ve önerini bize ilet</p>
         </div>
         <ChevronRight className="w-4 h-4 text-[#475569] group-hover:text-[#94a3b8] transition-colors" />
       </Link>
