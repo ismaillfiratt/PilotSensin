@@ -1,131 +1,102 @@
-export const metadata = { title: "Gizlilik Politikası – Pilot Sensin" };
+import type { Metadata } from "next";
+import Link from "next/link";
+
+export const metadata: Metadata = { title: "Gizlilik Politikası – PilotSensin" };
+
+const GUNCELLEME = "19 Mayıs 2026";
 
 export default function GizlilikPage() {
   return (
-    <article className="prose-custom">
-      <h1>Gizlilik Politikası</h1>
-      <p className="lead">
-        Pilot Sensin olarak gizliliğinize önem veriyoruz. Bu politika, Platform&apos;u
-        kullanırken verilerinizi nasıl topladığımızı, kullandığımızı ve koruduğumuzu
-        açıklamaktadır.
-      </p>
+    <div className="space-y-6">
+      <div className="glass-card rounded-2xl p-6 md:p-8">
+        <h1 className="text-2xl font-bold text-white mb-1">Gizlilik Politikası</h1>
+        <p className="text-sm text-[#64748b]">Son güncelleme: {GUNCELLEME}</p>
+        <p className="text-sm text-[#94a3b8] mt-3">
+          PilotSensin olarak gizliliğinizi ciddiye alıyoruz. Bu politika, hangi bilgileri
+          topladığımızı, nasıl kullandığımızı ve nasıl koruduğumuzu açıklamaktadır.
+        </p>
+      </div>
 
-      <section>
-        <h2>1. Toplanan Veriler</h2>
-        <p>
-          <strong>Hesap verileri:</strong> Kayıt olurken sağladığınız ad, soyad,
-          e-posta adresi ve işletme bilgileri.
-        </p>
-        <p>
-          <strong>Kullanım verileri:</strong> Platform ile etkileşimleriniz,
-          sayfa görüntülemeleri, oturum süreleri ve özellik kullanımı gibi
-          anonim istatistikler.
-        </p>
-        <p>
-          <strong>Teknik veriler:</strong> IP adresi, tarayıcı türü ve versiyonu,
-          işletim sistemi, referans URL.
-        </p>
-        <p>
-          <strong>İşletme verileri:</strong> Nakit akışı, stok, görevler ve
-          prosedürler gibi siz giren tüm veriler yalnızca size aittir.
-        </p>
-      </section>
+      <div className="glass-card rounded-2xl p-6 md:p-8 space-y-8 text-[#94a3b8] leading-relaxed">
 
-      <section>
-        <h2>2. Verileri Nasıl Kullanıyoruz</h2>
-        <ul>
-          <li>Platform hizmetlerini sağlamak ve sürdürmek</li>
-          <li>Hesabınızı yönetmek ve kimliğinizi doğrulamak</li>
-          <li>Teknik destek ve müşteri hizmetleri sunmak</li>
-          <li>Hizmet kalitesini iyileştirmek</li>
-          <li>
-            Açık rızanız olması halinde ürün güncellemeleri ve duyurular göndermek
-          </li>
-          <li>Yasal yükümlülükleri yerine getirmek</li>
-        </ul>
-      </section>
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold text-white">1. Hangi Bilgileri Topluyoruz?</h2>
+          <h3 className="text-base font-semibold text-[#e2e8f0]">1.1 Hesap Bilgileri</h3>
+          <p className="text-sm">Kayıt sırasında ad, soyad ve e-posta adresinizi alıyoruz. Profil sayfasında ek bilgiler (telefon, işletme adı, adres) girebilirsiniz; bu bilgiler isteğe bağlıdır.</p>
+          <h3 className="text-base font-semibold text-[#e2e8f0]">1.2 Ödeme Bilgileri</h3>
+          <p className="text-sm">Abonelik ödemelerinde kart bilgileriniz doğrudan platformumuzda saklanmaz; ödeme altyapı sağlayıcısı üzerinden işlenir. Sistemimizde yalnızca işlem referans numarası ve abonelik durumuna ait veriler tutulur.</p>
+          <h3 className="text-base font-semibold text-[#e2e8f0]">1.3 Kullanım Verileri</h3>
+          <p className="text-sm">Platform kullanımınız sırasında IP adresi, tarayıcı türü, cihaz bilgisi, ziyaret edilen sayfalar ve özellik kullanım istatistikleri otomatik olarak toplanır.</p>
+          <h3 className="text-base font-semibold text-[#e2e8f0]">1.4 İşletme Verileri</h3>
+          <p className="text-sm">Platforma girdiğiniz satış kayıtları, stok bilgileri, nakit akışı, görevler ve diğer işletme verileri tamamen size aittir. Bu veriler yalnızca hizmetin sunulması amacıyla sistemde tutulur, üçüncü taraflarla paylaşılmaz.</p>
+          <h3 className="text-base font-semibold text-[#e2e8f0]">1.5 Çerezler</h3>
+          <p className="text-sm">Çerezler hakkında detaylı bilgi için <Link href="/politikalar/cerez" className="text-[#fbc024] hover:underline">Çerez Politikamızı</Link> inceleyiniz.</p>
+        </section>
 
-      <section>
-        <h2>3. Veri Güvenliği</h2>
-        <p>
-          Verileriniz şifrelenmiş bağlantılar (TLS/HTTPS) üzerinden iletilir.
-          Supabase altyapısı, endüstri standardı güvenlik önlemleriyle korunmaktadır.
-          Şifreniz hiçbir zaman düz metin olarak saklanmaz; güvenli hash
-          algoritmaları kullanılır.
-        </p>
-        <p>
-          Güvenlik ihlali şüphesi halinde, ilgili mevzuat kapsamında sizi
-          derhal bilgilendireceğiz.
-        </p>
-      </section>
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold text-white">2. Bilgilerinizi Nasıl Kullanıyoruz?</h2>
+          <ul className="space-y-1.5 text-sm list-disc list-inside">
+            <li>Hesabınızı oluşturmak, doğrulamak ve yönetmek</li>
+            <li>PilotSensin hizmetini sunmak ve teknik işleyişi sağlamak</li>
+            <li>Abonelik ve faturalandırma işlemlerini gerçekleştirmek</li>
+            <li>Müşteri desteği sağlamak ve destek taleplerinizi yanıtlamak</li>
+            <li>Platform güvenliğini korumak ve yetkisiz erişimleri önlemek</li>
+            <li>Hizmet değişiklikleri ve önemli güncellemeler hakkında bilgilendirme yapmak</li>
+            <li>Hizmet kalitesini ölçmek ve iyileştirmek</li>
+            <li>Yasal yükümlülükleri yerine getirmek</li>
+          </ul>
+          <p className="text-sm">Verilerinizi reklam amaçlı üçüncü taraflara satmıyoruz.</p>
+        </section>
 
-      <section>
-        <h2>4. Çerezler ve Yerel Depolama</h2>
-        <p>
-          Platform, temel işlevselliği sağlamak amacıyla oturum çerezleri ve
-          tarayıcının yerel depolama alanını (localStorage) kullanır.
-          Bu veriler; tema tercihiniz, bildirim ayarlarınız ve oturum durumunuz
-          gibi bilgileri içerir. Üçüncü taraf reklamcılık çerezi kullanılmaz.
-        </p>
-      </section>
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold text-white">3. Üçüncü Taraflarla Paylaşım</h2>
+          <p className="text-sm">Verileriniz yalnızca hizmetin sunulması için zorunlu olan altyapı sağlayıcılarıyla paylaşılmaktadır:</p>
+          <div className="space-y-2 text-sm">
+            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-4">
+              <p className="text-white font-semibold mb-1">Supabase Inc. — Veritabanı, Kimlik Doğrulama ve Depolama</p>
+              <p>Hesap verileri ve işletme verileriniz Supabase Inc. altyapısında barındırılmaktadır. Supabase sunucuları Singapur konumludur. SOC 2 Type II ve ISO 27001 sertifikalıdır.</p>
+            </div>
+            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-4">
+              <p className="text-white font-semibold mb-1">Vercel Inc. — Uygulama Barındırma (Global CDN)</p>
+              <p>Uygulama kodumuz Vercel global ağı üzerinden sunulmaktadır.</p>
+            </div>
+            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-4">
+              <p className="text-white font-semibold mb-1">Resend Inc. — E-posta Servisi (ABD)</p>
+              <p>Hesap doğrulama, destek yanıtları ve sistem bildirimleri için kullanılır.</p>
+            </div>
+          </div>
+        </section>
 
-      <section>
-        <h2>5. Üçüncü Taraf Hizmetler</h2>
-        <p>
-          Platform, aşağıdaki üçüncü taraf altyapılarından yararlanmaktadır:
-        </p>
-        <ul>
-          <li>
-            <strong>Supabase</strong> – Kimlik doğrulama ve veri depolama
-          </li>
-          <li>
-            <strong>Vercel</strong> – Platform barındırma
-          </li>
-        </ul>
-        <p>
-          Bu hizmetlerin kendi gizlilik politikaları mevcuttur. Verileriniz
-          bu sağlayıcılar aracılığıyla işlenmekte ancak üçüncü taraflara
-          satılmamaktadır.
-        </p>
-      </section>
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold text-white">4. Veri Güvenliği</h2>
+          <p className="text-sm">TLS şifreli iletişim, AES-256 veritabanı şifrelemesi, Row Level Security ile yalıtım, güvenli parola hashleme ve düzenli güvenlik güncellemeleri uygulanmaktadır.</p>
+        </section>
 
-      <section>
-        <h2>6. Veri Sahipliği</h2>
-        <p>
-          Platform&apos;a girdiğiniz tüm işletme verileri (nakit akışı, stok,
-          görevler, prosedürler vb.) <strong>yalnızca size aittir</strong>.
-          Bu verileri analiz, pazarlama veya üçüncü taraflarla paylaşım amacıyla
-          kullanmıyoruz.
-        </p>
-      </section>
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold text-white">5. Veri Saklama</h2>
+          <p className="text-sm">Hesabınızı sildiğinizde kişisel verileriniz 30 gün içinde kalıcı olarak silinir. Mali kayıtlar Vergi Usul Kanunu uyarınca 10 yıl saklanmak zorundadır.</p>
+        </section>
 
-      <section>
-        <h2>7. Veri Silme</h2>
-        <p>
-          Hesabınızı istediğiniz zaman silebilirsiniz. Silme işlemi, kişisel
-          verilerinizi kalıcı olarak kaldırır. Yasal saklama yükümlülüğü
-          gerektiren veriler ilgili süre sonunda silinir.
-        </p>
-      </section>
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold text-white">6. Çocukların Gizliliği</h2>
+          <p className="text-sm">PilotSensin yalnızca 18 yaş ve üzerindeki kişilere yönelik bir platformdur. 18 yaşın altındaki kişilere ait verileri öğrendiğimizde derhal sileriz.</p>
+        </section>
 
-      <section>
-        <h2>8. Politika Değişiklikleri</h2>
-        <p>
-          Bu politikada önemli değişiklik yapıldığında, kayıtlı e-posta
-          adresinize bildirim gönderilecektir. Güncellenmiş politika, yayın
-          tarihinden itibaren geçerli olacaktır.
-        </p>
-      </section>
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold text-white">7. Politika Değişiklikleri</h2>
+          <p className="text-sm">Önemli değişiklikler olduğunda kayıtlı e-posta adresinize bildirim göndeririz ve sayfanın güncelleme tarihini değiştiririz.</p>
+        </section>
 
-      <section>
-        <h2>9. İletişim</h2>
-        <p>
-          Gizlilik konusundaki sorularınız için:{" "}
-          <a href="mailto:gizlilik@pilotsensin.com">gizlilik@pilotsensin.com</a>
-        </p>
-      </section>
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold text-white">8. Haklarınız</h2>
+          <p className="text-sm">KVKK kapsamındaki tüm haklarınız için <Link href="/politikalar/kvkk" className="text-[#fbc024] hover:underline">KVKK Aydınlatma Metni</Link>ni inceleyiniz.</p>
+        </section>
 
-      <p className="meta">Son güncelleme: Mayıs 2025</p>
-    </article>
+        <div className="border-t border-[rgba(255,255,255,0.07)] pt-6 text-sm text-[#64748b]">
+          <p>Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[#fbc024] hover:underline">destek@pilotsensin.com</Link></p>
+          <p className="mt-1">Son güncelleme: {GUNCELLEME}</p>
+        </div>
+      </div>
+    </div>
   );
 }

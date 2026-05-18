@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Plane, Mail, Lock, User, Building2, Eye, EyeOff, AlertCircle, CheckCircle2, MailCheck } from "lucide-react";
+import { Plane, Mail, Lock, User, Building2, Eye, EyeOff, AlertCircle, CheckCircle2, MailCheck, Check } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 
 function GoogleIcon() {
@@ -43,6 +43,7 @@ export default function KayitPage() {
   const [yukleniyor, setYuk]          = useState(false);
   const [emailGonderildi, setEG]      = useState(false);
   const [googleYuk, setGoogleYuk]     = useState(false);
+  const [yasalKabul, setYasalKabul]   = useState(false);
 
   const handleGoogle = async () => {
     setHata("");
@@ -77,6 +78,7 @@ export default function KayitPage() {
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.businessAd.trim()) { setHata("İşletme adı zorunlu."); return; }
+    if (!yasalKabul) { setHata("Devam etmek için yasal belgeleri kabul etmeniz gerekiyor."); return; }
     setHata("");
     setYuk(true);
 
@@ -103,6 +105,9 @@ export default function KayitPage() {
         : error.message);
       return;
     }
+
+    // Yasal kabul kaydı
+    await fetch("/api/yasal-kabul", { method: "POST" }).catch(() => {});
 
     // Oturum açıldıysa (e-posta onayı kapalı) direkt dashboard'a
     if (data.session) {
@@ -317,13 +322,44 @@ export default function KayitPage() {
                 </select>
               </div>
 
-              <div className="flex gap-3 pt-2">
+              {/* Yasal kabul checkbox */}
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setYasalKabul(v => !v)}
+                onKeyDown={e => e.key === " " && setYasalKabul(v => !v)}
+                className="flex items-start gap-3 p-3.5 rounded-xl border transition-all cursor-pointer select-none"
+                style={{
+                  borderColor:     yasalKabul ? "rgba(251,192,36,0.4)" : "rgba(255,255,255,0.1)",
+                  backgroundColor: yasalKabul ? "rgba(251,192,36,0.06)" : "rgba(255,255,255,0.02)",
+                }}
+              >
+                <div
+                  className="w-4 h-4 rounded flex items-center justify-center shrink-0 mt-0.5 transition-colors"
+                  style={{
+                    backgroundColor: yasalKabul ? "#fbc024" : "transparent",
+                    border: yasalKabul ? "1.5px solid #fbc024" : "1.5px solid rgba(255,255,255,0.25)",
+                  }}
+                >
+                  {yasalKabul && <Check className="w-3 h-3 text-[#0e172a]" />}
+                </div>
+                <p className="text-xs text-[#94a3b8] leading-relaxed">
+                  <Link href="/politikalar/kullanim-kosullari" target="_blank" onClick={e => e.stopPropagation()} className="text-[#fbc024] hover:underline">Kullanım Koşulları</Link>
+                  {", "}
+                  <Link href="/politikalar/gizlilik" target="_blank" onClick={e => e.stopPropagation()} className="text-[#fbc024] hover:underline">Gizlilik Politikası</Link>
+                  {" ve verilerimin aktarılmasına ilişkin "}
+                  <Link href="/politikalar/acik-riza" target="_blank" onClick={e => e.stopPropagation()} className="text-[#fbc024] hover:underline">Açık Rıza Metni</Link>
+                  {"'ni okudum, kabul ediyorum."}
+                </p>
+              </div>
+
+              <div className="flex gap-3">
                 <button type="button" onClick={() => { setAdim(1); setHata(""); }}
                   className="flex-1 py-3 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
                   ← Geri
                 </button>
-                <button type="submit" disabled={yukleniyor}
-                  className="flex-1 py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-60">
+                <button type="submit" disabled={yukleniyor || !yasalKabul}
+                  className="flex-1 py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
                   {yukleniyor ? "Kaydediliyor..." : "Hesap Oluştur"}
                 </button>
               </div>

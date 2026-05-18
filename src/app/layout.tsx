@@ -5,6 +5,7 @@ import ToastContainer from "@/components/ui/ToastContainer";
 import SwProvider from "@/components/providers/SwProvider";
 import OnayDialog from "@/components/onay/OnayDialog";
 import GeriAlSnackbar from "@/components/snackbar/GeriAlSnackbar";
+import CerezBanner from "@/components/cerez/CerezBanner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -54,6 +55,7 @@ export default function RootLayout({
         <ToastContainer />
         <OnayDialog />
         <GeriAlSnackbar />
+        <CerezBanner />
         <SwProvider />
       </body>
     </html>

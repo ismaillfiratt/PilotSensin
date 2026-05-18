@@ -218,6 +218,14 @@ function GirisIcerik() {
               Kayıt Ol
             </Link>
           </p>
+
+          <p className="text-center text-[10px] text-[#475569] leading-relaxed">
+            Sisteme giriş yaparak{" "}
+            <Link href="/politikalar/kullanim-kosullari" className="hover:text-[#94a3b8] underline">
+              Kullanım Koşulları
+            </Link>
+            &apos;nı kabul etmiş sayılırsınız.
+          </p>
         </div>
       </motion.div>
     </div>

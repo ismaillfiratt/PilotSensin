@@ -318,17 +318,23 @@ export default function LandingPage() {
 
       {/* ── Footer ─────────────────────────────────────────────────────────── */}
       <footer style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-        <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col items-center gap-4">
           <span className="font-black tracking-tight" style={{ color: "#fbc024" }}>
             Pilot<span style={{ color: "#64748b" }}>Sensin</span>
           </span>
-          <div className="flex items-center gap-6 text-xs" style={{ color: "#334155" }}>
-            <Link href="/fiyatlandirma" className="hover:text-slate-400">Fiyatlandırma</Link>
-            <Link href="/politikalar/gizlilik" className="hover:text-slate-400">Gizlilik</Link>
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs" style={{ color: "#334155" }}>
+            <Link href="/fiyatlandirma"                  className="hover:text-slate-400">Fiyatlandırma</Link>
+            <Link href="/politikalar/kvkk"               className="hover:text-slate-400">KVKK</Link>
+            <Link href="/politikalar/gizlilik"           className="hover:text-slate-400">Gizlilik</Link>
             <Link href="/politikalar/kullanim-kosullari" className="hover:text-slate-400">Kullanım Koşulları</Link>
-            <Link href="/politikalar/kvkk" className="hover:text-slate-400">KVKK</Link>
+            <Link href="/politikalar/cerez"              className="hover:text-slate-400">Çerez</Link>
+            <Link href="/politikalar/mesafeli-satis"     className="hover:text-slate-400">Mesafeli Satış</Link>
+            <Link href="/politikalar/on-bilgilendirme"   className="hover:text-slate-400">Ön Bilgilendirme</Link>
+            <Link href="/politikalar/iade-iptal"         className="hover:text-slate-400">İade &amp; İptal</Link>
+            <Link href="/politikalar/acik-riza"          className="hover:text-slate-400">Açık Rıza</Link>
+            <Link href="/politikalar/sla"                className="hover:text-slate-400">SLA</Link>
           </div>
-          <p className="text-xs" style={{ color: "#334155" }}>© {new Date().getFullYear()} PilotSensin</p>
+          <p className="text-xs" style={{ color: "#334155" }}>© {new Date().getFullYear()} PilotSensin · destek@pilotsensin.com</p>
         </div>
       </footer>
 
