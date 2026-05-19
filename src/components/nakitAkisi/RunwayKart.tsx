@@ -60,12 +60,23 @@ export default function RunwayKart() {
           )}
         </div>
 
-        <div className="flex items-baseline gap-2">
+        <div className="flex items-baseline gap-2 flex-wrap">
           <span className="font-number font-semibold text-3xl text-[#0F172A]">
             {hesap.gun === Infinity ? "∞" : hesap.gun}
           </span>
           <span className="text-sm" style={{ color: "var(--text-secondary)" }}>gün</span>
         </div>
+        <p className="text-xs font-medium" style={{ color: hesap.durum === "kritik" ? "#C97676" : hesap.durum === "dikkat" ? "#F59E0B" : "var(--color-success)" }}>
+          {hesap.gun === Infinity
+            ? "Yeterli nakit rezervi var"
+            : hesap.gun === 0
+            ? "Nakit tükendi — acil önlem gerekli"
+            : hesap.durum === "kritik"
+            ? `${hesap.gun} gün içinde nakit kritik seviyeye düşebilir`
+            : hesap.durum === "dikkat"
+            ? `${hesap.gun} gün yeterli — giderleri izle`
+            : `${hesap.gun} gün yeterli nakit`}
+        </p>
 
         <div className="pt-3 border-t border-black/5 grid grid-cols-3 gap-3 text-xs">
           <div>

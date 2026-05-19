@@ -90,24 +90,46 @@ function tekrarlayanKalemler(
 ): PlanlananKalem[] {
   const kalemler: PlanlananKalem[] = [];
   const simdi = new Date();
+  simdi.setHours(0, 0, 0, 0);
 
   for (const t of tekrarlayanlar) {
     if (!t.aktif) continue;
-    // Bu ay ve gelecek ay için ekle
-    for (let ay = 0; ay <= 1; ay++) {
-      const tarihObj = new Date(simdi.getFullYear(), simdi.getMonth() + ay, t.odemeGunu);
-      if (tarihObj < simdi) continue;
-      const tarih = tarihObj.toISOString().split("T")[0];
-      kalemler.push({
-        id:         `tekrar_${t.id}_${tarih}`,
-        tip:        t.tip,
-        kategori:   t.kategori,
-        tutarKurus:      t.tutarKurus,
-        vadeTarihi: tarih,
-        tamamlandi: false,
-        aciklama:   t.ad,
-        kaynak:     "maas_otomatik",
-      });
+    const periyot = t.tekrarPeriyot ?? "aylik";
+
+    if (periyot === "gunluk") {
+      // Sonraki 30 gün, her gün
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(simdi); d.setDate(simdi.getDate() + i);
+        const tarih = d.toISOString().split("T")[0];
+        kalemler.push({ id: `tekrar_${t.id}_${tarih}`, tip: t.tip, kategori: t.kategori, tutarKurus: t.tutarKurus, vadeTarihi: tarih, tamamlandi: false, aciklama: t.ad, kaynak: "maas_otomatik" });
+      }
+    } else if (periyot === "haftalik") {
+      // Sonraki 30 gün, haftada bir (odemeGunu = 0-6, haftanın günü)
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(simdi); d.setDate(simdi.getDate() + i);
+        if (d.getDay() === (t.odemeGunu % 7)) {
+          const tarih = d.toISOString().split("T")[0];
+          kalemler.push({ id: `tekrar_${t.id}_${tarih}`, tip: t.tip, kategori: t.kategori, tutarKurus: t.tutarKurus, vadeTarihi: tarih, tamamlandi: false, aciklama: t.ad, kaynak: "maas_otomatik" });
+        }
+      }
+    } else if (periyot === "2ayda1" || periyot === "3ayda1") {
+      const adim = periyot === "2ayda1" ? 2 : 3;
+      for (let ay = 0; ay <= Math.ceil(30 / 28 / adim) + 1; ay++) {
+        const tarihObj = new Date(simdi.getFullYear(), simdi.getMonth() + ay * adim, t.odemeGunu);
+        if (tarihObj < simdi) continue;
+        const sonuc = new Date(simdi); sonuc.setDate(sonuc.getDate() + 30);
+        if (tarihObj > sonuc) break;
+        const tarih = tarihObj.toISOString().split("T")[0];
+        kalemler.push({ id: `tekrar_${t.id}_${tarih}`, tip: t.tip, kategori: t.kategori, tutarKurus: t.tutarKurus, vadeTarihi: tarih, tamamlandi: false, aciklama: t.ad, kaynak: "maas_otomatik" });
+      }
+    } else {
+      // "aylik" — varsayılan: bu ay ve gelecek ay
+      for (let ay = 0; ay <= 1; ay++) {
+        const tarihObj = new Date(simdi.getFullYear(), simdi.getMonth() + ay, t.odemeGunu);
+        if (tarihObj < simdi) continue;
+        const tarih = tarihObj.toISOString().split("T")[0];
+        kalemler.push({ id: `tekrar_${t.id}_${tarih}`, tip: t.tip, kategori: t.kategori, tutarKurus: t.tutarKurus, vadeTarihi: tarih, tamamlandi: false, aciklama: t.ad, kaynak: "maas_otomatik" });
+      }
     }
   }
   return kalemler;

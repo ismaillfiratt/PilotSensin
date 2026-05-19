@@ -6,6 +6,8 @@ import { useSearchParams } from "next/navigation";
 import { useNakit }            from "@/store/nakit";
 import { useKdvHavuzu, netKdvBakiye } from "@/store/kdvHavuzu";
 import { formatTL } from "@/lib/para";
+import { nakitSkoru } from "@/lib/pilot-score";
+import { motion } from "framer-motion";
 import RunwayKart  from "@/components/nakitAkisi/RunwayKart";
 import IslemTablosu from "@/components/nakit/IslemTablosu";
 
@@ -13,6 +15,39 @@ const NakitGrafik           = dynamic(() => import("@/components/nakit/NakitGraf
 const KategoriGrafik        = dynamic(() => import("@/components/nakit/KategoriGrafik"),               { ssr: false });
 const NakitProjectionGrafik = dynamic(() => import("@/components/nakitAkisi/NakitProjectionGrafik"),   { ssr: false });
 const PlanlananKalemler     = dynamic(() => import("@/components/nakitAkisi/PlanlananKalemler"),        { ssr: false });
+
+/* ── Nakit Akışı Skor Gauge ── */
+function NakitSkorBadge({ skor, durum }: { skor: number; durum: "ok" | "warning" | "critical" }) {
+  const renk  = durum === "ok" ? "#10B981" : durum === "warning" ? "#F59E0B" : "#EF4444";
+  const etiket = durum === "ok" ? "İyi" : durum === "warning" ? "Dikkat" : "Kritik";
+  const radius = 30;
+  const circ   = 2 * Math.PI * radius;
+  const offset = circ - (skor / 100) * circ;
+
+  return (
+    <div className="flex flex-col items-center gap-1.5 shrink-0">
+      <div className="relative w-20 h-20">
+        <svg className="w-full h-full -rotate-90" viewBox="0 0 70 70">
+          <circle cx="35" cy="35" r={radius} fill="none" stroke="#F3F4F6" strokeWidth="6" />
+          <motion.circle
+            cx="35" cy="35" r={radius} fill="none"
+            stroke={renk} strokeWidth="6" strokeLinecap="round"
+            strokeDasharray={circ}
+            initial={{ strokeDashoffset: circ }}
+            animate={{ strokeDashoffset: offset }}
+            transition={{ duration: 1, ease: "easeOut" }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="font-number font-bold text-base" style={{ color: renk }}>%{skor}</span>
+        </div>
+      </div>
+      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ color: renk, background: `${renk}15`, border: `1px solid ${renk}30` }}>
+        {etiket}
+      </span>
+    </div>
+  );
+}
 
 interface StatCardProps {
   etiket: string;
@@ -55,25 +90,32 @@ export default function NakitAkisiContent() {
     [kdvKayitlari]
   );
 
+  const nakit = useMemo(() => nakitSkoru(islemler), [islemler]);
+
   const ay = new Date().toLocaleDateString("tr-TR", { month: "long", year: "numeric" }).toUpperCase();
 
   return (
     <div className="max-w-6xl mx-auto px-2">
 
       {/* 1. Hero */}
-      <section className="space-y-2 py-6">
-        <p className="label-caps">NAKİT AKIŞI · {ay}</p>
-        <div className="flex items-baseline gap-3">
-          <span
-            className="hero-number"
-            style={{ color: netKurus >= 0 ? "var(--forest)" : "var(--color-danger)" }}
-          >
-            {netKurus >= 0 ? "+" : ""}{formatTL(netKurus)}
-          </span>
+      <section className="py-6">
+        <div className="flex items-start justify-between gap-6">
+          <div className="space-y-2">
+            <p className="label-caps">NAKİT AKIŞI · {ay}</p>
+            <div className="flex items-baseline gap-3">
+              <span
+                className="hero-number"
+                style={{ color: netKurus >= 0 ? "var(--forest)" : "var(--color-danger)" }}
+              >
+                {netKurus >= 0 ? "+" : ""}{formatTL(netKurus)}
+              </span>
+            </div>
+            <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Bu ay net</p>
+          </div>
+
+          {/* Nakit Akışı Skoru */}
+          <NakitSkorBadge skor={nakit.skor} durum={nakit.durum} />
         </div>
-        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-          Bu ay net
-        </p>
       </section>
 
       <hr className="section-rule" />

@@ -5,15 +5,18 @@ import type { Kurus } from "@/lib/para";
 
 export type PlanlananTip = "gelir" | "gider";
 export type PlanlananKaynak = "manuel" | "kdv_otomatik" | "maas_otomatik";
+export type TekrarPeriyot = "gunluk" | "haftalik" | "aylik" | "2ayda1" | "3ayda1";
 
 export interface TekrarlayanKayit {
-  id:        string;
-  ad:        string;
-  tip:       PlanlananTip;
-  kategori:  string;
-  tutarKurus:     Kurus;
-  odemeGunu: number;
-  aktif:     boolean;
+  id:           string;
+  ad:           string;
+  tip:          PlanlananTip;
+  kategori:     string;
+  tutarKurus:   Kurus;
+  odemeGunu:    number;
+  aktif:        boolean;
+  /** Varsayılan: "aylik" — geriye dönük uyum için opsiyonel */
+  tekrarPeriyot?: TekrarPeriyot;
 }
 
 export interface PlanlananKalem {
@@ -34,6 +37,7 @@ interface NakitAkisStore {
   ekle:                (kalem: Omit<PlanlananKalem, "id">) => Promise<void>;
   sil:                 (id: string) => Promise<void>;
   tamamla:             (id: string) => Promise<void>;
+  tamamlaGeriAl:       (id: string) => Promise<void>;
 
   tekrarlayanEkle:     (kayit: Omit<TekrarlayanKayit, "id">) => Promise<void>;
   tekrarlayanSil:      (id: string) => Promise<void>;
@@ -72,6 +76,14 @@ export const useNakitAkis = create<NakitAkisStore>()(
       tamamla: async (id) => {
         set((s) => ({
           kalemler: s.kalemler.map((k) => k.id === id ? { ...k, tamamlandi: true } : k),
+        }));
+        const { kalemler, tekrarlayanlar } = get();
+        await kaydet(kalemler, tekrarlayanlar);
+      },
+
+      tamamlaGeriAl: async (id) => {
+        set((s) => ({
+          kalemler: s.kalemler.map((k) => k.id === id ? { ...k, tamamlandi: false } : k),
         }));
         const { kalemler, tekrarlayanlar } = get();
         await kaydet(kalemler, tekrarlayanlar);
