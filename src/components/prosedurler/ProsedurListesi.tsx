@@ -50,17 +50,17 @@ export default function ProsedurListesi() {
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             value={arama}
             onChange={e => setArama(e.target.value)}
             placeholder="Prosedür ara..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] text-sm focus:outline-none focus:border-[rgba(251,192,36,0.4)] transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors"
           />
         </div>
         <button
           onClick={() => { setDuzenle(null); setModalAcik(true); }}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors shrink-0"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors shrink-0"
         >
           <Plus className="w-4 h-4" /> Prosedür Ekle
         </button>
@@ -69,7 +69,7 @@ export default function ProsedurListesi() {
       {/* Kart Listesi */}
       <div className="space-y-3">
         {filtrelenmis.length === 0 && (
-          <div className="py-16 text-center text-[#94a3b8] text-sm glass-card rounded-2xl">
+          <div className="py-16 text-center text-gray-400 text-sm card rounded-2xl">
             Prosedür bulunamadı.
           </div>
         )}
@@ -85,7 +85,7 @@ export default function ProsedurListesi() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.04 }}
-              className="glass-card rounded-2xl overflow-hidden"
+              className="card rounded-2xl overflow-hidden"
             >
               <div className="flex">
                 {/* Sol renk çubuğu — kategoriye göre */}
@@ -103,14 +103,14 @@ export default function ProsedurListesi() {
                     onClick={() => setAcik(acikMi ? null : p.id)}
                   >
                     {/* Expand/collapse ikonu */}
-                    <span className="shrink-0 mt-[1px] text-[#475569] group-hover:text-[#94a3b8] transition-colors">
+                    <span className="shrink-0 mt-[1px] text-gray-500 group-hover:text-gray-400 transition-colors">
                       {acikMi
                         ? <ChevronDown  className="w-4 h-4" />
                         : <ChevronRight className="w-4 h-4" />}
                     </span>
 
                     {/* Başlık */}
-                    <h3 className="flex-1 min-w-0 text-sm font-bold text-white leading-snug group-hover:text-[#e2e8f0] transition-colors">
+                    <h3 className="flex-1 min-w-0 text-sm font-bold text-gray-800 leading-snug group-hover:text-[#e2e8f0] transition-colors">
                       {p.baslik}
                     </h3>
 
@@ -119,14 +119,14 @@ export default function ProsedurListesi() {
                       <button
                         onClick={() => { setDuzenle(p); setModalAcik(true); }}
                         title="Düzenle"
-                        className="w-7 h-7 flex items-center justify-center rounded-lg text-[#475569] border border-[rgba(255,255,255,0.06)] hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] hover:bg-[rgba(251,192,36,0.06)] transition-all"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 border border-gray-200 hover:border-[var(--forest-300, #7DD0A0)] hover:text-[var(--leaf)] hover:bg-[var(--mint)] transition-all"
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleProsedurSil(p)}
                         title="Sil"
-                        className="w-7 h-7 flex items-center justify-center rounded-lg text-[#475569] border border-[rgba(255,255,255,0.06)] hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] hover:bg-[rgba(239,68,68,0.06)] transition-all"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 border border-gray-200 hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] hover:bg-[rgba(239,68,68,0.06)] transition-all"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -146,7 +146,7 @@ export default function ProsedurListesi() {
                     <span className="text-[#2d3f55] text-xs select-none">·</span>
 
                     {/* Sorumlu */}
-                    <span className="flex items-center gap-1 text-[11px] text-[#64748b] whitespace-nowrap">
+                    <span className="flex items-center gap-1 text-[11px] text-gray-500 whitespace-nowrap">
                       <User className="w-3 h-3 shrink-0" />
                       {p.sorumlu}
                     </span>
@@ -163,7 +163,7 @@ export default function ProsedurListesi() {
                     </span>
 
                     {/* Adım sayacı — sağa it */}
-                    <span className="ml-auto flex items-center gap-1.5 text-[11px] text-[#475569] whitespace-nowrap bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)] px-2 py-[3px] rounded-md">
+                    <span className="ml-auto flex items-center gap-1.5 text-[11px] text-gray-500 whitespace-nowrap bg-gray-50 border border-gray-200 px-2 py-[3px] rounded-md">
                       <List className="w-3 h-3" />
                       {p.adimlar.length} adım
                     </span>
@@ -184,19 +184,19 @@ export default function ProsedurListesi() {
                   >
                     <div className="px-5 py-4 space-y-2.5">
                       {p.aciklama && (
-                        <p className="text-xs text-[#64748b] italic pb-2.5 border-b border-[rgba(255,255,255,0.05)]">
+                        <p className="text-xs text-gray-500 italic pb-2.5 border-b border-gray-200">
                           {p.aciklama}
                         </p>
                       )}
                       {p.adimlar.length === 0 && (
-                        <p className="text-xs text-[#475569] text-center py-2">Henüz adım eklenmemiş.</p>
+                        <p className="text-xs text-gray-500 text-center py-2">Henüz adım eklenmemiş.</p>
                       )}
                       {p.adimlar.map(adim => (
                         <div key={adim.sira} className="flex items-start gap-3">
-                          <span className="w-6 h-6 rounded-full bg-[rgba(251,192,36,0.12)] border border-[rgba(251,192,36,0.25)] text-[#fbc024] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                          <span className="w-6 h-6 rounded-full bg-[var(--mint)] border border-[var(--forest-200, #B3E8C8)] text-[var(--leaf)] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                             {adim.sira}
                           </span>
-                          <p className="text-sm text-[#94a3b8] leading-relaxed">{adim.aciklama}</p>
+                          <p className="text-sm text-gray-400 leading-relaxed">{adim.aciklama}</p>
                         </div>
                       ))}
                     </div>

@@ -41,33 +41,33 @@ export default function KisiselBilgiler({ ad, soyad, telefon }: Props) {
   };
 
   return (
-    <div className="glass-card rounded-2xl p-6">
-      <h2 className="text-sm font-semibold text-white mb-5">Kişisel Bilgiler</h2>
+    <div className="card rounded-2xl p-6">
+      <h2 className="text-sm font-semibold text-gray-800 mb-5">Kişisel Bilgiler</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Ad *</label>
+            <label className="text-xs text-gray-400 font-medium block mb-1.5">Ad *</label>
             <input
               required value={form.ad} onChange={(e) => set("ad", e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm"
+              className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
             />
           </div>
           <div>
-            <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Soyad</label>
+            <label className="text-xs text-gray-400 font-medium block mb-1.5">Soyad</label>
             <input
               value={form.soyad} onChange={(e) => set("soyad", e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm"
+              className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
             />
           </div>
         </div>
 
         <div>
-          <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Telefon</label>
+          <label className="text-xs text-gray-400 font-medium block mb-1.5">Telefon</label>
           <input
             type="tel" value={form.telefon} onChange={(e) => set("telefon", e.target.value)}
             placeholder="+90 5xx xxx xx xx"
-            className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm"
+            className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
           />
         </div>
 
@@ -87,7 +87,7 @@ export default function KisiselBilgiler({ ad, soyad, telefon }: Props) {
           <button
             type="submit"
             disabled={yukleniyor}
-            className="ml-auto flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-60"
+            className="ml-auto flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-60"
           >
             <Save className="w-4 h-4" />
             {yukleniyor ? "Kaydediliyor..." : "Kaydet"}

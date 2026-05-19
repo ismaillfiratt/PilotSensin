@@ -44,12 +44,12 @@ export default function ProfilPage() {
   if (!user) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="h-8 w-40 rounded-xl bg-[rgba(255,255,255,0.06)] animate-pulse" />
+        <div className="h-8 w-40 rounded-xl bg-gray-50 animate-pulse" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="h-64 rounded-2xl bg-[rgba(255,255,255,0.04)] animate-pulse" />
+          <div className="h-64 rounded-2xl bg-gray-50 animate-pulse" />
           <div className="lg:col-span-2 space-y-6">
-            <div className="h-48 rounded-2xl bg-[rgba(255,255,255,0.04)] animate-pulse" />
-            {isPilot && <div className="h-56 rounded-2xl bg-[rgba(255,255,255,0.04)] animate-pulse" />}
+            <div className="h-48 rounded-2xl bg-gray-50 animate-pulse" />
+            {isPilot && <div className="h-56 rounded-2xl bg-gray-50 animate-pulse" />}
           </div>
         </div>
       </div>
@@ -59,8 +59,8 @@ export default function ProfilPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Profilim</h1>
-        <p className="text-sm text-[#94a3b8] mt-1">
+        <h1 className="text-2xl font-bold text-gray-800">Profilim</h1>
+        <p className="text-sm text-gray-400 mt-1">
           {isPilot ? "Kişisel ve işletme bilgilerini yönet" : `${sirketAdi} ekibinin üyesisin`}
         </p>
       </div>

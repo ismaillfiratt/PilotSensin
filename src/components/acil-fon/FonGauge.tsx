@@ -16,7 +16,7 @@ export default function FonGauge({ ad, mevcut, toplamHedefKurus, aylikOdemeKurus
   const oran  = Math.min(mevcut / hedef, 1);
   const yuzde = Math.round(oran * 100);
   const kalan = Math.max(toplamHedefKurus - mevcut, 0);
-  const renk  = yuzde >= 75 ? "#22c55e" : yuzde >= 50 ? "#fbc024" : "#ef4444";
+  const renk  = yuzde >= 75 ? "#22c55e" : yuzde >= 50 ? "var(--leaf)" : "#ef4444";
   const durum = yuzde >= 75 ? "İyi Durumda" : yuzde >= 50 ? "Gelişiyor" : toplamHedefKurus === 0 ? "Hedef Yok" : "Kritik";
 
   const R = 78, SW = 12, CX = 100, CY = 100;
@@ -33,9 +33,9 @@ export default function FonGauge({ ad, mevcut, toplamHedefKurus, aylikOdemeKurus
   }
 
   return (
-    <div className="glass-card rounded-2xl p-6 flex flex-col items-center">
-      <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest mb-1">Acil Durum Fonu</h2>
-      <p className="text-xs text-white font-semibold mb-4 truncate max-w-full">{ad}</p>
+    <div className="card rounded-2xl p-6 flex flex-col items-center">
+      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-1">Acil Durum Fonu</h2>
+      <p className="text-xs text-gray-800 font-semibold mb-4 truncate max-w-full">{ad}</p>
 
       <svg viewBox="0 15 200 140" className="w-full" style={{ maxWidth: 220 }}>
         <path d={arc(180, 0, R)} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={SW} strokeLinecap="round" />
@@ -46,7 +46,7 @@ export default function FonGauge({ ad, mevcut, toplamHedefKurus, aylikOdemeKurus
           transition={{ duration: 1.4, ease: "easeOut" }}
           style={{ filter: `drop-shadow(0 0 6px ${renk}60)` }}
         />
-        {(() => { const p = polar(90, R); return <circle cx={p.x} cy={p.y} r={4} fill="#fbc024" opacity={0.6} />; })()}
+        {(() => { const p = polar(90, R); return <circle cx={p.x} cy={p.y} r={4} fill="var(--leaf)" opacity={0.6} />; })()}
         {(() => { const p = polar(45, R); return <circle cx={p.x} cy={p.y} r={4} fill="#22c55e" opacity={0.6} />; })()}
         <motion.text x="100" y="112" textAnchor="middle" fill={renk} fontSize="30" fontWeight="900"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
@@ -60,11 +60,11 @@ export default function FonGauge({ ad, mevcut, toplamHedefKurus, aylikOdemeKurus
         {[
           { label: "Mevcut Birikim", value: formatTL(mevcut),                                         color: renk         },
           { label: "Toplam Hedef",   value: toplamHedefKurus > 0 ? formatTL(toplamHedefKurus) : "—",           color: "#94a3b8"    },
-          { label: "Kalan",          value: toplamHedefKurus > 0 ? formatTL(kalan) : "—",                 color: kalan > 0 ? "#fbc024" : "#22c55e" },
+          { label: "Kalan",          value: toplamHedefKurus > 0 ? formatTL(kalan) : "—",                 color: kalan > 0 ? "var(--leaf)" : "#22c55e" },
           { label: "Aylık Ödeme",    value: aylikOdemeKurus > 0 ? formatTL(aylikOdemeKurus) : "—",             color: "#94a3b8"    },
         ].map(({ label, value, color }) => (
-          <div key={label} className="bg-[rgba(255,255,255,0.04)] rounded-xl p-3">
-            <p className="text-[10px] text-[#94a3b8] mb-1">{label}</p>
+          <div key={label} className="bg-gray-50 rounded-xl p-3">
+            <p className="text-[10px] text-gray-400 mb-1">{label}</p>
             <p className="text-base font-bold" style={{ color }}>{value}</p>
           </div>
         ))}

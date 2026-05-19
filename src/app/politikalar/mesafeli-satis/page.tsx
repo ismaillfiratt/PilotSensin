@@ -8,30 +8,30 @@ const GUNCELLEME = "19 Mayıs 2026";
 export default function MesafeliSatisPage() {
   return (
     <div className="space-y-6">
-      <div className="glass-card rounded-2xl p-6 md:p-8">
+      <div className="card rounded-2xl p-6 md:p-8">
         <h1 className="text-2xl font-bold text-white mb-1">Mesafeli Satış Sözleşmesi</h1>
-        <p className="text-sm text-[#64748b]">Son güncelleme: {GUNCELLEME}</p>
-        <p className="text-sm text-[#94a3b8] mt-3">
+        <p className="text-sm text-gray-500">Son güncelleme: {GUNCELLEME}</p>
+        <p className="text-sm text-gray-400 mt-3">
           6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği
           kapsamında hazırlanmıştır. Ödeme öncesinde okunup onaylanması zorunludur.
         </p>
       </div>
 
-      <div className="glass-card rounded-2xl p-6 md:p-8 space-y-8 text-[#94a3b8] leading-relaxed">
+      <div className="card rounded-2xl p-6 md:p-8 space-y-8 text-gray-400 leading-relaxed">
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white">1. Taraflar</h2>
           <div className="space-y-3 text-sm">
-            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
               <p className="text-white font-semibold mb-2">SATICI</p>
               <div className="space-y-1">
-                <div className="flex gap-3"><span className="text-[#64748b] min-w-24">Unvan</span><span>İsmail Fırat (Şahıs Şirketi)</span></div>
-                <div className="flex gap-3"><span className="text-[#64748b] min-w-24">Adres</span><span>Güveren Mah. 3746. Sk. No:13 Kepez / Antalya</span></div>
-                <div className="flex gap-3"><span className="text-[#64748b] min-w-24">E-posta</span><span className="text-[#fbc024]">destek@pilotsensin.com</span></div>
-                <div className="flex gap-3"><span className="text-[#64748b] min-w-24">Vergi No</span><span>[SONRADAN_EKLENECEK]</span></div>
+                <div className="flex gap-3"><span className="text-gray-500 min-w-24">Unvan</span><span>İsmail Fırat (Şahıs Şirketi)</span></div>
+                <div className="flex gap-3"><span className="text-gray-500 min-w-24">Adres</span><span>Güveren Mah. 3746. Sk. No:13 Kepez / Antalya</span></div>
+                <div className="flex gap-3"><span className="text-gray-500 min-w-24">E-posta</span><span className="text-[var(--leaf)]">destek@pilotsensin.com</span></div>
+                <div className="flex gap-3"><span className="text-gray-500 min-w-24">Vergi No</span><span>[SONRADAN_EKLENECEK]</span></div>
               </div>
             </div>
-            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
               <p className="text-white font-semibold mb-1">ALICI (TÜKETİCİ)</p>
               <p>Ödeme işlemi sırasında sisteme kayıtlı ad, soyad ve e-posta adresiyle tanımlanan kullanıcı.</p>
             </div>
@@ -50,19 +50,19 @@ export default function MesafeliSatisPage() {
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white">3. Hizmet Bedeli</h2>
-          <div className="bg-[rgba(251,192,36,0.06)] border border-[rgba(251,192,36,0.2)] rounded-xl p-4 text-sm space-y-2">
+          <div className="bg-[var(--mint)] border border-[var(--forest-100, #D9F2E4)] rounded-xl p-4 text-sm space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-white font-semibold">Aylık Plan</span>
-              <span className="text-[#fbc024] font-bold text-base">499 TL / ay</span>
+              <span className="text-[var(--leaf)] font-bold text-base">499 TL / ay</span>
             </div>
             <div className="flex justify-between items-center">
               <div>
                 <span className="text-white font-semibold">Yıllık Plan</span>
                 <span className="ml-2 text-xs bg-[rgba(34,197,94,0.15)] text-[#22c55e] px-2 py-0.5 rounded-full">%20 İndirim</span>
               </div>
-              <span className="text-[#fbc024] font-bold text-base">4.790 TL / yıl</span>
+              <span className="text-[var(--leaf)] font-bold text-base">4.790 TL / yıl</span>
             </div>
-            <p className="text-[#64748b] text-xs">Tüm fiyatlar KDV dahildir. Yıllık plan aylık plana kıyasla %20 daha avantajlıdır.</p>
+            <p className="text-gray-500 text-xs">Tüm fiyatlar KDV dahildir. Yıllık plan aylık plana kıyasla %20 daha avantajlıdır.</p>
           </div>
         </section>
 
@@ -118,9 +118,9 @@ export default function MesafeliSatisPage() {
           </p>
         </section>
 
-        <div className="border-t border-[rgba(255,255,255,0.07)] pt-6 text-sm text-[#64748b]">
-          <p>İlgili belgeler: <Link href="/politikalar/on-bilgilendirme" className="text-[#fbc024] hover:underline mr-3">Ön Bilgilendirme Formu</Link><Link href="/politikalar/iade-iptal" className="text-[#fbc024] hover:underline">İade &amp; İptal Politikası</Link></p>
-          <p className="mt-2">Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[#fbc024] hover:underline">destek@pilotsensin.com</Link></p>
+        <div className="border-t border-gray-200 pt-6 text-sm text-gray-500">
+          <p>İlgili belgeler: <Link href="/politikalar/on-bilgilendirme" className="text-[var(--leaf)] hover:underline mr-3">Ön Bilgilendirme Formu</Link><Link href="/politikalar/iade-iptal" className="text-[var(--leaf)] hover:underline">İade &amp; İptal Politikası</Link></p>
+          <p className="mt-2">Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[var(--leaf)] hover:underline">destek@pilotsensin.com</Link></p>
           <p className="mt-1">Son güncelleme: {GUNCELLEME}</p>
         </div>
       </div>

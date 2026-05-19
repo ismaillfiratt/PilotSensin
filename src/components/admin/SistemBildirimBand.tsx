@@ -17,7 +17,7 @@ interface Toast extends SistemBildirim { toastId: string; }
 
 const TIP: Record<BildirimTip, { renk: string; ikon: string }> = {
   kritik:     { renk: "#ef4444", ikon: "🚨" },
-  duyuru:     { renk: "#fbc024", ikon: "📢" },
+  duyuru:     { renk: "var(--leaf)", ikon: "📢" },
   guncelleme: { renk: "#22c55e", ikon: "✅" },
 };
 
@@ -47,7 +47,7 @@ function ToastItem({ t, onKapat }: { t: Toast; onKapat: (id: string) => void }) 
           </p>
         </div>
         <button onClick={() => onKapat(t.id)}
-          className="text-[#475569] hover:text-white transition-colors shrink-0 text-xl leading-none mt-0.5"
+          className="text-gray-500 hover:text-white transition-colors shrink-0 text-xl leading-none mt-0.5"
           aria-label="Bildirimi kapat">×</button>
       </div>
     </motion.div>

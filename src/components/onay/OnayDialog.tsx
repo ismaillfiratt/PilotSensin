@@ -14,19 +14,16 @@ export default function OnayDialog() {
 
   const vazgecRef = useRef<HTMLButtonElement>(null);
 
-  /* Her açılışta checkbox'ları sıfırla, Vazgeç'e focus ver */
   useEffect(() => {
     if (acik) {
       setKaskad(true);
       setOturumdaSusturma(false);
       setSilDisabled(false);
-      // Küçük gecikme — animasyon tamamlanınca focus
       const t = setTimeout(() => vazgecRef.current?.focus(), 80);
       return () => clearTimeout(t);
     }
   }, [acik]);
 
-  /* ESC → vazgeç */
   const handleKey = useCallback((e: KeyboardEvent) => {
     if (e.key === "Escape") { e.preventDefault(); vazgec(); }
   }, [vazgec]);
@@ -41,9 +38,7 @@ export default function OnayDialog() {
   const handleOnayla = () => {
     if (silDisabled) return;
     setSilDisabled(true);
-    if (oturumdaSusturma && secenek) {
-      bu_oturumdaSusturuldu(secenek.tip);
-    }
+    if (oturumdaSusturma && secenek) bu_oturumdaSusturuldu(secenek.tip);
     onayla(kaskad);
   };
 
@@ -51,17 +46,15 @@ export default function OnayDialog() {
     <AnimatePresence>
       {acik && secenek && (
         <>
-          {/* Backdrop */}
           <motion.div
             key="backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-200"
             onClick={vazgec}
           />
 
-          {/* Sheet / Dialog */}
           <motion.div
             key="dialog"
             initial={{ opacity: 0, y: 40 }}
@@ -72,70 +65,64 @@ export default function OnayDialog() {
             dragElastic={{ top: 0, bottom: 0.3 }}
             onDragEnd={(_, info) => { if (info.velocity.y > 300 || info.offset.y > 100) vazgec(); }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed z-[201] bg-[#0e172a] glass-card bottom-0 inset-x-0 rounded-t-2xl border-t border-white/10 md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-md md:w-full"
+            className="fixed z-201 bg-white bottom-0 inset-x-0 rounded-t-2xl border-t border-gray-200 md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-md md:w-full shadow-2xl"
           >
             {/* Mobil drag handle */}
             <div className="md:hidden flex justify-center pt-3 pb-1 cursor-grab">
-              <div className="w-12 h-1 rounded-full bg-white/20" />
+              <div className="w-12 h-1 rounded-full bg-gray-200" />
             </div>
 
             <div className="px-5 pt-5 pb-2 space-y-4">
-              {/* İkon + Başlık */}
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
-                  <Trash2 className="w-5 h-5 text-red-400" />
+                <div className="w-12 h-12 rounded-full bg-red-50 border border-red-100 flex items-center justify-center shrink-0">
+                  <Trash2 className="w-5 h-5 text-red-500" />
                 </div>
-                <h2 className="text-lg font-bold text-white">Silme Onayı</h2>
+                <h2 className="text-lg font-bold text-gray-800">Silme Onayı</h2>
               </div>
 
-              {/* Açıklama */}
-              <p className="text-sm text-[#94a3b8] leading-relaxed">
-                <span className="text-white font-semibold">&ldquo;{secenek.isim}&rdquo;</span>{" "}
+              <p className="text-sm text-gray-500 leading-relaxed">
+                <span className="text-gray-800 font-semibold">&ldquo;{secenek.isim}&rdquo;</span>{" "}
                 kaydını silmek istediğine emin misin?
               </p>
 
-              {/* Bağlı kayıt uyarısı */}
               {secenek.kaskadBaglıSayisi > 0 && (
-                <p className="text-xs text-amber-400 bg-amber-400/8 border border-amber-400/20 rounded-xl px-3 py-2">
+                <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
                   Bu kayda bağlı <span className="font-bold">{secenek.kaskadBaglıSayisi}</span> kayıt daha var.
                 </p>
               )}
 
-              {/* Kaskad checkbox */}
               <label className="flex items-start gap-3 cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={kaskad}
                   onChange={(e) => setKaskad(e.target.checked)}
-                  className="mt-0.5 min-w-[18px] min-h-[18px] rounded accent-red-500 cursor-pointer"
+                  className="mt-0.5 w-4 h-4 rounded accent-red-500 cursor-pointer"
                 />
-                <span className="text-sm text-[#94a3b8] group-hover:text-white transition-colors leading-snug">
+                <span className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors leading-snug">
                   Bağlı kayıtları da sil
                 </span>
               </label>
 
-              {/* Oturumda susturma checkbox */}
               <label className="flex items-start gap-3 cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={oturumdaSusturma}
                   onChange={(e) => setOturumdaSusturma(e.target.checked)}
-                  className="mt-0.5 min-w-[18px] min-h-[18px] rounded accent-[#fbc024] cursor-pointer"
+                  className="mt-0.5 w-4 h-4 rounded cursor-pointer"
+                  style={{ accentColor: "var(--leaf)" }}
                 />
-                <span className="text-sm text-[#64748b] group-hover:text-[#94a3b8] transition-colors leading-snug">
+                <span className="text-sm text-gray-400 group-hover:text-gray-500 transition-colors leading-snug">
                   Bu oturumda bu tip kayıt için bir daha sorma
                 </span>
               </label>
 
-              {/* Çöp kutusu notu */}
-              <p className="text-xs text-[#475569] bg-white/3 rounded-xl px-3 py-2">
+              <p className="text-xs text-gray-400 bg-gray-50 rounded-xl px-3 py-2">
                 30 gün boyunca çöp kutusunda kalır, sonra kalıcı silinir.
               </p>
             </div>
 
-            {/* Butonlar — sticky footer */}
             <div
-              className="sticky bottom-0 bg-[#0e172a] px-5 pt-3 pb-4 md:pb-5"
+              className="sticky bottom-0 bg-white px-5 pt-3 pb-4 md:pb-5 border-t border-gray-100"
               style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 20px)" }}
             >
               <div className="flex gap-3">
@@ -143,7 +130,7 @@ export default function OnayDialog() {
                   ref={vazgecRef}
                   type="button"
                   onClick={vazgec}
-                  className="flex-1 min-h-12 rounded-xl border border-white/10 bg-white/5 text-[#94a3b8] text-sm font-semibold hover:bg-white/8 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white/20"
+                  className="flex-1 min-h-12 rounded-xl border border-gray-200 bg-white text-gray-600 text-sm font-semibold hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-200"
                 >
                   {secenek.iptalMetni ?? "Vazgeç"}
                 </button>
@@ -151,7 +138,7 @@ export default function OnayDialog() {
                   type="button"
                   onClick={handleOnayla}
                   disabled={silDisabled}
-                  className="flex-1 min-h-12 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                  className="flex-1 min-h-12 rounded-xl bg-red-500 hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-red-400/50"
                 >
                   {secenek.onayMetni ?? "Evet, Sil"}
                 </button>

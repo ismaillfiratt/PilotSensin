@@ -30,9 +30,9 @@ const DURUM_CONFIG = {
     label:  "Tehlike — İşletme Batış Riskinde!",
   },
   dikkat: {
-    renk:   "#fbc024",
-    bg:     "rgba(251,192,36,0.08)",
-    border: "rgba(251,192,36,0.25)",
+    renk:   "var(--leaf)",
+    bg:     "var(--mint)",
+    border: "var(--forest-200, #B3E8C8)",
     icon:   Zap,
     emoji:  "🟡",
     label:  "Dikkat — Tedarik ve Satışları İnceleyin",
@@ -104,13 +104,13 @@ export default function RunwayKart() {
         </p>
 
         {/* Günlük harcama hızı */}
-        <div className="pt-1 border-t border-[rgba(255,255,255,0.05)] space-y-0.5">
-          <p className="text-[10px] text-[#64748b]">
+        <div className="pt-1 border-t border-gray-200 space-y-0.5">
+          <p className="text-[10px] text-gray-500">
             Günlük harcama hızınız:{" "}
-            <span className="text-[#94a3b8] font-semibold">{tl(hesap.gunlukGider)}</span>
+            <span className="text-gray-400 font-semibold">{tl(hesap.gunlukGider)}</span>
           </p>
           {hesap.aylikSabit > 0 && (
-            <p className="text-[10px] text-[#475569]">
+            <p className="text-[10px] text-gray-500">
               Sabit giderler: {tl(hesap.aylikSabit)}/ay dahil
             </p>
           )}
@@ -125,15 +125,15 @@ export default function RunwayKart() {
       </div>
 
       {/* ── Toplam kaynak ── */}
-      <div className="glass-card p-4 rounded-2xl space-y-2">
-        <p className="text-xs text-[#64748b] font-semibold uppercase tracking-wide">
+      <div className="card p-4 rounded-2xl space-y-2">
+        <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide">
           Toplam Kaynak
         </p>
-        <p className={`text-3xl font-black ${hesap.toplamKaynak >= 0 ? "text-white" : "text-[#ef4444]"}`}>
+        <p className={`text-3xl font-black ${hesap.toplamKaynak >= 0 ? "text-gray-800" : "text-[#ef4444]"}`}>
           {tl(hesap.toplamKaynak)}
         </p>
-        <div className="text-[10px] text-[#475569] space-y-0.5">
-          <p>Kasa: <span className="text-[#94a3b8]">{tl(hesap.kasa)}</span></p>
+        <div className="text-[10px] text-gray-500 space-y-0.5">
+          <p>Kasa: <span className="text-gray-400">{tl(hesap.kasa)}</span></p>
           {hesap.acilFon > 0 && (
             <p>Acil fon: <span className="text-[#22c55e]">+{tl(hesap.acilFon)}</span></p>
           )}
@@ -141,10 +141,10 @@ export default function RunwayKart() {
       </div>
 
       {/* ── 30 günlük projeksiyon ── */}
-      <div className={`glass-card p-4 rounded-2xl space-y-2 ${hesap.kritikProj ? "border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.05)]" : ""}`}>
+      <div className={`card p-4 rounded-2xl space-y-2 ${hesap.kritikProj ? "border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.05)]" : ""}`}>
         <div className="flex items-center gap-2">
-          <TrendingDown className={`w-4 h-4 ${hesap.kritikProj ? "text-[#ef4444]" : "text-[#64748b]"}`} />
-          <p className="text-xs font-semibold uppercase tracking-wide text-[#64748b]">
+          <TrendingDown className={`w-4 h-4 ${hesap.kritikProj ? "text-[#ef4444]" : "text-gray-500"}`} />
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
             30 Günlük Projeksiyon
           </p>
         </div>
@@ -152,7 +152,7 @@ export default function RunwayKart() {
         {hesap.kritikProj && hesap.ilkKritik ? (
           <>
             <p className="text-sm font-bold text-[#ef4444]">⚠ Kritik Nakit Sıkışıklığı Riski</p>
-            <p className="text-[10px] text-[#94a3b8]">
+            <p className="text-[10px] text-gray-400">
               {hesap.ilkKritik.etiket} tarihinde bakiye sıfırın altına düşüyor.
               En düşük: {tl(Math.min(...hesap.proj.map((g) => g.bakiye)))}
             </p>
@@ -160,7 +160,7 @@ export default function RunwayKart() {
         ) : (
           <>
             <p className="text-sm font-bold text-[#22c55e]">30 gün boyunca pozitif</p>
-            <p className="text-[10px] text-[#475569]">
+            <p className="text-[10px] text-gray-500">
               En düşük projeksiyon:{" "}
               {tl(Math.min(...hesap.proj.map((g) => g.bakiye)))}
             </p>

@@ -86,7 +86,7 @@ export default function SatisModal({ urun, onClose }: Props) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ duration: 0.2 }}
-          className="w-full max-w-md glass-card rounded-2xl p-6 space-y-4"
+          className="w-full max-w-md card rounded-2xl p-6 space-y-4"
         >
           {/* Başlık */}
           <div className="flex items-start justify-between">
@@ -95,11 +95,11 @@ export default function SatisModal({ urun, onClose }: Props) {
                 <ShoppingCart className="w-5 h-5 text-[#22c55e]" />
                 Satış Yap
               </h2>
-              <p className="text-sm text-[#94a3b8] mt-0.5">
+              <p className="text-sm text-gray-400 mt-0.5">
                 {urun.ad} — Stok: <span className="text-white font-medium">{urun.mevcutAdet} {urun.birim}</span>
               </p>
             </div>
-            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors">
+            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-gray-50 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -108,19 +108,19 @@ export default function SatisModal({ urun, onClose }: Props) {
             <div className="grid grid-cols-2 gap-3">
               {/* Adet */}
               <div>
-                <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Satış Adedi *</label>
+                <label className="text-xs text-gray-400 font-medium block mb-1.5">Satış Adedi *</label>
                 <input
                   type="number" min="1" max={urun.mevcutAdet} required
                   value={adet} onChange={(e) => setAdet(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(34,197,94,0.5)] text-lg font-bold text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white focus:outline-none focus:border-[rgba(34,197,94,0.5)] text-lg font-bold text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
               {/* Birim satış fiyatı */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs text-[#94a3b8] font-medium">Birim Satış Fiyatı *</label>
+                  <label className="text-xs text-gray-400 font-medium">Birim Satış Fiyatı *</label>
                   <button type="button" onClick={() => setKdvDahil((v) => !v)}
-                    className={`text-[9px] px-1.5 py-0.5 rounded border transition-colors ${kdvDahil ? "border-[rgba(251,192,36,0.4)] text-[#fbc024]" : "border-[rgba(255,255,255,0.08)] text-[#475569]"}`}>
+                    className={`text-[9px] px-1.5 py-0.5 rounded border transition-colors ${kdvDahil ? "border-[var(--forest-300, #7DD0A0)] text-[var(--leaf)]" : "border-gray-200 text-gray-500"}`}>
                     {kdvDahil ? "KDV Dahil" : "KDV Hariç"}
                   </button>
                 </div>
@@ -128,14 +128,14 @@ export default function SatisModal({ urun, onClose }: Props) {
                   type="number" min="0.01" step="0.01" required
                   value={fiyat} onChange={(e) => setFiyat(e.target.value)}
                   placeholder="0.00"
-                  className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(34,197,94,0.5)] text-lg font-bold [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white focus:outline-none focus:border-[rgba(34,197,94,0.5)] text-lg font-bold [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
             </div>
 
             {/* KDV oranı */}
             <div>
-              <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Satış KDV Oranı</label>
+              <label className="text-xs text-gray-400 font-medium block mb-1.5">Satış KDV Oranı</label>
               <div className="flex gap-2">
                 {KDV_ORANLARI.map((r) => (
                   <button key={r} type="button" onClick={() => setKdvOrani(r)}
@@ -153,17 +153,17 @@ export default function SatisModal({ urun, onClose }: Props) {
 
             {/* Açıklama */}
             <div>
-              <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Açıklama</label>
+              <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama</label>
               <input type="text" value={aciklama} onChange={(e) => setAciklama(e.target.value)}
                 placeholder="Opsiyonel not..."
-                className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#475569] focus:outline-none text-sm" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white placeholder-[#475569] focus:outline-none text-sm" />
             </div>
 
             {/* Önizleme */}
             {Number(adet) > 0 && Number(fiyat) > 0 && (
-              <div className="p-3 rounded-xl bg-[rgba(0,0,0,0.25)] border border-[rgba(255,255,255,0.06)] space-y-2 text-xs">
-                <p className="text-[10px] font-semibold text-[#94a3b8] uppercase tracking-wide">Satış Özeti</p>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[#64748b]">
+              <div className="p-3 rounded-xl bg-gray-50 border border-gray-200 space-y-2 text-xs">
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Satış Özeti</p>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-gray-500">
                   <div className="flex justify-between">
                     <span>Birim Fiyat (KDV Hz)</span>
                     <span className="text-white">{tl(hesap.birimFiyatNetHariç)}</span>
@@ -178,19 +178,19 @@ export default function SatisModal({ urun, onClose }: Props) {
                   </div>
                   <div className="flex justify-between">
                     <span>KDV Tutarı</span>
-                    <span className="text-[#fbc024]">+{tl(hesap.toplamKdvKurus)}</span>
+                    <span className="text-[var(--leaf)]">+{tl(hesap.toplamKdvKurus)}</span>
                   </div>
                 </div>
-                <div className="border-t border-[rgba(255,255,255,0.06)] pt-2 grid grid-cols-2 gap-3">
+                <div className="border-t border-gray-200 pt-2 grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-[10px] text-[#64748b]">Kasaya Giren</p>
+                    <p className="text-[10px] text-gray-500">Kasaya Giren</p>
                     <p className="text-base font-bold text-[#22c55e]">{tl(hesap.kasaGirisKurus)}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-[#64748b]">Brüt Kâr</p>
+                    <p className="text-[10px] text-gray-500">Brüt Kâr</p>
                     <p className="text-base font-bold" style={{ color: hesap.brutKarKurus >= 0 ? "#22c55e" : "#ef4444" }}>
                       {hesap.brutKarKurus >= 0 ? "+" : ""}{tl(hesap.brutKarKurus)}
-                      <span className="text-[10px] text-[#64748b] ml-1">%{Math.abs(hesap.brutMarj).toFixed(1)}</span>
+                      <span className="text-[10px] text-gray-500 ml-1">%{Math.abs(hesap.brutMarj).toFixed(1)}</span>
                     </p>
                   </div>
                 </div>
@@ -218,7 +218,7 @@ export default function SatisModal({ urun, onClose }: Props) {
             {/* Butonlar */}
             <div className="flex gap-3">
               <button type="button" onClick={onClose}
-                className="flex-1 py-3 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium hover:bg-gray-50 transition-colors">
                 İptal
               </button>
               <button

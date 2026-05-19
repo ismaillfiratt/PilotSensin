@@ -8,19 +8,19 @@ const GUNCELLEME = "19 Mayıs 2026";
 export default function AcikRizaPage() {
   return (
     <div className="space-y-6">
-      <div className="glass-card rounded-2xl p-6 md:p-8">
+      <div className="card rounded-2xl p-6 md:p-8">
         <h1 className="text-2xl font-bold text-white mb-1">
           Kişisel Verilerin Yurt Dışına Aktarımına İlişkin Açık Rıza Metni
         </h1>
-        <p className="text-sm text-[#64748b]">Son güncelleme: {GUNCELLEME}</p>
-        <p className="text-sm text-[#94a3b8] mt-3">
+        <p className="text-sm text-gray-500">Son güncelleme: {GUNCELLEME}</p>
+        <p className="text-sm text-gray-400 mt-3">
           İşbu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) madde 9 kapsamında
           kişisel verilerinizin yurt dışına aktarımına ilişkin açık rızanıza dair bilgilendirme
           niteliğindedir.
         </p>
       </div>
 
-      <div className="glass-card rounded-2xl p-6 md:p-8 space-y-8 text-[#94a3b8] leading-relaxed">
+      <div className="card rounded-2xl p-6 md:p-8 space-y-8 text-gray-400 leading-relaxed">
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white">1. Aktarımın Kapsamı</h2>
@@ -95,7 +95,7 @@ export default function AcikRizaPage() {
             KVKK madde 11 kapsamındaki tüm haklarınızı kullanabilirsiniz: bilgi alma, düzeltme
             talep etme, silme talep etme, aktarılan üçüncü kişilere bildirim isteme, itiraz
             etme ve tazminat talep etme hakları. Başvuru için{" "}
-            <Link href="/politikalar/kvkk" className="text-[#fbc024] hover:underline">KVKK Aydınlatma Metni</Link>ni inceleyiniz.
+            <Link href="/politikalar/kvkk" className="text-[var(--leaf)] hover:underline">KVKK Aydınlatma Metni</Link>ni inceleyiniz.
           </p>
         </section>
 
@@ -109,9 +109,9 @@ export default function AcikRizaPage() {
           </p>
         </section>
 
-        <div className="border-t border-[rgba(255,255,255,0.07)] pt-6 text-sm text-[#64748b]">
-          <p>İlgili belgeler: <Link href="/politikalar/kvkk" className="text-[#fbc024] hover:underline mr-3">KVKK Aydınlatma Metni</Link><Link href="/politikalar/gizlilik" className="text-[#fbc024] hover:underline">Gizlilik Politikası</Link></p>
-          <p className="mt-2">Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[#fbc024] hover:underline">destek@pilotsensin.com</Link></p>
+        <div className="border-t border-gray-200 pt-6 text-sm text-gray-500">
+          <p>İlgili belgeler: <Link href="/politikalar/kvkk" className="text-[var(--leaf)] hover:underline mr-3">KVKK Aydınlatma Metni</Link><Link href="/politikalar/gizlilik" className="text-[var(--leaf)] hover:underline">Gizlilik Politikası</Link></p>
+          <p className="mt-2">Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[var(--leaf)] hover:underline">destek@pilotsensin.com</Link></p>
           <p className="mt-1">Son güncelleme: {GUNCELLEME}</p>
         </div>
       </div>

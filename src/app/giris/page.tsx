@@ -37,13 +37,12 @@ export default function GirisPage() {
 function GirisIcerik() {
   const router       = useRouter();
   const searchParams = useSearchParams();
-  const [form, setForm]         = useState({ email: "", password: "" });
-  const [goster, setGoster]     = useState(false);
-  const [hata, setHata]         = useState("");
-  const [yukleniyor, setYuk]    = useState(false);
+  const [form, setForm]           = useState({ email: "", password: "" });
+  const [goster, setGoster]       = useState(false);
+  const [hata, setHata]           = useState("");
+  const [yukleniyor, setYuk]      = useState(false);
   const [googleYuk, setGoogleYuk] = useState(false);
 
-  // URL'de ?erisim=reddedildi varsa uyarı göster
   useEffect(() => {
     if (searchParams.get("erisim") === "reddedildi") {
       setHata("Bu sayfaya erişim yetkiniz yok. Lütfen yetkili bir hesapla giriş yapın.");
@@ -56,7 +55,6 @@ function GirisIcerik() {
     e.preventDefault();
     setHata("");
     setYuk(true);
-
     try {
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithPassword({
@@ -66,7 +64,6 @@ function GirisIcerik() {
       if (error) {
         setHata("E-posta veya şifre hatalı.");
       } else {
-        // system_admin kontrolü → /admin veya /dashboard
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           const { data: profil } = await supabase
@@ -74,11 +71,7 @@ function GirisIcerik() {
             .select("system_admin")
             .eq("id", user.id)
             .maybeSingle();
-          if (profil?.system_admin) {
-            router.push("/admin");
-          } else {
-            router.push("/dashboard");
-          }
+          router.push(profil?.system_admin ? "/admin" : "/dashboard");
         } else {
           router.push("/dashboard");
         }
@@ -98,10 +91,7 @@ function GirisIcerik() {
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: {
-          redirectTo: getRedirectUrl(),
-          queryParams: { access_type: "offline", prompt: "consent" },
-        },
+        options: { redirectTo: getRedirectUrl(), queryParams: { access_type: "offline", prompt: "consent" } },
       });
       if (error) setHata("Google girişi başlatılamadı. Lütfen tekrar deneyin.");
     } catch {
@@ -112,40 +102,38 @@ function GirisIcerik() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0e172a] flex items-center justify-center p-4">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-[#fbc024] opacity-5 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-[#fbc024] opacity-5 blur-3xl" />
-      </div>
-
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-sm relative"
+        transition={{ duration: 0.35 }}
+        className="w-full max-w-sm"
       >
+        {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-[#fbc024] flex items-center justify-center mb-4 shadow-lg shadow-[#fbc024]/20">
-            <Plane className="w-7 h-7 text-[#0e172a] rotate-45" />
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-md"
+            style={{ background: "var(--forest)" }}>
+            <Plane className="w-7 h-7 text-white rotate-45" />
           </div>
-          <h1 className="text-2xl font-black text-white tracking-tight">Pilot Sensin</h1>
-          <p className="text-sm text-[#94a3b8] mt-1">İşletmenizi güvenle yönetin</p>
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Pilot Sensin</h1>
+          <p className="text-sm text-gray-500 mt-1">İşletmenizi güvenle yönetin</p>
         </div>
 
-        <div className="glass-card rounded-2xl p-7 space-y-5">
+        {/* Kart */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-7 space-y-5 shadow-sm">
           <div>
-            <h2 className="text-lg font-bold text-white">Giriş Yap</h2>
-            <p className="text-xs text-[#94a3b8] mt-0.5">Hesabınıza erişin</p>
+            <h2 className="text-lg font-bold text-gray-800">Giriş Yap</h2>
+            <p className="text-xs text-gray-400 mt-0.5">Hesabınıza erişin</p>
           </div>
 
           {hata && (
             <motion.div
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.25)]"
+              className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 border border-red-100"
             >
-              <AlertCircle className="w-4 h-4 text-[#ef4444] shrink-0" />
-              <p className="text-sm text-[#ef4444]">{hata}</p>
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+              <p className="text-sm text-red-600">{hata}</p>
             </motion.div>
           )}
 
@@ -154,21 +142,19 @@ function GirisIcerik() {
             type="button"
             onClick={handleGoogle}
             disabled={googleYuk || yukleniyor}
-            className="w-full min-h-12 flex items-center justify-center gap-2.5 px-4 rounded-xl border border-[rgba(255,255,255,0.12)] text-white text-sm font-medium active:bg-white/5 hover:bg-[rgba(255,255,255,0.06)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full min-h-12 flex items-center justify-center gap-2.5 px-4 rounded-xl border border-gray-200 text-gray-700 text-sm font-medium bg-white hover:bg-gray-50 active:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {googleYuk ? (
-              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            ) : (
-              <GoogleIcon />
-            )}
+            {googleYuk
+              ? <span className="w-4 h-4 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
+              : <GoogleIcon />}
             {googleYuk ? "Yönlendiriliyor..." : "Google ile Giriş Yap"}
           </button>
 
           {/* Divider */}
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-[rgba(255,255,255,0.08)]" />
-            <span className="text-xs text-[#475569]">veya e-posta ile</span>
-            <div className="flex-1 h-px bg-[rgba(255,255,255,0.08)]" />
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-xs text-gray-400">veya e-posta ile</span>
+            <div className="flex-1 h-px bg-gray-200" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -185,8 +171,9 @@ function GirisIcerik() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-[#94a3b8] font-medium">Şifre</span>
-                <Link href="/sifre-sifirla" className="text-xs text-[#fbc024] hover:underline">
+                <span className="text-xs text-gray-500 font-medium">Şifre</span>
+                <Link href="/sifre-sifirla" className="text-xs hover:underline transition-colors"
+                  style={{ color: "var(--leaf)" }}>
                   Şifremi unuttum
                 </Link>
               </div>
@@ -200,7 +187,7 @@ function GirisIcerik() {
                 prefix={<Lock className="w-4 h-4" />}
                 suffix={
                   <button type="button" onClick={() => setGoster(!goster)}
-                    className="min-w-11 min-h-11 flex items-center justify-center rounded-lg text-[#94a3b8] active:text-white transition-colors">
+                    className="min-w-11 min-h-11 flex items-center justify-center rounded-lg text-gray-400 active:text-gray-700 transition-colors">
                     {goster ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 }
@@ -212,16 +199,16 @@ function GirisIcerik() {
             </Buton>
           </form>
 
-          <p className="text-center text-sm text-[#94a3b8]">
+          <p className="text-center text-sm text-gray-500">
             Hesabınız yok mu?{" "}
-            <Link href="/kayit" className="text-[#fbc024] font-semibold hover:underline">
+            <Link href="/kayit" className="font-semibold hover:underline" style={{ color: "var(--leaf)" }}>
               Kayıt Ol
             </Link>
           </p>
 
-          <p className="text-center text-[10px] text-[#475569] leading-relaxed">
+          <p className="text-center text-[10px] text-gray-400 leading-relaxed">
             Sisteme giriş yaparak{" "}
-            <Link href="/politikalar/kullanim-kosullari" className="hover:text-[#94a3b8] underline">
+            <Link href="/politikalar/kullanim-kosullari" className="hover:text-gray-600 underline">
               Kullanım Koşulları
             </Link>
             &apos;nı kabul etmiş sayılırsınız.

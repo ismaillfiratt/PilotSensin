@@ -30,7 +30,7 @@ const TIP_LABEL: Record<BildirimTip, string> = {
 
 const TIP_RENK: Record<BildirimTip, string> = {
   kritik: "#ef4444",
-  uyari:  "#fbc024",
+  uyari:  "var(--leaf)",
   bilgi:  "#94a3b8",
   basari: "#22c55e",
 };
@@ -56,7 +56,7 @@ function Toggle({
       style={{
         width: 40, height: 22,
         backgroundColor: checked
-          ? (disabled ? "#4a5568" : "#fbc024")
+          ? (disabled ? "#4a5568" : "var(--leaf)")
           : "rgba(255,255,255,0.10)",
         cursor: disabled ? "not-allowed" : "pointer",
       }}
@@ -73,14 +73,14 @@ function Toggle({
 
 function Bolum({ label }: { label: string }) {
   return (
-    <p className="text-[10px] font-bold text-[#64748b] uppercase tracking-widest mb-3">
+    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">
       {label}
     </p>
   );
 }
 
 function Ayrac() {
-  return <div className="border-t border-[rgba(255,255,255,0.06)]" />;
+  return <div className="border-t border-gray-200" />;
 }
 
 export default function BildirimAyarlari() {
@@ -126,16 +126,16 @@ export default function BildirimAyarlari() {
   };
 
   return (
-    <div className="glass-card rounded-2xl p-6 space-y-6">
+    <div className="card rounded-2xl p-6 space-y-6">
 
       {/* Başlık */}
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-lg bg-[rgba(251,192,36,0.12)] border border-[rgba(251,192,36,0.2)] flex items-center justify-center">
-          <Bell className="w-4 h-4 text-[#fbc024]" />
+        <div className="w-9 h-9 rounded-lg bg-[var(--mint)] border border-[var(--forest-100, #D9F2E4)] flex items-center justify-center">
+          <Bell className="w-4 h-4 text-[var(--leaf)]" />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-white">Bildirim Tercihleri</h2>
-          <p className="text-xs text-[#94a3b8]">Değişiklikler otomatik kaydedilir</p>
+          <h2 className="text-sm font-semibold text-gray-800">Bildirim Tercihleri</h2>
+          <p className="text-xs text-gray-400">Değişiklikler otomatik kaydedilir</p>
         </div>
       </div>
 
@@ -147,7 +147,7 @@ export default function BildirimAyarlari() {
         <div className="space-y-3">
           {MODUL_SIRA.map((key) => (
             <div key={key} className="flex items-center justify-between">
-              <span className="text-sm text-white">{MODUL_LABEL[key]}</span>
+              <span className="text-sm text-gray-800">{MODUL_LABEL[key]}</span>
               <Toggle
                 checked={modul[key]}
                 onChange={() => setModul(key, !modul[key])}
@@ -172,9 +172,9 @@ export default function BildirimAyarlari() {
                     className="w-2 h-2 rounded-full shrink-0"
                     style={{ backgroundColor: TIP_RENK[key] }}
                   />
-                  <span className="text-sm text-white">{TIP_LABEL[key]}</span>
+                  <span className="text-sm text-gray-800">{TIP_LABEL[key]}</span>
                   {kilitledi && (
-                    <Lock className="w-3 h-3 text-[#64748b]" />
+                    <Lock className="w-3 h-3 text-gray-500" />
                   )}
                 </div>
                 <Toggle
@@ -198,11 +198,11 @@ export default function BildirimAyarlari() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {ses ? (
-              <Volume2 className="w-4 h-4 text-[#94a3b8]" />
+              <Volume2 className="w-4 h-4 text-gray-400" />
             ) : (
-              <VolumeX className="w-4 h-4 text-[#64748b]" />
+              <VolumeX className="w-4 h-4 text-gray-500" />
             )}
-            <span className="text-sm text-white">Bildirim sesi</span>
+            <span className="text-sm text-gray-800">Bildirim sesi</span>
           </div>
           <Toggle checked={ses} onChange={() => setSes(!ses)} />
         </div>
@@ -212,11 +212,11 @@ export default function BildirimAyarlari() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {push ? (
-                <BellRing className="w-4 h-4 text-[#94a3b8]" />
+                <BellRing className="w-4 h-4 text-gray-400" />
               ) : (
-                <BellOff className="w-4 h-4 text-[#64748b]" />
+                <BellOff className="w-4 h-4 text-gray-500" />
               )}
-              <span className="text-sm text-white">Tarayıcı bildirimleri</span>
+              <span className="text-sm text-gray-800">Tarayıcı bildirimleri</span>
             </div>
             <Toggle checked={push} onChange={handlePushToggle} />
           </div>
@@ -243,8 +243,8 @@ export default function BildirimAyarlari() {
         <Bolum label="Sessiz Saat" />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-[#94a3b8]" />
-            <span className="text-sm text-white">Sessiz saati etkinleştir</span>
+            <Clock className="w-4 h-4 text-gray-400" />
+            <span className="text-sm text-gray-800">Sessiz saati etkinleştir</span>
           </div>
           <Toggle
             checked={sessizSaat.aktif}
@@ -262,26 +262,26 @@ export default function BildirimAyarlari() {
             >
               <div className="flex items-center gap-3 pt-1">
                 <div className="flex-1">
-                  <label className="text-xs text-[#64748b] block mb-1">Başlangıç</label>
+                  <label className="text-xs text-gray-500 block mb-1">Başlangıç</label>
                   <input
                     type="time"
                     value={sessizSaat.baslangic}
                     onChange={(e) => setSessizSaat({ baslangic: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg text-sm text-white border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.05)] focus:outline-none focus:border-[rgba(251,192,36,0.4)] scheme-dark"
+                    className="w-full px-3 py-2 rounded-lg text-sm text-gray-800 border border-gray-200 bg-gray-50 focus:outline-none focus:border-[var(--leaf)] scheme-dark"
                   />
                 </div>
-                <ChevronDown className="w-4 h-4 text-[#475569] mt-4 shrink-0 -rotate-90" />
+                <ChevronDown className="w-4 h-4 text-gray-500 mt-4 shrink-0 -rotate-90" />
                 <div className="flex-1">
-                  <label className="text-xs text-[#64748b] block mb-1">Bitiş</label>
+                  <label className="text-xs text-gray-500 block mb-1">Bitiş</label>
                   <input
                     type="time"
                     value={sessizSaat.bitis}
                     onChange={(e) => setSessizSaat({ bitis: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg text-sm text-white border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.05)] focus:outline-none focus:border-[rgba(251,192,36,0.4)] scheme-dark"
+                    className="w-full px-3 py-2 rounded-lg text-sm text-gray-800 border border-gray-200 bg-gray-50 focus:outline-none focus:border-[var(--leaf)] scheme-dark"
                   />
                 </div>
               </div>
-              <p className="text-xs text-[#475569] mt-2">
+              <p className="text-xs text-gray-500 mt-2">
                 Bu aralıkta bildirimler sessiz eklenir — ses ve push devre dışı kalır.
               </p>
             </motion.div>
@@ -297,8 +297,8 @@ export default function BildirimAyarlari() {
         <div className="space-y-2">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
-              <Wallet className="w-4 h-4 text-[#94a3b8]" />
-              <span className="text-sm text-white">Kasa minimum eşiği</span>
+              <Wallet className="w-4 h-4 text-gray-400" />
+              <span className="text-sm text-gray-800">Kasa minimum eşiği</span>
             </div>
           </div>
           <div className="relative">
@@ -310,13 +310,13 @@ export default function BildirimAyarlari() {
               onChange={(e) => setKasaTlStr(e.target.value)}
               onBlur={handleKasaBlur}
               placeholder="0 — devre dışı"
-              className="w-full pr-10 px-3 py-2.5 rounded-xl text-sm text-white border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.05)] focus:outline-none focus:border-[rgba(251,192,36,0.4)] placeholder-[#475569] transition-colors"
+              className="w-full pr-10 px-3 py-2.5 rounded-xl text-sm text-gray-800 border border-gray-200 bg-gray-50 focus:outline-none focus:border-[var(--leaf)] placeholder-[#475569] transition-colors"
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#64748b] pointer-events-none">
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none">
               TL
             </span>
           </div>
-          <p className="text-xs text-[#475569]">
+          <p className="text-xs text-gray-500">
             Kasa bakiyesi bu değerin altına düşünce bildirim gönderilir. 0 = kapalı.
           </p>
         </div>

@@ -43,8 +43,8 @@ function PieTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   const d = payload[0];
   return (
-    <div className="glass-card rounded-xl px-3 py-2 text-xs">
-      <p className="text-white font-semibold">{d.name}</p>
+    <div className="card rounded-xl px-3 py-2 text-xs">
+      <p className="text-gray-800 font-semibold">{d.name}</p>
       <p style={{ color: d.payload.fill }}>{tlx(d.value)}</p>
     </div>
   );
@@ -59,18 +59,18 @@ function PLSatir({
 }) {
   return (
     <>
-      {separator && <div className="h-px bg-[rgba(255,255,255,0.07)] mx-5 my-0.5" />}
+      {separator && <div className="h-px bg-gray-50 mx-5 my-0.5" />}
       <div
         className={`flex items-center justify-between px-5 py-2.5 rounded-lg transition-colors ${indent ? "ml-2" : ""}`}
         style={{ backgroundColor: bg }}
       >
-        <span className={`text-sm ${bold ? "font-bold text-white" : "text-[#94a3b8]"}`}>
-          {indent && <span className="mr-2 text-[#475569]">–</span>}
+        <span className={`text-sm ${bold ? "font-bold text-gray-800" : "text-gray-400"}`}>
+          {indent && <span className="mr-2 text-gray-500">–</span>}
           {label}
         </span>
         <div className="flex items-center gap-3">
           {yuzde !== undefined && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[rgba(255,255,255,0.06)] text-[#64748b]">
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-50 text-gray-500">
               %{yuzde.toFixed(1)}
             </span>
           )}
@@ -180,7 +180,7 @@ export default function KarZararPage() {
   if (!yuklendi) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 rounded-full border-2 border-[rgba(255,255,255,0.1)] border-t-[#22c55e] animate-spin" />
+        <div className="w-8 h-8 rounded-full border-2 border-gray-200 border-t-[#22c55e] animate-spin" />
       </div>
     );
   }
@@ -193,8 +193,8 @@ export default function KarZararPage() {
       {/* ─── Başlık + Tarih Filtresi ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-white">Kâr - Zarar Analizi</h1>
-          <p className="text-xs md:text-sm text-[#94a3b8] mt-1">Gerçek satış verilerine dayalı P&amp;L raporu</p>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800">Kâr - Zarar Analizi</h1>
+          <p className="text-xs md:text-sm text-gray-400 mt-1">Gerçek satış verilerine dayalı P&amp;L raporu</p>
         </div>
         <div className="flex flex-col items-end gap-2">
           <button
@@ -214,7 +214,7 @@ export default function KarZararPage() {
             {tarihFiltreAktif && (
               <span
                 onClick={(e) => { e.stopPropagation(); setBaslangic(ayBasiIso()); setBitis(bugunIso()); }}
-                className="hover:text-white transition-colors"
+                className="hover:text-gray-800 transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
               </span>
@@ -233,17 +233,17 @@ export default function KarZararPage() {
           >
             <div className="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-[rgba(34,197,94,0.2)] bg-[rgba(34,197,94,0.04)]">
               <div className="flex items-center gap-2">
-                <label className="text-xs text-[#94a3b8] font-medium whitespace-nowrap">Başlangıç</label>
+                <label className="text-xs text-gray-400 font-medium whitespace-nowrap">Başlangıç</label>
                 <input type="date" value={baslangic} max={bitis}
                   onChange={(e) => setBaslangic(e.target.value)}
-                  className="px-3 py-1.5 rounded-lg text-xs text-white border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.05)] focus:outline-none focus:border-[rgba(34,197,94,0.4)] scheme-dark" />
+                  className="px-3 py-1.5 rounded-lg text-xs text-gray-800 border border-gray-200 bg-gray-50 focus:outline-none focus:border-[rgba(34,197,94,0.4)] scheme-dark" />
               </div>
-              <span className="text-[#94a3b8] text-xs">—</span>
+              <span className="text-gray-400 text-xs">—</span>
               <div className="flex items-center gap-2">
-                <label className="text-xs text-[#94a3b8] font-medium whitespace-nowrap">Bitiş</label>
+                <label className="text-xs text-gray-400 font-medium whitespace-nowrap">Bitiş</label>
                 <input type="date" value={bitis} min={baslangic} max={bugunIso()}
                   onChange={(e) => setBitis(e.target.value)}
-                  className="px-3 py-1.5 rounded-lg text-xs text-white border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.05)] focus:outline-none focus:border-[rgba(34,197,94,0.4)] scheme-dark" />
+                  className="px-3 py-1.5 rounded-lg text-xs text-gray-800 border border-gray-200 bg-gray-50 focus:outline-none focus:border-[rgba(34,197,94,0.4)] scheme-dark" />
               </div>
               <div className="flex gap-2 ml-auto">
                 {kisayollar.map(({ label, fn }) => (
@@ -276,9 +276,9 @@ export default function KarZararPage() {
             deger: netMarj * 100,
             alt: netMarj >= 0.15 ? "Sağlıklı marj" : netMarj >= 0 ? "Düşük marj" : "Zarar",
             icon: Percent,
-            renk: netMarj >= 0.15 ? "#22c55e" : netMarj >= 0 ? "#fbc024" : "#ef4444",
-            bg: netMarj >= 0.15 ? "rgba(34,197,94,0.1)" : netMarj >= 0 ? "rgba(251,192,36,0.1)" : "rgba(239,68,68,0.1)",
-            border: netMarj >= 0.15 ? "rgba(34,197,94,0.2)" : netMarj >= 0 ? "rgba(251,192,36,0.2)" : "rgba(239,68,68,0.2)",
+            renk: netMarj >= 0.15 ? "#22c55e" : netMarj >= 0 ? "var(--leaf)" : "#ef4444",
+            bg: netMarj >= 0.15 ? "rgba(34,197,94,0.1)" : netMarj >= 0 ? "var(--mint)" : "rgba(239,68,68,0.1)",
+            border: netMarj >= 0.15 ? "rgba(34,197,94,0.2)" : netMarj >= 0 ? "var(--forest-100, #D9F2E4)" : "rgba(239,68,68,0.2)",
             degerStr: `%${(netMarj * 100).toFixed(1)}`,
           },
           {
@@ -290,23 +290,23 @@ export default function KarZararPage() {
                 : `Başa baş için ${tl(basaBazCiro - satisHasilati)} daha gerekli`
               : "Satış verisi yok",
             icon: Target,
-            renk: satisHasilati >= basaBazCiro && basaBazCiro > 0 ? "#22c55e" : "#fbc024",
-            bg: satisHasilati >= basaBazCiro && basaBazCiro > 0 ? "rgba(34,197,94,0.1)" : "rgba(251,192,36,0.1)",
-            border: satisHasilati >= basaBazCiro && basaBazCiro > 0 ? "rgba(34,197,94,0.2)" : "rgba(251,192,36,0.2)",
+            renk: satisHasilati >= basaBazCiro && basaBazCiro > 0 ? "#22c55e" : "var(--leaf)",
+            bg: satisHasilati >= basaBazCiro && basaBazCiro > 0 ? "rgba(34,197,94,0.1)" : "var(--mint)",
+            border: satisHasilati >= basaBazCiro && basaBazCiro > 0 ? "rgba(34,197,94,0.2)" : "var(--forest-100, #D9F2E4)",
             degerStr: basaBazCiro > 0 ? tl(basaBazCiro) : "—",
           },
         ].map(({ label, alt, icon: Icon, renk, bg, border, degerStr }, i) => (
           <motion.div key={label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.07 }} className="glass-card rounded-xl p-4">
+            transition={{ delay: i * 0.07 }} className="card rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-[#94a3b8] font-medium">{label}</span>
+              <span className="text-xs text-gray-400 font-medium">{label}</span>
               <div className="w-8 h-8 rounded-lg flex items-center justify-center"
                 style={{ backgroundColor: bg, border: `1px solid ${border}` }}>
                 <Icon className="w-4 h-4" style={{ color: renk }} />
               </div>
             </div>
             <p className="text-xl font-bold" style={{ color: renk }}>{degerStr}</p>
-            <p className="text-xs mt-1 text-[#64748b] truncate">{alt}</p>
+            <p className="text-xs mt-1 text-gray-500 truncate">{alt}</p>
           </motion.div>
         ))}
       </div>
@@ -315,10 +315,10 @@ export default function KarZararPage() {
       <div className="flex flex-col lg:flex-row gap-6">
 
         {/* P&L hiyerarşi */}
-        <div className="glass-card rounded-2xl py-4 flex-1">
-          <div className="px-5 pb-3 border-b border-[rgba(255,255,255,0.06)]">
-            <h2 className="text-sm font-semibold text-white">Gelir Tablosu</h2>
-            <p className="text-xs text-[#94a3b8] mt-0.5">KDV hariç, seçili dönem</p>
+        <div className="card rounded-2xl py-4 flex-1">
+          <div className="px-5 pb-3 border-b border-gray-200">
+            <h2 className="text-sm font-semibold text-gray-800">Gelir Tablosu</h2>
+            <p className="text-xs text-gray-400 mt-0.5">KDV hariç, seçili dönem</p>
           </div>
           <div className="py-3 space-y-0.5">
 
@@ -326,7 +326,7 @@ export default function KarZararPage() {
             <div className="flex items-center gap-2 px-5 pt-2 pb-1">
               <TrendingUp className="w-3 h-3 text-[#22c55e]" />
               <span className="text-[10px] font-bold text-[#22c55e] uppercase tracking-widest">Hasılat</span>
-              <div className="flex-1 h-px bg-[rgba(255,255,255,0.06)]" />
+              <div className="flex-1 h-px bg-gray-50" />
             </div>
             <PLSatir label="Satış Hasılatı" deger={satisHasilati} renk="#22c55e" bold />
 
@@ -334,7 +334,7 @@ export default function KarZararPage() {
             <div className="flex items-center gap-2 px-5 pt-3 pb-1">
               <TrendingDown className="w-3 h-3 text-[#ef4444]" />
               <span className="text-[10px] font-bold text-[#ef4444] uppercase tracking-widest">Satılan Mal Maliyeti</span>
-              <div className="flex-1 h-px bg-[rgba(255,255,255,0.06)]" />
+              <div className="flex-1 h-px bg-gray-50" />
             </div>
             <PLSatir label="SMM" deger={-smm} renk="#ef4444" indent
               yuzde={satisHasilati > 0 ? (smm / satisHasilati) * 100 : 0} />
@@ -351,7 +351,7 @@ export default function KarZararPage() {
                 <div className="flex items-center gap-2 px-5 pt-3 pb-1">
                   <TrendingDown className="w-3 h-3 text-[#f97316]" />
                   <span className="text-[10px] font-bold text-[#f97316] uppercase tracking-widest">Sabit Giderler</span>
-                  <div className="flex-1 h-px bg-[rgba(255,255,255,0.06)]" />
+                  <div className="flex-1 h-px bg-gray-50" />
                 </div>
                 {giderler.map((g) => (
                   <PLSatir key={g.id} label={g.kategori} deger={-g.tutarKurus} renk="#f97316" indent
@@ -370,11 +370,11 @@ export default function KarZararPage() {
         </div>
 
         {/* Pie chart */}
-        <div className="glass-card rounded-2xl p-5 w-full lg:w-80 shrink-0">
-          <h2 className="text-sm font-semibold text-white mb-1">Gider Dağılımı</h2>
-          <p className="text-xs text-[#94a3b8] mb-4">SMM + sabit giderler</p>
+        <div className="card rounded-2xl p-5 w-full lg:w-80 shrink-0">
+          <h2 className="text-sm font-semibold text-gray-800 mb-1">Gider Dağılımı</h2>
+          <p className="text-xs text-gray-400 mb-4">SMM + sabit giderler</p>
           {pieData.length === 0 ? (
-            <div className="h-64 flex items-center justify-center text-sm text-[#64748b]">
+            <div className="h-64 flex items-center justify-center text-sm text-gray-500">
               Veri yok
             </div>
           ) : (
@@ -404,23 +404,23 @@ export default function KarZararPage() {
       </div>
 
       {/* ─── Sabit Gider Yönetimi ─── */}
-      <div className="glass-card rounded-2xl overflow-hidden">
+      <div className="card rounded-2xl overflow-hidden">
         <button
           onClick={() => setGiderAcik((p) => !p)}
-          className="w-full flex items-center justify-between px-5 py-4 hover:bg-[rgba(255,255,255,0.02)] transition-colors"
+          className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-[rgba(249,115,22,0.12)] border border-[rgba(249,115,22,0.2)] flex items-center justify-center">
               <DollarSign className="w-4 h-4 text-[#f97316]" />
             </div>
             <div className="text-left">
-              <p className="text-sm font-semibold text-white">Sabit Giderler</p>
-              <p className="text-xs text-[#64748b]">
+              <p className="text-sm font-semibold text-gray-800">Sabit Giderler</p>
+              <p className="text-xs text-gray-500">
                 {giderler.length} kalem · Toplam {tl(toplamGider)}/ay
               </p>
             </div>
           </div>
-          {giderAcik ? <ChevronUp className="w-4 h-4 text-[#64748b]" /> : <ChevronDown className="w-4 h-4 text-[#64748b]" />}
+          {giderAcik ? <ChevronUp className="w-4 h-4 text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-500" />}
         </button>
 
         <AnimatePresence>
@@ -430,42 +430,42 @@ export default function KarZararPage() {
               exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}
               style={{ overflow: "hidden" }}
             >
-              <div className="border-t border-[rgba(255,255,255,0.06)]">
+              <div className="border-t border-gray-200">
                 {/* Gider listesi */}
                 {giderler.length > 0 && (
-                  <div className="divide-y divide-[rgba(255,255,255,0.04)]">
+                  <div className="divide-y divide-gray-100">
                     {giderler.map((g) => (
                       <div key={g.id} className="flex items-center gap-3 px-5 py-3">
                         {duzenleId === g.id ? (
                           <>
                             <input value={duzenleAd}
                               onChange={(e) => setDuzenleAd(e.target.value)}
-                              className="flex-1 px-3 py-1.5 rounded-lg text-sm text-white bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] focus:outline-none focus:border-[rgba(249,115,22,0.4)]"
+                              className="flex-1 px-3 py-1.5 rounded-lg text-sm text-gray-800 bg-gray-50 border border-gray-200 focus:outline-none focus:border-[rgba(249,115,22,0.4)]"
                             />
                             <input type="number" min="0" step="0.01" value={duzenleTutar}
                               onChange={(e) => setDuzenleTutar(e.target.value)}
-                              className="w-28 px-3 py-1.5 rounded-lg text-sm text-white bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] focus:outline-none focus:border-[rgba(249,115,22,0.4)] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                              className="w-28 px-3 py-1.5 rounded-lg text-sm text-gray-800 bg-gray-50 border border-gray-200 focus:outline-none focus:border-[rgba(249,115,22,0.4)] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
                             />
                             <button onClick={handleGiderKaydet}
                               className="w-8 h-8 flex items-center justify-center rounded-lg bg-[rgba(34,197,94,0.12)] text-[#22c55e] hover:bg-[rgba(34,197,94,0.2)] transition-colors">
                               <Check className="w-3.5 h-3.5" />
                             </button>
                             <button onClick={() => setDuzenleId(null)}
-                              className="w-8 h-8 flex items-center justify-center rounded-lg text-[#64748b] hover:text-[#94a3b8] transition-colors">
+                              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-400 transition-colors">
                               <X className="w-3.5 h-3.5" />
                             </button>
                           </>
                         ) : (
                           <>
-                            <span className="flex-1 text-sm text-[#94a3b8]">{g.kategori}</span>
-                            <span className="text-sm font-semibold text-white">{tl(g.tutarKurus)}<span className="text-[#475569] text-xs">/ay</span></span>
+                            <span className="flex-1 text-sm text-gray-400">{g.kategori}</span>
+                            <span className="text-sm font-semibold text-gray-800">{tl(g.tutarKurus)}<span className="text-gray-500 text-xs">/ay</span></span>
                             <button
                               onClick={() => { setDuzenleId(g.id); setDuzenleAd(g.kategori); setDuzenleTutar(String(g.tutarKurus)); }}
-                              className="w-7 h-7 flex items-center justify-center rounded-lg text-[#475569] hover:text-[#fbc024] transition-colors">
+                              className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 hover:text-[var(--leaf)] transition-colors">
                               <Pencil className="w-3.5 h-3.5" />
                             </button>
                             <button onClick={() => handleGiderSil(g)}
-                              className="w-7 h-7 flex items-center justify-center rounded-lg text-[#475569] hover:text-[#ef4444] transition-colors">
+                              className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 hover:text-[#ef4444] transition-colors">
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </>
@@ -476,14 +476,14 @@ export default function KarZararPage() {
                 )}
 
                 {/* Yeni gider ekleme */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-5 py-4 border-t border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.01)]">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-5 py-4 border-t border-gray-200 bg-gray-50">
                   <input
                     type="text"
                     placeholder="Gider adı (örn. Kira)"
                     value={yeniKategori}
                     onChange={(e) => setYeniKategori(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleGiderEkle()}
-                    className="flex-1 min-h-11 px-3 py-2 rounded-xl text-sm text-white bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] placeholder-[#475569] focus:outline-none focus:border-[rgba(249,115,22,0.4)] transition-colors"
+                    className="flex-1 min-h-11 px-3 py-2 rounded-xl text-sm text-gray-800 bg-gray-50 border border-gray-200 placeholder-[#475569] focus:outline-none focus:border-[rgba(249,115,22,0.4)] transition-colors"
                   />
                   <div className="flex gap-2">
                     <input
@@ -492,12 +492,12 @@ export default function KarZararPage() {
                       value={yeniTutar}
                       onChange={(e) => setYeniTutar(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleGiderEkle()}
-                      className="flex-1 sm:w-32 min-h-11 px-3 py-2 rounded-xl text-sm text-white bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] placeholder-[#475569] focus:outline-none focus:border-[rgba(249,115,22,0.4)] transition-colors [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                      className="flex-1 sm:w-32 min-h-11 px-3 py-2 rounded-xl text-sm text-gray-800 bg-gray-50 border border-gray-200 placeholder-[#475569] focus:outline-none focus:border-[rgba(249,115,22,0.4)] transition-colors [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <button
                       onClick={handleGiderEkle}
                       disabled={!yeniKategori.trim() || !Number(yeniTutar)}
-                      className="shrink-0 flex items-center gap-1.5 px-3 py-2 min-h-11 rounded-xl bg-[#f97316] text-white text-sm font-semibold hover:bg-[#ea6c0a] transition-colors disabled:opacity-40"
+                      className="shrink-0 flex items-center gap-1.5 px-3 py-2 min-h-11 rounded-xl bg-[#f97316] text-gray-800 text-sm font-semibold hover:bg-[#ea6c0a] transition-colors disabled:opacity-40"
                     >
                       <Plus className="w-4 h-4" />
                       Ekle
@@ -512,7 +512,7 @@ export default function KarZararPage() {
 
       {/* ─── Ürün Marj Analizi ─── */}
       <div>
-        <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest mb-4">
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-4">
           Ürün Bazlı Marj Analizi
         </h2>
         <div className="flex flex-col lg:flex-row gap-6">
@@ -525,7 +525,7 @@ export default function KarZararPage() {
 
       {/* ─── Satış Geçmişi ─── */}
       <div>
-        <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest mb-4">
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-4">
           Satış Geçmişi
         </h2>
         <SatisGecmisi />

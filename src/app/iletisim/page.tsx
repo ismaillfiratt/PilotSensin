@@ -31,7 +31,7 @@ const sema = z.object({
 const KATEGORI_KARTLAR = [
   { key: "kullanim" as DestekKategori, icon: HelpCircle, label: "Kullanım Soruları",  renk: "#3b82f6" },
   { key: "hata"     as DestekKategori, icon: Bug,         label: "Hata Bildirimi",     renk: "#ef4444" },
-  { key: "oneri"    as DestekKategori, icon: Lightbulb,   label: "Öneri Paylaş",       renk: "#fbc024" },
+  { key: "oneri"    as DestekKategori, icon: Lightbulb,   label: "Öneri Paylaş",       renk: "var(--leaf)" },
 ];
 
 function zaman(iso: string) {
@@ -169,36 +169,36 @@ export default function IletisimPage() {
     <div className="max-w-2xl mx-auto space-y-6 pb-24">
 
       {/* Hero */}
-      <div className="glass-card rounded-2xl p-6">
+      <div className="card rounded-2xl p-6">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-xl bg-[rgba(251,192,36,0.12)] border border-[rgba(251,192,36,0.25)] flex items-center justify-center">
-            <MessageCircle className="w-5 h-5 text-[#fbc024]" />
+          <div className="w-10 h-10 rounded-xl bg-[var(--mint)] border border-[var(--forest-200, #B3E8C8)] flex items-center justify-center">
+            <MessageCircle className="w-5 h-5 text-[var(--leaf)]" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">Sana Nasıl Yardımcı Olabiliriz?</h1>
-            <p className="text-xs text-[#94a3b8]">Ekibimiz en kısa sürede döner</p>
+            <h1 className="text-xl font-bold text-gray-800">Sana Nasıl Yardımcı Olabiliriz?</h1>
+            <p className="text-xs text-gray-400">Ekibimiz en kısa sürede döner</p>
           </div>
         </div>
 
         {/* E-posta kartı */}
-        <div className="flex items-center justify-between gap-3 p-4 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] mt-4">
+        <div className="flex items-center justify-between gap-3 p-4 rounded-xl bg-gray-50 border border-gray-200 mt-4">
           <div className="flex items-center gap-3 min-w-0">
-            <Mail className="w-4 h-4 text-[#fbc024] shrink-0" />
+            <Mail className="w-4 h-4 text-[var(--leaf)] shrink-0" />
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-white truncate">{DESTEK_EMAIL}</p>
-              <p className="text-xs text-[#64748b]">
+              <p className="text-sm font-semibold text-gray-800 truncate">{DESTEK_EMAIL}</p>
+              <p className="text-xs text-gray-500">
                 Ort. yanıt: {ortYanit !== null ? `${ortYanit} saat` : "4 saat"}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button onClick={kopyala}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[rgba(255,255,255,0.1)] text-[#94a3b8] hover:text-white transition-colors">
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200 text-gray-400 hover:text-gray-800 transition-colors">
               {kopyalandi ? <Check className="w-3.5 h-3.5 text-[#22c55e]" /> : <Copy className="w-3.5 h-3.5" />}
               {kopyalandi ? "Kopyalandı" : "Kopyala"}
             </button>
             <button onClick={() => window.open(`mailto:${DESTEK_EMAIL}`)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[rgba(251,192,36,0.12)] border border-[rgba(251,192,36,0.25)] text-[#fbc024] hover:bg-[rgba(251,192,36,0.2)] transition-colors">
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--mint)] border border-[var(--forest-200, #B3E8C8)] text-[var(--leaf)] hover:bg-[var(--forest-100, #D9F2E4)] transition-colors">
               <ExternalLink className="w-3.5 h-3.5" /> Mail Aç
             </button>
           </div>
@@ -209,21 +209,21 @@ export default function IletisimPage() {
       <div className="grid grid-cols-3 gap-3">
         {KATEGORI_KARTLAR.map(({ key, icon: Icon, label, renk }) => (
           <button key={key} onClick={() => kategoriSec(key)}
-            className="glass-card rounded-xl p-4 text-center hover:scale-[1.02] transition-all active:scale-95 border"
+            className="card rounded-xl p-4 text-center hover:scale-[1.02] transition-all active:scale-95 border"
             style={{ borderColor: kategori === key ? renk + "60" : "transparent" }}>
             <div className="w-8 h-8 rounded-lg flex items-center justify-center mx-auto mb-2"
               style={{ backgroundColor: renk + "20" }}>
               <Icon className="w-4 h-4" style={{ color: renk }} />
             </div>
-            <p className="text-xs font-semibold text-white leading-snug">{label}</p>
+            <p className="text-xs font-semibold text-gray-800 leading-snug">{label}</p>
           </button>
         ))}
       </div>
 
       {/* Yeni talep formu */}
-      <div ref={formRef} className="glass-card rounded-2xl p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-          <Plus className="w-4 h-4 text-[#fbc024]" /> Yeni Talep
+      <div ref={formRef} className="card rounded-2xl p-5 space-y-4">
+        <h2 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+          <Plus className="w-4 h-4 text-[var(--leaf)]" /> Yeni Talep
         </h2>
 
         {hata.genel && (
@@ -235,30 +235,30 @@ export default function IletisimPage() {
 
         {/* Konu */}
         <div>
-          <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Konu *</label>
+          <label className="text-xs text-gray-400 font-medium block mb-1.5">Konu *</label>
           <input value={konu} onChange={e => setKonu(e.target.value)} maxLength={200}
             placeholder="Kısaca sorununuzu özetleyin..."
-            className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#475569] text-sm focus:outline-none focus:border-[rgba(251,192,36,0.4)] transition-colors" />
+            className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#475569] text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors" />
           {hata.konu && <p className="text-xs text-[#ef4444] mt-1">{hata.konu}</p>}
         </div>
 
         {/* Kategori + Öncelik */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Kategori *</label>
+            <label className="text-xs text-gray-400 font-medium block mb-1.5">Kategori *</label>
             <select value={kategori} onChange={e => setKategori(e.target.value as DestekKategori)}
-              className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-sm focus:outline-none focus:border-[rgba(251,192,36,0.4)] transition-colors">
+              className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors">
               {Object.entries(KATEGORI_ETIKETLERI).map(([k, v]) => (
-                <option key={k} value={k} className="bg-[#0e172a]">{v}</option>
+                <option key={k} value={k} className="bg-[var(--forest)]">{v}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Öncelik</label>
+            <label className="text-xs text-gray-400 font-medium block mb-1.5">Öncelik</label>
             <select value={oncelik} onChange={e => setOncelik(e.target.value as DestekOncelik)}
-              className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-sm focus:outline-none focus:border-[rgba(251,192,36,0.4)] transition-colors">
+              className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors">
               {Object.entries(ONCELIK_ETIKETLERI).map(([k, v]) => (
-                <option key={k} value={k} className="bg-[#0e172a]">{v}</option>
+                <option key={k} value={k} className="bg-[var(--forest)]">{v}</option>
               ))}
             </select>
           </div>
@@ -266,47 +266,47 @@ export default function IletisimPage() {
 
         {/* Açıklama */}
         <div>
-          <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Açıklama *</label>
+          <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama *</label>
           <textarea value={mesaj} onChange={e => setMesaj(e.target.value)} maxLength={5000} rows={5}
             placeholder="Sorununuzu veya isteğinizi açık ve detaylı açıklayın..."
-            className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#475569] text-sm focus:outline-none focus:border-[rgba(251,192,36,0.4)] transition-colors resize-none leading-relaxed" />
+            className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#475569] text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors resize-none leading-relaxed" />
           <div className="flex justify-between mt-1">
             <p className="text-xs text-[#ef4444]">{hata.mesaj ?? ""}</p>
-            <p className="text-xs text-[#475569]">{mesaj.length.toLocaleString("tr-TR")} / 5.000</p>
+            <p className="text-xs text-gray-500">{mesaj.length.toLocaleString("tr-TR")} / 5.000</p>
           </div>
         </div>
 
         {/* Dosya ekleri */}
         <div>
-          <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Dosya Ekle</label>
+          <label className="text-xs text-gray-400 font-medium block mb-1.5">Dosya Ekle</label>
           <input ref={dosyaRef} type="file" multiple accept="image/*,application/pdf,text/plain"
             onChange={dosyaEkle} className="hidden" />
           <button onClick={() => dosyaRef.current?.click()}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-[rgba(255,255,255,0.12)] text-[#64748b] text-xs font-medium hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] transition-all">
+            className="flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-gray-200 text-gray-500 text-xs font-medium hover:border-[var(--forest-300, #7DD0A0)] hover:text-[var(--leaf)] transition-all">
             <Paperclip className="w-3.5 h-3.5" /> Ekran görüntüsü veya dosya ekle
           </button>
           {dosyalar.length > 0 && (
             <div className="mt-2 space-y-1.5">
               {dosyalar.map((d, i) => (
-                <div key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[rgba(255,255,255,0.04)] text-xs text-[#94a3b8]">
+                <div key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-50 text-xs text-gray-400">
                   <Paperclip className="w-3 h-3 shrink-0" />
                   <span className="flex-1 truncate">{d.name}</span>
-                  <span className="text-[#475569]">{(d.size / 1024).toFixed(0)} KB</span>
+                  <span className="text-gray-500">{(d.size / 1024).toFixed(0)} KB</span>
                   <button onClick={() => dosyaKaldir(i)}
-                    className="text-[#475569] hover:text-[#ef4444] transition-colors">
+                    className="text-gray-500 hover:text-[#ef4444] transition-colors">
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
               ))}
             </div>
           )}
-          <p className="text-xs text-[#475569] mt-1.5">Maks. 5 dosya, her biri 10MB (resim, PDF, metin)</p>
+          <p className="text-xs text-gray-500 mt-1.5">Maks. 5 dosya, her biri 10MB (resim, PDF, metin)</p>
         </div>
 
         <button onClick={handleGonder} disabled={gonderiyor}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
           {gonderiyor
-            ? <><div className="w-4 h-4 border-2 border-[#0e172a]/30 border-t-[#0e172a] rounded-full animate-spin" />Gönderiliyor...</>
+            ? <><div className="w-4 h-4 border-2 border-[var(--forest)]/30 border-t-[var(--forest)] rounded-full animate-spin" />Gönderiliyor...</>
             : <><Send className="w-4 h-4" />Talep Gönder</>}
         </button>
       </div>
@@ -315,15 +315,15 @@ export default function IletisimPage() {
       {talepler.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-white">Talepleriniz</h2>
-            <div className="flex gap-1 p-1 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)]">
+            <h2 className="text-sm font-semibold text-gray-800">Talepleriniz</h2>
+            <div className="flex gap-1 p-1 rounded-xl bg-gray-50 border border-gray-200">
               {(["tumu", "acik", "cozuldu", "kapali"] as const).map(f => (
                 <button key={f} onClick={() => setFiltre(f)}
                   className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all"
                   style={{
-                    backgroundColor: filtre === f ? "rgba(251,192,36,0.15)" : "transparent",
-                    color:           filtre === f ? "#fbc024" : "#64748b",
-                    border:          filtre === f ? "1px solid rgba(251,192,36,0.3)" : "1px solid transparent",
+                    backgroundColor: filtre === f ? "var(--mint)" : "transparent",
+                    color:           filtre === f ? "var(--leaf)" : "#64748b",
+                    border:          filtre === f ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid transparent",
                   }}>
                   {f === "tumu" ? "Hepsi" : DURUM_ETIKETLERI[f as DestekDurum]}
                 </button>
@@ -334,7 +334,7 @@ export default function IletisimPage() {
           <AnimatePresence mode="popLayout">
             {gorununTalepler.length === 0 ? (
               <motion.div key="bos" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="glass-card rounded-xl py-8 text-center text-sm text-[#64748b]">
+                className="card rounded-xl py-8 text-center text-sm text-gray-500">
                 Bu filtreyle eşleşen talep yok
               </motion.div>
             ) : gorununTalepler.map((t, i) => {
@@ -344,12 +344,12 @@ export default function IletisimPage() {
                 <motion.button key={t.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.04 }}
                   onClick={() => router.push(`/iletisim/${t.id}`)}
-                  className="w-full glass-card rounded-xl overflow-hidden hover:bg-[rgba(255,255,255,0.02)] transition-colors text-left"
+                  className="w-full card rounded-xl overflow-hidden hover:bg-gray-50 transition-colors text-left"
                   style={{ borderLeft: okunmamis ? `3px solid ${durumRenk}` : undefined }}>
                   <div className="flex items-center gap-3 px-4 py-3.5">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <p className={`text-sm truncate ${okunmamis ? "font-bold text-white" : "font-medium text-[#e2e8f0]"}`}>
+                        <p className={`text-sm truncate ${okunmamis ? "font-bold text-gray-800" : "font-medium text-[#e2e8f0]"}`}>
                           {t.konu}
                         </p>
                         {okunmamis && <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: durumRenk }} />}
@@ -359,16 +359,16 @@ export default function IletisimPage() {
                           style={{ color: durumRenk, backgroundColor: durumRenk + "20" }}>
                           {DURUM_ETIKETLERI[t.durum]}
                         </span>
-                        <span className="text-[10px] text-[#475569]">{KATEGORI_ETIKETLERI[t.kategori]}</span>
-                        <span className="text-[10px] text-[#475569]" style={{ color: ONCELIK_RENKLERI[t.oncelik] }}>
+                        <span className="text-[10px] text-gray-500">{KATEGORI_ETIKETLERI[t.kategori]}</span>
+                        <span className="text-[10px] text-gray-500" style={{ color: ONCELIK_RENKLERI[t.oncelik] }}>
                           {ONCELIK_ETIKETLERI[t.oncelik]}
                         </span>
-                        <span className="text-[10px] text-[#475569] flex items-center gap-0.5 ml-auto">
+                        <span className="text-[10px] text-gray-500 flex items-center gap-0.5 ml-auto">
                           <Clock className="w-3 h-3" />{zaman(t.sonMesajTarihi)}
                         </span>
                       </div>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-[#475569] shrink-0" />
+                    <ChevronRight className="w-4 h-4 text-gray-500 shrink-0" />
                   </div>
                 </motion.button>
               );
@@ -378,10 +378,10 @@ export default function IletisimPage() {
       )}
 
       {talepler.length === 0 && (
-        <div className="glass-card rounded-2xl py-12 text-center">
-          <MessageCircle className="w-10 h-10 text-[#334155] mx-auto mb-3" />
-          <p className="text-sm text-[#64748b]">Henüz destek talebin yok.</p>
-          <p className="text-xs text-[#475569] mt-1">Sorularınla bize ulaş!</p>
+        <div className="card rounded-2xl py-12 text-center">
+          <MessageCircle className="w-10 h-10 text-gray-600 mx-auto mb-3" />
+          <p className="text-sm text-gray-500">Henüz destek talebin yok.</p>
+          <p className="text-xs text-gray-500 mt-1">Sorularınla bize ulaş!</p>
         </div>
       )}
     </div>

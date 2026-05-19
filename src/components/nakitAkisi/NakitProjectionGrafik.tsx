@@ -21,9 +21,9 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   const negatif = (bakiye as number) < 0;
 
   return (
-    <div className="bg-[#0e172a] border border-[rgba(255,255,255,0.1)] rounded-xl p-3 text-xs space-y-1 shadow-xl">
-      <p className="font-semibold text-[#94a3b8]">{label}</p>
-      <p className={`font-bold text-sm ${negatif ? "text-[#ef4444]" : "text-white"}`}>
+    <div className="bg-white border border-gray-200 rounded-xl p-3 text-xs space-y-1 shadow-xl">
+      <p className="font-semibold text-gray-400">{label}</p>
+      <p className={`font-bold text-sm ${negatif ? "text-[#ef4444]" : "text-gray-800"}`}>
         Bakiye: {tl(bakiye as number)}
       </p>
       {(giren as number) > 0 && <p className="text-[#22c55e]">+{tl(giren as number)} Gelir</p>}
@@ -52,11 +52,11 @@ export default function NakitProjectionGrafik() {
   const padding = Math.abs(yMax - yMin) * 0.15 || 1000;
 
   return (
-    <div className="glass-card rounded-2xl p-5 space-y-4">
+    <div className="card rounded-2xl p-5 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-bold text-white">30 Günlük Nakit Projeksiyonu</h2>
-          <p className="text-xs text-[#64748b] mt-0.5">Planlanan gelir ve giderler dahil tahmini bakiye</p>
+          <h2 className="text-base font-bold text-gray-800">30 Günlük Nakit Projeksiyonu</h2>
+          <p className="text-xs text-gray-500 mt-0.5">Planlanan gelir ve giderler dahil tahmini bakiye</p>
         </div>
         {kritik && (
           <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[rgba(239,68,68,0.12)] text-[#ef4444] border border-[rgba(239,68,68,0.25)] flex items-center gap-1.5">
@@ -125,14 +125,14 @@ export default function NakitProjectionGrafik() {
             stroke={lineColor}
             strokeWidth={2.5}
             dot={false}
-            activeDot={{ r: 4, fill: lineColor, stroke: "#0e172a", strokeWidth: 2 }}
+            activeDot={{ r: 4, fill: lineColor, stroke: "var(--forest)", strokeWidth: 2 }}
           />
         </ComposedChart>
       </ResponsiveContainer>
       </div>
 
       {/* Gün açıklaması */}
-      <div className="flex items-center gap-4 text-xs text-[#475569]">
+      <div className="flex items-center gap-4 text-xs text-gray-500">
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-0.5 rounded bg-[#22c55e]" />
           Pozitif bakiye
@@ -142,7 +142,7 @@ export default function NakitProjectionGrafik() {
           Negatif bakiye
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-0.5 rounded bg-[rgba(255,255,255,0.2)]" style={{ border: "1px dashed rgba(255,255,255,0.2)" }} />
+          <span className="w-3 h-0.5 rounded bg-gray-50" style={{ border: "1px dashed rgba(255,255,255,0.2)" }} />
           Sıfır seviyesi
         </span>
       </div>

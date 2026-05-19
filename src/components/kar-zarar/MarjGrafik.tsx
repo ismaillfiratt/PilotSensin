@@ -15,11 +15,11 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="glass-card rounded-xl p-3 text-xs space-y-1 min-w-[170px]">
-      <p className="text-white font-semibold mb-1.5">{label}</p>
-      <div className="flex justify-between gap-4"><span className="text-[#94a3b8]">Toplam ciro</span><span className="text-white font-bold">{tl(d.toplamCiroKurus)}</span></div>
-      <div className="flex justify-between gap-4"><span className="text-[#94a3b8]">Brüt kâr</span><span className="font-bold" style={{ color: d.color }}>{tl(d.toplamKar)}</span></div>
-      <div className="flex justify-between gap-4"><span className="text-[#94a3b8]">Marj</span><span className="font-bold" style={{ color: d.color }}>%{d.marj.toFixed(1)}</span></div>
+    <div className="card rounded-xl p-3 text-xs space-y-1 min-w-[170px]">
+      <p className="text-gray-800 font-semibold mb-1.5">{label}</p>
+      <div className="flex justify-between gap-4"><span className="text-gray-400">Toplam ciro</span><span className="text-gray-800 font-bold">{tl(d.toplamCiroKurus)}</span></div>
+      <div className="flex justify-between gap-4"><span className="text-gray-400">Brüt kâr</span><span className="font-bold" style={{ color: d.color }}>{tl(d.toplamKar)}</span></div>
+      <div className="flex justify-between gap-4"><span className="text-gray-400">Marj</span><span className="font-bold" style={{ color: d.color }}>%{d.marj.toFixed(1)}</span></div>
     </div>
   );
 };
@@ -35,7 +35,7 @@ function urunMarjVerisi(kayitlar: SatisKaydi[]) {
   }
   return Object.values(map).map((u) => {
     const marj  = u.toplamCiroKurus > 0 ? (u.toplamKar / u.toplamCiroKurus) * 100 : 0;
-    const color = marj >= 30 ? "#22c55e" : marj >= 15 ? "#fbc024" : "#ef4444";
+    const color = marj >= 30 ? "#22c55e" : marj >= 15 ? "var(--leaf)" : "#ef4444";
     return { ...u, marj, color };
   }).sort((a, b) => b.marj - a.marj).slice(0, 12);
 }
@@ -48,21 +48,21 @@ export default function MarjGrafik() {
 
   if (data.length === 0) {
     return (
-      <div className="glass-card rounded-2xl p-5 flex-1 flex items-center justify-center">
-        <p className="text-sm text-[#64748b]">Satış kaydı girildiğinde grafik oluşur</p>
+      <div className="card rounded-2xl p-5 flex-1 flex items-center justify-center">
+        <p className="text-sm text-gray-500">Satış kaydı girildiğinde grafik oluşur</p>
       </div>
     );
   }
 
   return (
-    <div className="glass-card rounded-2xl p-5 flex-1">
+    <div className="card rounded-2xl p-5 flex-1">
       <div className="mb-5">
-        <h2 className="text-sm font-semibold text-white">Ürün Bazlı Kâr Marjı</h2>
-        <p className="text-xs text-[#94a3b8] mt-0.5">
+        <h2 className="text-sm font-semibold text-gray-800">Ürün Bazlı Kâr Marjı</h2>
+        <p className="text-xs text-gray-400 mt-0.5">
           Gerçek satış verisi · {data.length} ürün
           &nbsp;·&nbsp;
           <span className="text-[#22c55e]">■</span> ≥%30 &nbsp;
-          <span className="text-[#fbc024]">■</span> %15–30 &nbsp;
+          <span className="text-[var(--leaf)]">■</span> %15–30 &nbsp;
           <span className="text-[#ef4444]">■</span> &lt;%15
         </p>
       </div>

@@ -24,7 +24,7 @@ function StatKart({ label, deger, renk, bg, icon: Icon, secili, onClick }: {
       }}>
       <Icon className="w-4 h-4 mx-auto mb-1" style={{ color: renk }} />
       <p className="text-xl font-black" style={{ color: renk }}>{deger}</p>
-      <p className="text-[10px] text-[#94a3b8] mt-0.5 leading-tight">{label}</p>
+      <p className="text-[10px] text-gray-400 mt-0.5 leading-tight">{label}</p>
     </button>
   );
 }
@@ -139,21 +139,21 @@ export default function GorevTarihselPanel() {
   const kartlar = [
     { key: "toplam"    as Filtre, label: "Toplam",       renk: "#94a3b8", bg: "rgba(148,163,184,0.12)", icon: ListTodo     },
     { key: "yapilacak" as Filtre, label: "Yapılacak",    renk: "#94a3b8", bg: "rgba(148,163,184,0.08)", icon: ListTodo     },
-    { key: "devam"     as Filtre, label: "Devam Ediyor", renk: "#fbc024", bg: "rgba(251,192,36,0.12)",  icon: Clock        },
+    { key: "devam"     as Filtre, label: "Devam Ediyor", renk: "var(--leaf)", bg: "var(--mint)",  icon: Clock        },
     { key: "tamamlandi"as Filtre, label: "Tamamlandı",   renk: "#22c55e", bg: "rgba(34,197,94,0.12)",   icon: CheckCircle2 },
     { key: "geciken"   as Filtre, label: "Geciken",      renk: "#ef4444", bg: "rgba(239,68,68,0.12)",   icon: AlertCircle  },
   ];
 
   return (
-    <div className="glass-card rounded-2xl p-6 space-y-5">
+    <div className="card rounded-2xl p-6 space-y-5">
       {/* Başlık */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-[rgba(251,192,36,0.12)] border border-[rgba(251,192,36,0.2)] flex items-center justify-center">
-          <Calendar className="w-5 h-5 text-[#fbc024]" />
+        <div className="w-10 h-10 rounded-xl bg-[var(--mint)] border border-[var(--forest-100, #D9F2E4)] flex items-center justify-center">
+          <Calendar className="w-5 h-5 text-[var(--leaf)]" />
         </div>
         <div>
-          <h3 className="text-base font-bold text-white">Tarihsel Görev Analizi</h3>
-          <p className="text-xs text-[#94a3b8]">Dönem seç · Karta tıkla · Filtrele / Ara</p>
+          <h3 className="text-base font-bold text-gray-800">Tarihsel Görev Analizi</h3>
+          <p className="text-xs text-gray-400">Dönem seç · Karta tıkla · Filtrele / Ara</p>
         </div>
       </div>
 
@@ -164,9 +164,9 @@ export default function GorevTarihselPanel() {
             <button key={key} onClick={() => setMod(key)}
               className="px-3 py-1.5 rounded-xl text-xs font-medium border transition-all"
               style={{
-                borderColor:     mod === key ? "#fbc024" : "rgba(255,255,255,0.08)",
-                backgroundColor: mod === key ? "rgba(251,192,36,0.12)" : "transparent",
-                color:           mod === key ? "#fbc024" : "#94a3b8",
+                borderColor:     mod === key ? "var(--leaf)" : "rgba(255,255,255,0.08)",
+                backgroundColor: mod === key ? "var(--mint)" : "transparent",
+                color:           mod === key ? "var(--leaf)" : "#94a3b8",
               }}>
               {label}
             </button>
@@ -174,9 +174,9 @@ export default function GorevTarihselPanel() {
           <button onClick={() => setMod("ozel")}
             className="px-3 py-1.5 rounded-xl text-xs font-medium border transition-all flex items-center gap-1.5"
             style={{
-              borderColor:     mod === "ozel" ? "#fbc024" : "rgba(255,255,255,0.08)",
-              backgroundColor: mod === "ozel" ? "rgba(251,192,36,0.12)" : "transparent",
-              color:           mod === "ozel" ? "#fbc024" : "#94a3b8",
+              borderColor:     mod === "ozel" ? "var(--leaf)" : "rgba(255,255,255,0.08)",
+              backgroundColor: mod === "ozel" ? "var(--mint)" : "transparent",
+              color:           mod === "ozel" ? "var(--leaf)" : "#94a3b8",
             }}>
             <Calendar className="w-3 h-3" />
             Özel Tarih
@@ -184,32 +184,32 @@ export default function GorevTarihselPanel() {
         </div>
 
         {mod === "ozel" && (
-          <div className="flex flex-wrap items-center gap-2 p-3 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)]">
+          <div className="flex flex-wrap items-center gap-2 p-3 rounded-xl bg-gray-50 border border-gray-200">
             <div className="flex items-center gap-2">
-              <label className="text-xs text-[#94a3b8] whitespace-nowrap">Başlangıç</label>
+              <label className="text-xs text-gray-400 whitespace-nowrap">Başlangıç</label>
               <input type="date" value={ozelBas} max={ozelBit}
                 onChange={(e) => setOzelBas(e.target.value)}
-                className="px-2.5 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] text-white text-xs focus:outline-none focus:border-[rgba(251,192,36,0.5)] scheme-dark" />
+                className="px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-xs focus:outline-none focus:border-[var(--leaf)] scheme-dark" />
             </div>
-            <span className="text-[#64748b] text-xs">—</span>
+            <span className="text-gray-500 text-xs">—</span>
             <div className="flex items-center gap-2">
-              <label className="text-xs text-[#94a3b8] whitespace-nowrap">Bitiş</label>
+              <label className="text-xs text-gray-400 whitespace-nowrap">Bitiş</label>
               <input type="date" value={ozelBit} min={ozelBas} max={trBugun()}
                 onChange={(e) => setOzelBit(e.target.value)}
-                className="px-2.5 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] text-white text-xs focus:outline-none focus:border-[rgba(251,192,36,0.5)] scheme-dark" />
+                className="px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-xs focus:outline-none focus:border-[var(--leaf)] scheme-dark" />
             </div>
           </div>
         )}
       </div>
 
-      <p className="text-xs text-[#64748b] -mt-1">
-        <span className="text-[#94a3b8] font-medium">{donemEtiket}</span>
+      <p className="text-xs text-gray-500 -mt-1">
+        <span className="text-gray-400 font-medium">{donemEtiket}</span>
         {" "}— bu dönemde oluşturulan {stats.toplam} görev
       </p>
 
       {/* Stat kartları */}
       {stats.toplam === 0 ? (
-        <div className="py-10 text-center text-[#64748b] text-sm">
+        <div className="py-10 text-center text-gray-500 text-sm">
           Bu dönemde henüz görev oluşturulmamış
         </div>
       ) : (
@@ -221,7 +221,7 @@ export default function GorevTarihselPanel() {
                 secili={filtre === key} onClick={() => toggle(key)} />
             ))}
           </div>
-          <p className="text-[10px] text-[#475569] text-center -mt-2">
+          <p className="text-[10px] text-gray-500 text-center -mt-2">
             Karta tıklayarak görevleri görüntüleyin
           </p>
 
@@ -229,18 +229,18 @@ export default function GorevTarihselPanel() {
           {filtre && (
             <div className="space-y-3">
               {/* ── Filtre & arama çubuğu ── */}
-              <div className="flex flex-wrap gap-2 p-3 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)]">
+              <div className="flex flex-wrap gap-2 p-3 rounded-xl bg-gray-50 border border-gray-200">
                 {/* Arama */}
-                <div className="flex items-center gap-1.5 flex-1 min-w-40 px-2.5 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)]">
-                  <Search className="w-3.5 h-3.5 text-[#64748b] shrink-0" />
+                <div className="flex items-center gap-1.5 flex-1 min-w-40 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200">
+                  <Search className="w-3.5 h-3.5 text-gray-500 shrink-0" />
                   <input
                     value={arama}
                     onChange={(e) => setArama(e.target.value)}
                     placeholder="Görev ara…"
-                    className="flex-1 text-xs text-white bg-transparent outline-none placeholder-[#475569]"
+                    className="flex-1 text-xs text-gray-800 bg-transparent outline-none placeholder-[#475569]"
                   />
                   {arama && (
-                    <button onClick={() => setArama("")} className="text-[#64748b] hover:text-white transition-colors">
+                    <button onClick={() => setArama("")} className="text-gray-500 hover:text-gray-800 transition-colors">
                       <X className="w-3 h-3" />
                     </button>
                   )}
@@ -248,21 +248,21 @@ export default function GorevTarihselPanel() {
 
                 {/* Sorumlu filtresi */}
                 <select value={sorumluF} onChange={(e) => setSorumluF(e.target.value)}
-                  className="px-2.5 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-xs text-white focus:outline-none focus:border-[rgba(251,192,36,0.4)] transition-colors">
-                  <option value="" className="bg-[#0e172a]">Tüm Sorumlular</option>
+                  className="px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-[var(--leaf)] transition-colors">
+                  <option value="" className="bg-white">Tüm Sorumlular</option>
                   {donemSorumlular.map((s) => (
-                    <option key={s} value={s} className="bg-[#0e172a]">{s}</option>
+                    <option key={s} value={s} className="bg-white">{s}</option>
                   ))}
                 </select>
 
                 {/* Öncelik filtresi */}
                 <select value={oncelikF} onChange={(e) => setOncelikF(e.target.value as "" | Oncelik)}
-                  className="px-2.5 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-xs text-white focus:outline-none focus:border-[rgba(251,192,36,0.4)] transition-colors">
-                  <option value="" className="bg-[#0e172a]">Tüm Öncelikler</option>
-                  <option value="acil"   className="bg-[#0e172a]">Acil</option>
-                  <option value="yuksek" className="bg-[#0e172a]">Yüksek</option>
-                  <option value="normal" className="bg-[#0e172a]">Normal</option>
-                  <option value="dusuk"  className="bg-[#0e172a]">Düşük</option>
+                  className="px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-[var(--leaf)] transition-colors">
+                  <option value="" className="bg-white">Tüm Öncelikler</option>
+                  <option value="acil"   className="bg-white">Acil</option>
+                  <option value="yuksek" className="bg-white">Yüksek</option>
+                  <option value="normal" className="bg-white">Normal</option>
+                  <option value="dusuk"  className="bg-white">Düşük</option>
                 </select>
 
                 {/* Filtreleri temizle */}
@@ -276,14 +276,14 @@ export default function GorevTarihselPanel() {
               </div>
 
               {/* Sonuç sayısı */}
-              <p className="text-[11px] text-[#64748b] font-semibold uppercase tracking-widest">
+              <p className="text-[11px] text-gray-500 font-semibold uppercase tracking-widest">
                 {gosterilecek.length} görev
-                {herhangiFiltre && <span className="text-[#475569] normal-case font-normal ml-1">(filtrelenmiş)</span>}
+                {herhangiFiltre && <span className="text-gray-500 normal-case font-normal ml-1">(filtrelenmiş)</span>}
               </p>
 
               {/* Liste */}
               {gosterilecek.length === 0 ? (
-                <p className="text-center text-xs text-[#64748b] py-4">
+                <p className="text-center text-xs text-gray-500 py-4">
                   {herhangiFiltre ? "Bu filtrelerle eşleşen görev bulunamadı" : "Bu kategoride görev yok"}
                 </p>
               ) : (
@@ -294,15 +294,15 @@ export default function GorevTarihselPanel() {
                     const gecikti = g.durum !== "tamamlandi" && new Date(g.sonTarih) < simdi;
                     return (
                       <div key={g.id}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)]">
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200">
                         <span className="w-1.5 h-1.5 rounded-full shrink-0"
                           style={{ backgroundColor: gecikti ? "#ef4444" : cfg.color }} />
 
-                        <p className={`flex-1 text-sm truncate ${g.durum === "tamamlandi" ? "line-through text-[#64748b]" : "text-white"}`}>
+                        <p className={`flex-1 text-sm truncate ${g.durum === "tamamlandi" ? "line-through text-gray-500" : "text-gray-800"}`}>
                           {g.baslik}
                         </p>
 
-                        <span className="text-[10px] text-[#475569] shrink-0 hidden sm:block">
+                        <span className="text-[10px] text-gray-500 shrink-0 hidden sm:block">
                           {trGoster(g.olusturmaTarih, "kisa")}
                         </span>
 
@@ -310,7 +310,7 @@ export default function GorevTarihselPanel() {
                           {oncelik.label}
                         </span>
 
-                        <span className="text-[10px] text-[#64748b] shrink-0">{g.sorumlu}</span>
+                        <span className="text-[10px] text-gray-500 shrink-0">{g.sorumlu}</span>
 
                         <span className="text-[10px] shrink-0 font-medium px-1.5 py-0.5 rounded-md whitespace-nowrap"
                           style={{

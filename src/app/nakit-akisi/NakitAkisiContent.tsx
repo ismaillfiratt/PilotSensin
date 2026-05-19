@@ -18,8 +18,8 @@ export default function NakitAkisiContent() {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-white">Nakit Akışı</h1>
-        <p className="text-xs md:text-sm text-[#94a3b8] mt-1">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-800">Nakit Akışı</h1>
+        <p className="text-xs md:text-sm text-gray-400 mt-1">
           Gelir ve giderlerini takip et · 30 günlük projeksiyon ve erken uyarı analizi
         </p>
       </div>
@@ -31,7 +31,7 @@ export default function NakitAkisiContent() {
 
       {/* ─── BÖLÜM 2: Mevcut Durum ─── */}
       <div className="pt-2">
-        <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest mb-4">
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-4">
           Mevcut Nakit Durumu
         </h2>
         <NakitOzet />
@@ -43,7 +43,7 @@ export default function NakitAkisiContent() {
       </div>
 
       <div>
-        <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest mb-4">
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-4">
           İşlemler
         </h2>
         <IslemTablosu otomatikAcilModal={modalParam} />

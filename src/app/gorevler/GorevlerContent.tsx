@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useGorevler } from "@/store/gorevler";
 import GorevOzet from "@/components/gorevler/GorevOzet";
 
-const KanbanBoard        = dynamic(() => import("@/components/gorevler/KanbanBoard"),        { ssr: false, loading: () => <div className="h-64 glass-card rounded-2xl animate-pulse" /> });
+const KanbanBoard        = dynamic(() => import("@/components/gorevler/KanbanBoard"),        { ssr: false, loading: () => <div className="h-64 card rounded-2xl animate-pulse" /> });
 const GorevTarihselPanel = dynamic(() => import("@/components/gorevler/GorevTarihselPanel"), { ssr: false });
 
 export default function GorevlerContent() {
@@ -17,20 +17,20 @@ export default function GorevlerContent() {
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-white">Görevler</h1>
-          <p className="text-xs md:text-sm text-[#94a3b8] mt-1">Ekip görevlerini takip et, önceliklendirme yap</p>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800">Görevler</h1>
+          <p className="text-xs md:text-sm text-gray-400 mt-1">Ekip görevlerini takip et, önceliklendirme yap</p>
         </div>
       </div>
 
       <GorevOzet gorevler={gorevler} />
 
       <div>
-        <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest mb-4">Kanban Tablosu</h2>
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-4">Kanban Tablosu</h2>
         <KanbanBoard otomatikAcilModal={modalParam === "ekle"} />
       </div>
 
       <div>
-        <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest mb-4">Tarihsel Analiz</h2>
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-4">Tarihsel Analiz</h2>
         <GorevTarihselPanel />
       </div>
     </div>

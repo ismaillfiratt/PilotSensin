@@ -136,7 +136,7 @@ export default function AdminDestekDetayPage() {
 
   if (!talep) return (
     <div className="flex items-center justify-center h-64">
-      <div className="w-6 h-6 border-2 border-[rgba(255,255,255,0.1)] border-t-[#fbc024] rounded-full animate-spin" />
+      <div className="w-6 h-6 border-2 border-gray-200 border-t-[var(--leaf)] rounded-full animate-spin" />
     </div>
   );
 
@@ -150,12 +150,12 @@ export default function AdminDestekDetayPage() {
       <div className="space-y-4">
         <div className="flex items-center gap-3">
           <button onClick={() => router.back()}
-            className="w-9 h-9 flex items-center justify-center rounded-xl border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:text-white transition-colors">
+            className="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-400 hover:text-white transition-colors">
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-white truncate">{talep.konu}</p>
-            <p className="text-xs text-[#475569]">#{id.slice(0, 8)} · {KATEGORI_ETIKETLERI[talep.kategori]}</p>
+            <p className="text-xs text-gray-500">#{id.slice(0, 8)} · {KATEGORI_ETIKETLERI[talep.kategori]}</p>
           </div>
           <span className="text-xs font-bold px-2.5 py-1 rounded-full shrink-0"
             style={{ color: durumRenk, backgroundColor: durumRenk + "20" }}>
@@ -164,30 +164,30 @@ export default function AdminDestekDetayPage() {
         </div>
 
         {/* Thread */}
-        <div className="glass-card rounded-2xl overflow-hidden">
-          <div className="divide-y divide-[rgba(255,255,255,0.04)] min-h-[200px]">
+        <div className="card rounded-2xl overflow-hidden">
+          <div className="divide-y divide-gray-100 min-h-[200px]">
             {mesajlar.map(m => {
               const adminMi  = m.gonderenTip === "admin";
               const sistemMi = m.gonderenTip === "sistem";
               if (sistemMi) return (
                 <div key={m.id} className="px-4 py-2.5 text-center">
-                  <p className="text-xs text-[#475569]">─── {m.mesaj} ───</p>
+                  <p className="text-xs text-gray-500">─── {m.mesaj} ───</p>
                 </div>
               );
               return (
                 <div key={m.id}
                   className={`flex ${adminMi ? "justify-end" : "justify-start"} px-4 py-3`}
-                  style={m.icNot ? { backgroundColor: "rgba(251,192,36,0.04)" } : {}}>
+                  style={m.icNot ? { backgroundColor: "var(--mint)" } : {}}>
                   <div className="max-w-[85%] space-y-1">
                     <div className="flex items-center gap-2">
-                      {!adminMi && <span className="text-[10px] font-semibold text-[#94a3b8]">{m.gonderenAd ?? "Kullanıcı"}</span>}
-                      {adminMi  && <span className="text-[10px] font-semibold text-[#fbc024]">Sen (Admin)</span>}
-                      {m.icNot  && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[rgba(251,192,36,0.15)] text-[#fbc024]">İç Not</span>}
-                      <span className="text-[10px] text-[#475569]">{zaman(m.olusturma)}</span>
+                      {!adminMi && <span className="text-[10px] font-semibold text-gray-400">{m.gonderenAd ?? "Kullanıcı"}</span>}
+                      {adminMi  && <span className="text-[10px] font-semibold text-[var(--leaf)]">Sen (Admin)</span>}
+                      {m.icNot  && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--mint)] text-[var(--leaf)]">İç Not</span>}
+                      <span className="text-[10px] text-gray-500">{zaman(m.olusturma)}</span>
                     </div>
                     <div className="px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed"
                       style={{
-                        backgroundColor: m.icNot ? "rgba(251,192,36,0.08)" : adminMi ? "rgba(251,192,36,0.15)" : "rgba(255,255,255,0.06)",
+                        backgroundColor: m.icNot ? "var(--mint)" : adminMi ? "var(--mint)" : "rgba(255,255,255,0.06)",
                         color:           adminMi ? "#fde68a" : "#e2e8f0",
                         borderBottomRightRadius: adminMi ? 4 : 16,
                         borderBottomLeftRadius:  adminMi ? 16 : 4,
@@ -198,7 +198,7 @@ export default function AdminDestekDetayPage() {
                       <div className="flex flex-wrap gap-1.5 mt-1">
                         {m.ekler.map((e, i) => (
                           <a key={i} href={e.url} target="_blank" rel="noreferrer"
-                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[rgba(255,255,255,0.06)] text-xs text-[#94a3b8] hover:text-white transition-colors">
+                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gray-50 text-xs text-gray-400 hover:text-white transition-colors">
                             <Paperclip className="w-3 h-3" />{e.ad}
                           </a>
                         ))}
@@ -212,13 +212,13 @@ export default function AdminDestekDetayPage() {
           </div>
 
           {/* Cevap kutusu */}
-          <div className="border-t border-[rgba(255,255,255,0.06)] p-4 space-y-3">
+          <div className="border-t border-gray-200 p-4 space-y-3">
             <textarea value={cevap} onChange={e => setCevap(e.target.value)} rows={4}
               placeholder={icNot ? "İç not yaz (sadece adminler görür)..." : "Müşteriye cevap yaz..."}
               className="w-full px-3 py-2.5 rounded-xl border text-white placeholder-[#475569] text-sm focus:outline-none transition-colors resize-none"
               style={{
-                backgroundColor: icNot ? "rgba(251,192,36,0.06)" : "rgba(255,255,255,0.05)",
-                borderColor:     icNot ? "rgba(251,192,36,0.25)" : "rgba(255,255,255,0.08)",
+                backgroundColor: icNot ? "var(--mint)" : "rgba(255,255,255,0.05)",
+                borderColor:     icNot ? "var(--forest-200, #B3E8C8)" : "rgba(255,255,255,0.08)",
               }} />
             <div className="flex items-center gap-3 flex-wrap">
               <div className="flex items-center gap-2">
@@ -226,30 +226,30 @@ export default function AdminDestekDetayPage() {
                   onChange={e => { setDosyalar(p => [...p, ...Array.from(e.target.files ?? [])].slice(0, 5)); e.target.value = ""; }}
                   className="hidden" />
                 <button onClick={() => dosyaRef.current?.click()}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#64748b] hover:text-[#fbc024] hover:border-[rgba(251,192,36,0.3)] transition-colors">
+                  className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:text-[var(--leaf)] hover:border-[var(--forest-200, #B3E8C8)] transition-colors">
                   <Paperclip className="w-4 h-4" />
                 </button>
                 <button onClick={() => setIcNot(!icNot)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors"
                   style={{
-                    backgroundColor: icNot ? "rgba(251,192,36,0.12)" : "transparent",
-                    borderColor:     icNot ? "rgba(251,192,36,0.3)" : "rgba(255,255,255,0.08)",
-                    color:           icNot ? "#fbc024" : "#64748b",
+                    backgroundColor: icNot ? "var(--mint)" : "transparent",
+                    borderColor:     icNot ? "var(--forest-200, #B3E8C8)" : "rgba(255,255,255,0.08)",
+                    color:           icNot ? "var(--leaf)" : "#64748b",
                   }}>
                   {icNot ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                   {icNot ? "İç Not" : "İç Not Ekle"}
                 </button>
                 {dosyalar.map((d, i) => (
-                  <span key={i} className="flex items-center gap-1 text-xs text-[#64748b] bg-[rgba(255,255,255,0.05)] px-2 py-1 rounded-lg">
+                  <span key={i} className="flex items-center gap-1 text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
                     {d.name.slice(0, 10)}
                     <button onClick={() => setDosyalar(p => p.filter((_, x) => x !== i))}><X className="w-3 h-3" /></button>
                   </span>
                 ))}
               </div>
               <button onClick={handleGonder} disabled={gonderiyor || (!cevap.trim() && dosyalar.length === 0)}
-                className="ml-auto flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-50">
+                className="ml-auto flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-50">
                 {gonderiyor
-                  ? <div className="w-4 h-4 border-2 border-[#0e172a]/30 border-t-[#0e172a] rounded-full animate-spin" />
+                  ? <div className="w-4 h-4 border-2 border-[var(--forest)]/30 border-t-[var(--forest)] rounded-full animate-spin" />
                   : <Send className="w-4 h-4" />}
                 {icNot ? "Not Ekle" : "Gönder"}
               </button>
@@ -261,53 +261,53 @@ export default function AdminDestekDetayPage() {
       {/* Sağ — Yan Panel */}
       <div className="space-y-4">
         {/* Kullanıcı bilgisi */}
-        <div className="glass-card rounded-2xl p-4 space-y-2">
-          <p className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider mb-3">Kullanıcı</p>
+        <div className="card rounded-2xl p-4 space-y-2">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Kullanıcı</p>
           <p className="text-sm font-semibold text-white">{talep.kullaniciAd ?? "—"}</p>
-          <p className="text-xs text-[#64748b]">{talep.kullaniciEmail}</p>
+          <p className="text-xs text-gray-500">{talep.kullaniciEmail}</p>
         </div>
 
         {/* Talep yönetimi */}
-        <div className="glass-card rounded-2xl p-4 space-y-3">
-          <p className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">Talep Yönetimi</p>
+        <div className="card rounded-2xl p-4 space-y-3">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Talep Yönetimi</p>
 
           <div className="space-y-2">
-            <label className="text-xs text-[#64748b]">Durum</label>
+            <label className="text-xs text-gray-500">Durum</label>
             <select value={talep.durum}
               onChange={e => handleDurumGuncelle(e.target.value as DestekDurum)}
-              className="w-full px-3 py-2 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-sm focus:outline-none">
+              className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-white text-sm focus:outline-none">
               {Object.entries(DURUM_ETIKETLERI).map(([k, v]) => (
-                <option key={k} value={k} className="bg-[#0e172a]">{v}</option>
+                <option key={k} value={k} className="bg-[var(--forest)]">{v}</option>
               ))}
             </select>
 
-            <label className="text-xs text-[#64748b]">Kategori</label>
+            <label className="text-xs text-gray-500">Kategori</label>
             <select value={talep.kategori} disabled
-              className="w-full px-3 py-2 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)] text-[#64748b] text-sm focus:outline-none cursor-not-allowed">
+              className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-500 text-sm focus:outline-none cursor-not-allowed">
               {Object.entries(KATEGORI_ETIKETLERI).map(([k, v]) => (
-                <option key={k} value={k} className="bg-[#0e172a]">{v}</option>
+                <option key={k} value={k} className="bg-[var(--forest)]">{v}</option>
               ))}
             </select>
 
-            <label className="text-xs text-[#64748b]">Öncelik</label>
+            <label className="text-xs text-gray-500">Öncelik</label>
             <select value={talep.oncelik} disabled
-              className="w-full px-3 py-2 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)] text-[#64748b] text-sm focus:outline-none cursor-not-allowed">
+              className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-500 text-sm focus:outline-none cursor-not-allowed">
               {Object.entries(ONCELIK_ETIKETLERI).map(([k, v]) => (
-                <option key={k} value={k} className="bg-[#0e172a]">{v}</option>
+                <option key={k} value={k} className="bg-[var(--forest)]">{v}</option>
               ))}
             </select>
           </div>
         </div>
 
         {/* İstatistik */}
-        <div className="glass-card rounded-2xl p-4 space-y-2">
-          <p className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider mb-2">İstatistik</p>
-          <div className="space-y-1.5 text-xs text-[#64748b]">
-            <div className="flex justify-between"><span>Açılış</span><span className="text-[#94a3b8]">{zaman(talep.olusturma)}</span></div>
-            <div className="flex justify-between"><span>Son Mesaj</span><span className="text-[#94a3b8]">{zaman(talep.sonMesajTarihi)}</span></div>
-            <div className="flex justify-between"><span>Mesaj Sayısı</span><span className="text-[#94a3b8]">{mesajlar.filter(m => m.gonderenTip !== "sistem").length}</span></div>
+        <div className="card rounded-2xl p-4 space-y-2">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">İstatistik</p>
+          <div className="space-y-1.5 text-xs text-gray-500">
+            <div className="flex justify-between"><span>Açılış</span><span className="text-gray-400">{zaman(talep.olusturma)}</span></div>
+            <div className="flex justify-between"><span>Son Mesaj</span><span className="text-gray-400">{zaman(talep.sonMesajTarihi)}</span></div>
+            <div className="flex justify-between"><span>Mesaj Sayısı</span><span className="text-gray-400">{mesajlar.filter(m => m.gonderenTip !== "sistem").length}</span></div>
             {talep.memnuniyetPuan && (
-              <div className="flex justify-between"><span>Memnuniyet</span><span className="text-[#fbc024]">{"★".repeat(talep.memnuniyetPuan)}</span></div>
+              <div className="flex justify-between"><span>Memnuniyet</span><span className="text-[var(--leaf)]">{"★".repeat(talep.memnuniyetPuan)}</span></div>
             )}
           </div>
         </div>
@@ -320,7 +320,7 @@ export default function AdminDestekDetayPage() {
               ✓ Çözüldü İşaretle
             </button>
             <button onClick={() => handleDurumGuncelle("kapali")}
-              className="w-full py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#64748b] text-sm hover:bg-[rgba(255,255,255,0.04)] transition-colors">
+              className="w-full py-2.5 rounded-xl border border-gray-200 text-gray-500 text-sm hover:bg-gray-50 transition-colors">
               Talebi Kapat
             </button>
           </div>

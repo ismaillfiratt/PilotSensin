@@ -14,7 +14,6 @@ import { useSirket }      from "@/store/sirket";
 import { useBildirimler } from "@/store/bildirimler";
 import { createClient }   from "@/utils/supabase/client";
 
-/* ─── Tip tanımları ─── */
 interface Sekme {
   key:   string;
   label: string;
@@ -23,22 +22,21 @@ interface Sekme {
 }
 
 interface SayfaItem {
-  label:    string;
-  href:     string;
-  ikon:     LucideIcon;
+  label: string;
+  href:  string;
+  ikon:  LucideIcon;
 }
 
-/* ─── Sabitler ─── */
 const PILOT_DAHA: SayfaItem[] = [
-  { label: "Kâr-Zarar",           href: "/kar-zarar",    ikon: TrendingUp     },
-  { label: "Prosedürler",         href: "/prosedurler",  ikon: ClipboardCheck },
-  { label: "Acil Fon",            href: "/acil-fon",     ikon: Shield         },
-  { label: "Bildirimler",         href: "/bildirimler",  ikon: Bell           },
-  { label: "İletişim & Destek",   href: "/iletisim",     ikon: MessageCircle  },
-  { label: "Yasal Bilgiler",      href: "/politikalar",  ikon: Scale          },
-  { label: "Profil",              href: "/profil",       ikon: User           },
-  { label: "Ayarlar",             href: "/ayarlar",      ikon: Settings       },
-  { label: "Ekip",                href: "/ekip",         ikon: Users          },
+  { label: "Kâr-Zarar",          href: "/kar-zarar",    ikon: TrendingUp     },
+  { label: "Prosedürler",        href: "/prosedurler",  ikon: ClipboardCheck },
+  { label: "Acil Fon",           href: "/acil-fon",     ikon: Shield         },
+  { label: "Bildirimler",        href: "/bildirimler",  ikon: Bell           },
+  { label: "İletişim & Destek",  href: "/iletisim",     ikon: MessageCircle  },
+  { label: "Yasal Bilgiler",     href: "/politikalar",  ikon: Scale          },
+  { label: "Profil",             href: "/profil",       ikon: User           },
+  { label: "Ayarlar",            href: "/ayarlar",      ikon: Settings       },
+  { label: "Ekip",               href: "/ekip",         ikon: Users          },
 ];
 
 const COPILOT_DAHA: SayfaItem[] = [
@@ -50,15 +48,14 @@ const COPILOT_DAHA: SayfaItem[] = [
 ];
 
 export default function MobileNav() {
-  const pathname   = usePathname();
-  const router     = useRouter();
+  const pathname = usePathname();
+  const router   = useRouter();
   const [dahaAcik, setDahaAcik] = useState(false);
 
-  const { rol }       = useSirket();
-  const okunmamis     = useBildirimler((s) => s.bildirimler.filter((b) => !b.okundu).length);
-  const copilot       = rol === "copilot";
+  const { rol }    = useSirket();
+  const okunmamis  = useBildirimler((s) => s.bildirimler.filter((b) => !b.okundu).length);
+  const copilot    = rol === "copilot";
 
-  /* ── 5 sekme, 3. sekme role'e göre değişir ── */
   const sekmeler: Sekme[] = useMemo(() => [
     { key: "dashboard",   label: "Ana",     ikon: Home,           href: "/dashboard"   },
     { key: "stok",        label: "Stok",    ikon: Package,        href: "/stok"        },
@@ -71,7 +68,6 @@ export default function MobileNav() {
 
   const dahaListesi = copilot ? COPILOT_DAHA : PILOT_DAHA;
 
-  /* Aktif sekme tespiti */
   const aktifKey = useMemo(() => {
     const eslesen = sekmeler.find((s) => {
       if (!s.href) return false;
@@ -79,7 +75,6 @@ export default function MobileNav() {
       return pathname.startsWith(s.href);
     });
     if (eslesen) return eslesen.key;
-    // Daha listesindeki bir sayfadaysa "daha" aktif
     const dahaEslesen = dahaListesi.some((d) =>
       d.href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(d.href)
     );
@@ -102,23 +97,26 @@ export default function MobileNav() {
   return (
     <>
       {/* ── Alt navigasyon çubuğu ── */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 h-16 pb-safe bg-[#0e172a]/95 backdrop-blur-lg border-t border-white/10">
+      <nav
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 h-16 pb-safe bg-white"
+        style={{ borderTop: "1px solid var(--border-color)" }}
+      >
         <div className="flex h-full items-stretch">
           {sekmeler.map(({ key, label, ikon: Ikon, href }) => {
             const aktif = aktifKey === key;
-            const renk  = aktif ? "#fbc024" : "#64748b";
+            const renk  = aktif ? "var(--forest)" : "#94A3B8";
 
             if (key === "daha") {
               return (
                 <button
                   key="daha"
                   onClick={() => setDahaAcik(true)}
-                  className="flex-1 flex flex-col items-center justify-center gap-0.5 min-h-11 active:bg-white/5 transition-colors relative"
+                  className="flex-1 flex flex-col items-center justify-center gap-0.5 min-h-11 active:bg-gray-50 transition-colors relative"
                 >
                   <Ikon className="w-5.5 h-5.5" style={{ color: renk }} />
                   <span className="text-[10px] font-medium" style={{ color: renk }}>{label}</span>
                   {okunmamis > 0 && (
-                    <span className="absolute top-2 right-[calc(50%-18px)] w-2 h-2 rounded-full bg-[#ef4444]" />
+                    <span className="absolute top-2 right-[calc(50%-18px)] w-2 h-2 rounded-full bg-red-500" />
                   )}
                 </button>
               );
@@ -128,7 +126,7 @@ export default function MobileNav() {
               <Link
                 key={key}
                 href={href!}
-                className="flex-1 flex flex-col items-center justify-center gap-0.5 min-h-11 active:bg-white/5 transition-colors"
+                className="flex-1 flex flex-col items-center justify-center gap-0.5 min-h-11 active:bg-gray-50 transition-colors"
               >
                 <Ikon className="w-5.5 h-5.5" style={{ color: renk }} />
                 <span className="text-[10px] font-medium" style={{ color: renk }}>{label}</span>
@@ -142,18 +140,16 @@ export default function MobileNav() {
       <AnimatePresence>
         {dahaAcik && (
           <>
-            {/* Backdrop */}
             <motion.div
               key="backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="md:hidden fixed inset-0 z-40 bg-black/60"
+              className="md:hidden fixed inset-0 z-40 bg-black/30"
               onClick={() => setDahaAcik(false)}
             />
 
-            {/* Sheet */}
             <motion.div
               key="sheet"
               initial={{ y: "100%" }}
@@ -162,16 +158,18 @@ export default function MobileNav() {
               drag="y"
               dragConstraints={{ top: 0 }}
               dragElastic={{ top: 0, bottom: 0.3 }}
-              onDragEnd={(_, info) => { if (info.velocity.y > 300 || info.offset.y > 100) setDahaAcik(false); }}
+              onDragEnd={(_, info) => {
+                if (info.velocity.y > 300 || info.offset.y > 100) setDahaAcik(false);
+              }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-[#0e172a] border-t border-white/10 rounded-t-2xl max-h-[70vh] overflow-y-auto pb-safe"
+              className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white rounded-t-2xl max-h-[70vh] overflow-y-auto pb-safe"
+              style={{ borderTop: "1px solid var(--border-color)" }}
             >
               {/* Drag handle */}
               <div className="flex justify-center pt-3 pb-2">
-                <div className="w-10 h-1 rounded-full bg-white/20" />
+                <div className="w-10 h-1 rounded-full bg-gray-200" />
               </div>
 
-              {/* Navigasyon ögeleri */}
               <div className="px-2 pb-2">
                 {dahaListesi.map(({ label, href, ikon: Ikon }) => {
                   const aktif = href === "/dashboard"
@@ -181,34 +179,39 @@ export default function MobileNav() {
                     <button
                       key={href}
                       onClick={() => handleDahaItem(href)}
-                      className="w-full flex items-center gap-4 px-4 min-h-14 rounded-xl active:bg-white/5 transition-colors"
+                      className="w-full flex items-center gap-4 px-4 min-h-14 rounded-xl active:bg-gray-50 transition-colors"
                     >
                       <div
                         className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
                         style={{
-                          backgroundColor: aktif ? "rgba(251,192,36,0.12)" : "rgba(255,255,255,0.05)",
+                          backgroundColor: aktif ? "var(--mint)" : "#F8FAFC",
                         }}
                       >
-                        <Ikon className="w-4.5 h-4.5" style={{ color: aktif ? "#fbc024" : "#94a3b8" }} />
+                        <Ikon
+                          className="w-4.5 h-4.5"
+                          style={{ color: aktif ? "var(--forest)" : "#94A3B8" }}
+                        />
                       </div>
-                      <span className="flex-1 text-sm font-medium text-left" style={{ color: aktif ? "#fbc024" : "#e2e8f0" }}>
+                      <span
+                        className="flex-1 text-sm font-medium text-left"
+                        style={{ color: aktif ? "var(--forest)" : "#1E293B" }}
+                      >
                         {label}
                       </span>
-                      <ChevronRight className="w-4 h-4 text-[#475569] shrink-0" />
+                      <ChevronRight className="w-4 h-4 text-gray-300 shrink-0" />
                     </button>
                   );
                 })}
 
-                {/* Ayırıcı + Çıkış */}
-                <div className="border-t border-white/8 my-2" />
+                <div className="border-t border-gray-100 my-2" />
                 <button
                   onClick={handleCikis}
-                  className="w-full flex items-center gap-4 px-4 min-h-14 rounded-xl active:bg-red-500/10 transition-colors"
+                  className="w-full flex items-center gap-4 px-4 min-h-14 rounded-xl active:bg-red-50 transition-colors"
                 >
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-red-500/10">
-                    <LogOut className="w-4.5 h-4.5 text-[#ef4444]" />
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-red-50">
+                    <LogOut className="w-4.5 h-4.5 text-red-500" />
                   </div>
-                  <span className="flex-1 text-sm font-medium text-[#ef4444] text-left">Çıkış Yap</span>
+                  <span className="flex-1 text-sm font-medium text-red-500 text-left">Çıkış Yap</span>
                 </button>
               </div>
             </motion.div>

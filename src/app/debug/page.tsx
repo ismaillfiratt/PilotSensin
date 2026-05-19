@@ -58,13 +58,13 @@ export default function DebugPage() {
   };
 
   return (
-    <div style={{ padding: 32, fontFamily: "monospace", background: "#0e172a", minHeight: "100vh", color: "#fff" }}>
-      <h1 style={{ color: "#fbc024", marginBottom: 24 }}>DB Tanı Paneli</h1>
+    <div style={{ padding: 32, fontFamily: "monospace", background: "var(--forest)", minHeight: "100vh", color: "#fff" }}>
+      <h1 style={{ color: "var(--leaf)", marginBottom: 24 }}>DB Tanı Paneli</h1>
       <button
         onClick={test}
         disabled={yukleniyor}
         style={{
-          background: "#fbc024", color: "#0e172a", border: "none",
+          background: "var(--leaf)", color: "var(--forest)", border: "none",
           padding: "12px 24px", borderRadius: 8, fontWeight: "bold",
           cursor: yukleniyor ? "not-allowed" : "pointer", fontSize: 16, marginBottom: 24,
         }}

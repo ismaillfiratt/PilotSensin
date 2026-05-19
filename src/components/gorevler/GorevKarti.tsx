@@ -57,17 +57,17 @@ export default function GorevKarti({ gorev, index, onDuzenle, onSil, onTasi, isO
       exit={!isOverlay ? { opacity: 0, scale: 0.95 } : undefined}
       transition={{ duration: 0.22, delay: !isOverlay ? index * 0.04 : 0 }}
       style={style}
-      className={`glass-card rounded-xl p-4 group hover:border-[rgba(251,192,36,0.3)] transition-all ${isOverlay ? "shadow-2xl ring-1 ring-[rgba(251,192,36,0.4)]" : ""}`}
+      className={`card rounded-xl p-4 group hover:border-[var(--forest-200, #B3E8C8)] transition-all ${isOverlay ? "shadow-2xl ring-1 ring-[var(--forest-300, #7DD0A0)]" : ""}`}
     >
       {/* Başlık satırı */}
       <div className="flex items-start gap-2 mb-2">
         {!isOverlay && (
           <button {...listeners} {...attributes}
-            className="mt-0.5 shrink-0 text-[#475569] hover:text-[#94a3b8] cursor-grab active:cursor-grabbing transition-colors touch-none">
+            className="mt-0.5 shrink-0 text-gray-500 hover:text-gray-400 cursor-grab active:cursor-grabbing transition-colors touch-none">
             <GripVertical className="w-4 h-4" />
           </button>
         )}
-        <p className={`flex-1 text-sm font-semibold leading-snug ${tamamlandi ? "line-through text-[#94a3b8]" : "text-white"}`}>
+        <p className={`flex-1 text-sm font-semibold leading-snug ${tamamlandi ? "line-through text-gray-400" : "text-gray-800"}`}>
           {gorev.baslik}
         </p>
         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
@@ -77,12 +77,12 @@ export default function GorevKarti({ gorev, index, onDuzenle, onSil, onTasi, isO
       </div>
 
       {gorev.aciklama && (
-        <p className="text-xs text-[#94a3b8] mb-3 line-clamp-2 ml-6">{gorev.aciklama}</p>
+        <p className="text-xs text-gray-400 mb-3 line-clamp-2 ml-6">{gorev.aciklama}</p>
       )}
 
       {/* Sorumlu + tarih bilgisi */}
       <div className="flex items-center justify-between text-xs mb-2 ml-6">
-        <div className="flex items-center gap-1.5 text-[#94a3b8]">
+        <div className="flex items-center gap-1.5 text-gray-400">
           <User className="w-3 h-3" />
           <span>{gorev.sorumlu}</span>
         </div>
@@ -94,31 +94,31 @@ export default function GorevKarti({ gorev, index, onDuzenle, onSil, onTasi, isO
 
       {/* Oluşturma tarihi */}
       <div className="ml-6 mb-3">
-        <span className="text-[10px] text-[#475569]">
+        <span className="text-[10px] text-gray-500">
           Eklendi: {olusturmaTarihiEtiket(gorev.olusturmaTarih)}
         </span>
       </div>
 
       {/* Aksiyonlar */}
       {!isOverlay && (
-        <div className="flex items-center gap-1.5 pt-2 border-t border-[rgba(255,255,255,0.05)]">
+        <div className="flex items-center gap-1.5 pt-2 border-t border-gray-200">
           <button onClick={() => solDurum && onTasi(solDurum)} disabled={!solDurum}
             title={solDurum ? DURUM_CONFIG[solDurum].label : ""}
-            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] disabled:opacity-20 hover:enabled:border-[rgba(251,192,36,0.4)] hover:enabled:text-[#fbc024] transition-all">
+            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 disabled:opacity-20 hover:enabled:border-[var(--forest-300, #7DD0A0)] hover:enabled:text-[var(--leaf)] transition-all">
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
           <button onClick={() => sagDurum && onTasi(sagDurum)} disabled={!sagDurum}
             title={sagDurum ? DURUM_CONFIG[sagDurum].label : ""}
-            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] disabled:opacity-20 hover:enabled:border-[rgba(34,197,94,0.4)] hover:enabled:text-[#22c55e] transition-all">
+            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 disabled:opacity-20 hover:enabled:border-[rgba(34,197,94,0.4)] hover:enabled:text-[#22c55e] transition-all">
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
           <div className="flex-1" />
           <button onClick={onDuzenle}
-            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] transition-all">
+            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-[var(--forest-300, #7DD0A0)] hover:text-[var(--leaf)] transition-all">
             <Pencil className="w-3.5 h-3.5" />
           </button>
           <button onClick={onSil}
-            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] transition-all">
+            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] transition-all">
             <Trash2 className="w-3.5 h-3.5" />
           </button>
         </div>

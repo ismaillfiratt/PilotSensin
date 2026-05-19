@@ -51,7 +51,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="min-h-screen flex items-center justify-center" style={{ background: "#070d1a" }}>
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 rounded-full border-2 animate-spin"
-            style={{ borderColor: "rgba(251,192,36,0.3)", borderTopColor: "#fbc024" }} />
+            style={{ borderColor: "var(--forest-200, #B3E8C8)", borderTopColor: "var(--leaf)" }} />
           <p className="text-sm" style={{ color: "#64748b" }}>Yetki kontrol ediliyor…</p>
         </div>
       </div>
@@ -75,7 +75,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <button
               onClick={() => router.replace("/giris")}
               className="px-4 py-2 rounded-xl text-sm font-semibold"
-              style={{ background: "#fbc024", color: "#0e172a" }}
+              style={{ background: "var(--leaf)", color: "var(--forest)" }}
             >
               Farklı Hesapla Giriş Yap
             </button>

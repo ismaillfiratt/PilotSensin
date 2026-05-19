@@ -54,12 +54,12 @@ export default function AcilFonPage() {
       {/* Başlık */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-white">Acil Durum Fonu</h1>
-          <p className="text-xs md:text-sm text-[#94a3b8] mt-1">İşletmeni beklenmedik durumlara karşı koru</p>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800">Acil Durum Fonu</h1>
+          <p className="text-xs md:text-sm text-gray-400 mt-1">İşletmeni beklenmedik durumlara karşı koru</p>
         </div>
         <button
           onClick={() => { setDuzenleHedef(null); setHedefModalAcik(true); }}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors"
         >
           <Plus className="w-4 h-4" /> Yeni Hedef
         </button>
@@ -73,9 +73,9 @@ export default function AcilFonPage() {
             onClick={() => setAktifHedef(null)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all border shrink-0"
             style={{
-              borderColor:     aktifHedefId === null ? "#fbc024" : "rgba(255,255,255,0.1)",
-              backgroundColor: aktifHedefId === null ? "rgba(251,192,36,0.15)" : "rgba(255,255,255,0.03)",
-              color:           aktifHedefId === null ? "#fbc024" : "#94a3b8",
+              borderColor:     aktifHedefId === null ? "var(--leaf)" : "rgba(255,255,255,0.1)",
+              backgroundColor: aktifHedefId === null ? "var(--mint)" : "rgba(255,255,255,0.03)",
+              color:           aktifHedefId === null ? "var(--leaf)" : "#94a3b8",
             }}
           >
             <Settings2 className="w-3.5 h-3.5" />
@@ -86,7 +86,7 @@ export default function AcilFonPage() {
           {hedefler.map(h => {
             const hMevcut = mevcutBirikim(islemler, h.id);
             const hOran   = h.toplamHedefKurus > 0 ? Math.min(hMevcut / h.toplamHedefKurus, 1) : 0;
-            const hRenk   = hOran >= 0.75 ? "#22c55e" : hOran >= 0.5 ? "#fbc024" : "#ef4444";
+            const hRenk   = hOran >= 0.75 ? "#22c55e" : hOran >= 0.5 ? "var(--leaf)" : "#ef4444";
             const aktif   = aktifHedefId === h.id;
             return (
               <div key={h.id} className="flex items-center gap-1 shrink-0">
@@ -106,13 +106,13 @@ export default function AcilFonPage() {
                 {/* Düzenle / Sil butonları — her zaman görünür */}
                 <button
                   onClick={() => { setDuzenleHedef(h); setHedefModalAcik(true); }}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg text-[#94a3b8] border border-[rgba(255,255,255,0.08)] hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] transition-all"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 border border-gray-200 hover:border-[var(--forest-300, #7DD0A0)] hover:text-[var(--leaf)] transition-all"
                 >
                   <Pencil className="w-3 h-3" />
                 </button>
                 <button
                   onClick={() => handleHedefSil(h)}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg text-[#94a3b8] border border-[rgba(255,255,255,0.08)] hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] transition-all"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 border border-gray-200 hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] transition-all"
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>
@@ -124,11 +124,11 @@ export default function AcilFonPage() {
 
       {/* Boş durum — henüz hedef yok */}
       {hedefler.length === 0 && (
-        <div className="glass-card rounded-2xl p-8 text-center">
-          <p className="text-[#94a3b8] text-sm mb-3">Henüz bir tasarruf hedefi eklenmedi.</p>
+        <div className="card rounded-2xl p-8 text-center">
+          <p className="text-gray-400 text-sm mb-3">Henüz bir tasarruf hedefi eklenmedi.</p>
           <button
             onClick={() => setHedefModalAcik(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors"
           >
             <Plus className="w-4 h-4" /> İlk Hedefi Ekle
           </button>
@@ -149,7 +149,7 @@ export default function AcilFonPage() {
       {/* İşlem geçmişi */}
       {hedefler.length > 0 && (
         <div>
-          <h2 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-widest mb-4">İşlem Geçmişi</h2>
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-4">İşlem Geçmişi</h2>
           <IslemGecmisi />
         </div>
       )}

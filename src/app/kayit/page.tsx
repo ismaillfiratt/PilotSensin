@@ -31,19 +31,26 @@ const SEKTORLER = [
   "Çiçekçi", "Kırtasiye", "Diğer",
 ];
 
+const INPUT =
+  "w-full min-h-12 px-4 rounded-xl text-sm text-gray-800 bg-white border border-gray-200 " +
+  "placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] focus:ring-1 focus:ring-[var(--leaf)]/20 " +
+  "transition-colors disabled:opacity-50";
+
 export default function KayitPage() {
   const router = useRouter();
   const [form, setForm] = useState({
     ad: "", soyad: "", email: "", password: "", passwordTekrar: "",
     businessAd: "", sektor: "Market / Bakkal",
   });
-  const [goster, setGoster]           = useState(false);
-  const [hata, setHata]               = useState("");
-  const [adim, setAdim]               = useState<1 | 2>(1);
-  const [yukleniyor, setYuk]          = useState(false);
-  const [emailGonderildi, setEG]      = useState(false);
-  const [googleYuk, setGoogleYuk]     = useState(false);
-  const [yasalKabul, setYasalKabul]   = useState(false);
+  const [goster, setGoster]         = useState(false);
+  const [hata, setHata]             = useState("");
+  const [adim, setAdim]             = useState<1 | 2>(1);
+  const [yukleniyor, setYuk]        = useState(false);
+  const [emailGonderildi, setEG]    = useState(false);
+  const [googleYuk, setGoogleYuk]   = useState(false);
+  const [yasalKabul, setYasalKabul] = useState(false);
+
+  const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleGoogle = async () => {
     setHata("");
@@ -52,10 +59,7 @@ export default function KayitPage() {
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: {
-          redirectTo: getRedirectUrl(),
-          queryParams: { access_type: "offline", prompt: "consent" },
-        },
+        options: { redirectTo: getRedirectUrl(), queryParams: { access_type: "offline", prompt: "consent" } },
       });
       if (error) setHata("Google girişi başlatılamadı. Lütfen tekrar deneyin.");
     } catch {
@@ -64,8 +68,6 @@ export default function KayitPage() {
       setGoogleYuk(false);
     }
   };
-
-  const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleAdim1 = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -84,74 +86,54 @@ export default function KayitPage() {
 
     const supabase = createClient();
     const { data, error } = await supabase.auth.signUp({
-      email:    form.email,
-      password: form.password,
+      email: form.email, password: form.password,
       options: {
         emailRedirectTo: getRedirectUrl(),
-        data: {
-          ad:         form.ad,
-          soyad:      form.soyad,
-          businessAd: form.businessAd,
-          sektor:     form.sektor,
-        },
+        data: { ad: form.ad, soyad: form.soyad, businessAd: form.businessAd, sektor: form.sektor },
       },
     });
-
     setYuk(false);
 
     if (error) {
-      setHata(error.message.includes("already registered")
-        ? "Bu e-posta zaten kayıtlı."
-        : error.message);
+      setHata(error.message.includes("already registered") ? "Bu e-posta zaten kayıtlı." : error.message);
       return;
     }
 
-    // Yasal kabul kaydı
     await fetch("/api/yasal-kabul", { method: "POST" }).catch(() => {});
 
-    // Oturum açıldıysa (e-posta onayı kapalı) direkt dashboard'a
-    if (data.session) {
-      router.push("/dashboard");
-      router.refresh();
-    } else {
-      // E-posta onayı bekleniyor
-      setEG(true);
-    }
+    if (data.session) { router.push("/dashboard"); router.refresh(); }
+    else setEG(true);
   };
 
-  // E-posta onay bekleme ekranı
+  /* ── E-posta onay ekranı ── */
   if (emailGonderildi) {
     return (
-      <div className="min-h-screen bg-[#0e172a] flex items-center justify-center p-4">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-[#fbc024] opacity-5 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-[#fbc024] opacity-5 blur-3xl" />
-        </div>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-sm relative"
-        >
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm">
           <div className="flex flex-col items-center mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-[#fbc024] flex items-center justify-center mb-4">
-              <Plane className="w-7 h-7 text-[#0e172a] rotate-45" />
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-md"
+              style={{ background: "var(--forest)" }}>
+              <Plane className="w-7 h-7 text-white rotate-45" />
             </div>
-            <h1 className="text-2xl font-black text-white">Pilot Sensin</h1>
+            <h1 className="text-2xl font-black text-gray-900">Pilot Sensin</h1>
           </div>
-          <div className="glass-card rounded-2xl p-8 text-center space-y-5">
-            <div className="w-16 h-16 rounded-2xl bg-[rgba(251,192,36,0.12)] border border-[rgba(251,192,36,0.25)] flex items-center justify-center mx-auto">
-              <MailCheck className="w-8 h-8 text-[#fbc024]" />
+          <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center space-y-5 shadow-sm">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto"
+              style={{ background: "var(--mint)", border: "1px solid var(--forest-200, #B3E8C8)" }}>
+              <MailCheck className="w-8 h-8" style={{ color: "var(--forest)" }} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white mb-2">E-postanı Onayla</h2>
-              <p className="text-sm text-[#94a3b8] leading-relaxed">
-                <span className="text-white font-medium">{form.email}</span> adresine onay bağlantısı gönderdik. Bağlantıya tıklayarak hesabını aktifleştir.
+              <h2 className="text-lg font-bold text-gray-800 mb-2">E-postanı Onayla</h2>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                <span className="text-gray-800 font-medium">{form.email}</span> adresine onay bağlantısı gönderdik.
               </p>
             </div>
-            <div className="text-xs text-[#94a3b8] bg-[rgba(255,255,255,0.04)] rounded-xl p-3">
+            <div className="text-xs text-gray-400 bg-gray-50 rounded-xl p-3">
               E-posta gelmediyse spam klasörünü kontrol et.
             </div>
-            <Link href="/giris" className="block w-full py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+            <Link href="/giris"
+              className="block w-full py-3 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90"
+              style={{ background: "var(--forest)" }}>
               Giriş Sayfasına Git
             </Link>
           </div>
@@ -160,215 +142,208 @@ export default function KayitPage() {
     );
   }
 
+  /* ── Ana kayıt formu ── */
   return (
-    <div className="min-h-screen bg-[#0e172a] flex items-center justify-center p-4">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-[#fbc024] opacity-5 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-[#fbc024] opacity-5 blur-3xl" />
-      </div>
-
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-sm relative"
+        transition={{ duration: 0.35 }}
+        className="w-full max-w-sm"
       >
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-[#fbc024] flex items-center justify-center mb-4 shadow-lg shadow-[#fbc024]/20">
-            <Plane className="w-7 h-7 text-[#0e172a] rotate-45" />
+        {/* Logo */}
+        <div className="flex flex-col items-center mb-6">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-md"
+            style={{ background: "var(--forest)" }}>
+            <Plane className="w-7 h-7 text-white rotate-45" />
           </div>
-          <h1 className="text-2xl font-black text-white tracking-tight">Pilot Sensin</h1>
-          <p className="text-sm text-[#94a3b8] mt-1">İşletmenizi büyütmeye hazır mısınız?</p>
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Pilot Sensin</h1>
+          <p className="text-sm text-gray-500 mt-1">İşletmenizi büyütmeye hazır mısınız?</p>
         </div>
 
         {/* Adım göstergesi */}
-        <div className="flex items-center gap-2 mb-6 justify-center">
+        <div className="flex items-center gap-2 mb-5 justify-center">
           {([1, 2] as const).map((n) => (
             <div key={n} className="flex items-center gap-2">
               <div className="flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition-all"
                 style={{
-                  backgroundColor: adim >= n ? "#fbc024" : "rgba(255,255,255,0.08)",
-                  color: adim >= n ? "#0e172a" : "#94a3b8",
+                  background: adim >= n ? "var(--forest)" : "#F1F5F9",
+                  color:      adim >= n ? "#ffffff"       : "#94A3B8",
                 }}>
                 {adim > n ? <CheckCircle2 className="w-4 h-4" /> : n}
               </div>
-              <span className="text-xs text-[#94a3b8]">{n === 1 ? "Hesap" : "İşletme"}</span>
-              {n < 2 && <div className="w-8 h-px bg-[rgba(255,255,255,0.1)]" />}
+              <span className="text-xs text-gray-400">{n === 1 ? "Hesap" : "İşletme"}</span>
+              {n < 2 && <div className="w-8 h-px bg-gray-200" />}
             </div>
           ))}
         </div>
 
-        <div className="glass-card rounded-2xl p-7 space-y-5">
+        {/* Kart */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-7 space-y-5 shadow-sm">
           {hata && (
             <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.25)]">
-              <AlertCircle className="w-4 h-4 text-[#ef4444] shrink-0" />
-              <p className="text-sm text-[#ef4444]">{hata}</p>
+              className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 border border-red-100">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+              <p className="text-sm text-red-600">{hata}</p>
             </motion.div>
           )}
 
-          {/* Adım 1 */}
+          {/* ── Adım 1: Hesap bilgileri ── */}
           {adim === 1 && (
             <form onSubmit={handleAdim1} className="space-y-4">
               <div>
-                <h2 className="text-lg font-bold text-white">Hesap Bilgileri</h2>
-                <p className="text-xs text-[#94a3b8] mt-0.5">Giriş için kullanılacak bilgiler</p>
+                <h2 className="text-lg font-bold text-gray-800">Hesap Bilgileri</h2>
+                <p className="text-xs text-gray-400 mt-0.5">Giriş için kullanılacak bilgiler</p>
               </div>
 
-              {/* Google OAuth */}
-              <button
-                type="button"
-                onClick={handleGoogle}
-                disabled={googleYuk}
-                className="w-full flex items-center justify-center gap-2.5 py-3 rounded-xl border border-[rgba(255,255,255,0.12)] text-white text-sm font-medium hover:bg-[rgba(255,255,255,0.06)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {googleYuk ? (
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <GoogleIcon />
-                )}
+              {/* Google */}
+              <button type="button" onClick={handleGoogle} disabled={googleYuk}
+                className="w-full flex items-center justify-center gap-2.5 min-h-12 px-4 rounded-xl border border-gray-200 text-gray-700 text-sm font-medium bg-white hover:bg-gray-50 transition-colors disabled:opacity-50">
+                {googleYuk
+                  ? <span className="w-4 h-4 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
+                  : <GoogleIcon />}
                 {googleYuk ? "Yönlendiriliyor..." : "Google ile Kayıt Ol"}
               </button>
 
-              {/* Divider */}
               <div className="flex items-center gap-3">
-                <div className="flex-1 h-px bg-[rgba(255,255,255,0.08)]" />
-                <span className="text-xs text-[#475569]">veya e-posta ile</span>
-                <div className="flex-1 h-px bg-[rgba(255,255,255,0.08)]" />
+                <div className="flex-1 h-px bg-gray-200" />
+                <span className="text-xs text-gray-400">veya e-posta ile</span>
+                <div className="flex-1 h-px bg-gray-200" />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Ad *</label>
+                  <label className="text-xs text-gray-500 font-medium block mb-1.5">Ad *</label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#94a3b8]" />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                     <input required value={form.ad} onChange={(e) => set("ad", e.target.value)}
-                      placeholder="Adınız"
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm" />
+                      placeholder="Adınız" className={`${INPUT} pl-9`} />
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Soyad</label>
+                  <label className="text-xs text-gray-500 font-medium block mb-1.5">Soyad</label>
                   <input value={form.soyad} onChange={(e) => set("soyad", e.target.value)}
-                    placeholder="Soyadınız"
-                    className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm" />
+                    placeholder="Soyadınız" className={INPUT} />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">E-posta *</label>
+                <label className="text-xs text-gray-500 font-medium block mb-1.5">E-posta *</label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input type="email" required value={form.email} onChange={(e) => set("email", e.target.value)}
-                    placeholder="ornek@isletme.com"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm" />
+                    placeholder="ornek@isletme.com" className={`${INPUT} pl-10`} />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Şifre * (min. 6 karakter)</label>
+                <label className="text-xs text-gray-500 font-medium block mb-1.5">Şifre * <span className="text-gray-300">(min. 6 karakter)</span></label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input type={goster ? "text" : "password"} required value={form.password}
                     onChange={(e) => set("password", e.target.value)} placeholder="••••••••"
-                    className="w-full pl-10 pr-11 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm" />
+                    className={`${INPUT} pl-10 pr-11`} />
                   <button type="button" onClick={() => setGoster(!goster)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-white transition-colors">
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors">
                     {goster ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Şifre Tekrar *</label>
+                <label className="text-xs text-gray-500 font-medium block mb-1.5">Şifre Tekrar *</label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input type={goster ? "text" : "password"} required value={form.passwordTekrar}
                     onChange={(e) => set("passwordTekrar", e.target.value)} placeholder="••••••••"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm"
-                    style={{ borderColor: form.passwordTekrar && form.password !== form.passwordTekrar ? "rgba(239,68,68,0.5)" : undefined }} />
+                    className={`${INPUT} pl-10`}
+                    style={{ borderColor: form.passwordTekrar && form.password !== form.passwordTekrar ? "#FCA5A5" : undefined }} />
                 </div>
               </div>
 
-              <button type="submit" className="w-full py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+              <button type="submit"
+                className="w-full min-h-12 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90"
+                style={{ background: "var(--forest)" }}>
                 Devam Et →
               </button>
             </form>
           )}
 
-          {/* Adım 2 */}
+          {/* ── Adım 2: İşletme bilgileri ── */}
           {adim === 2 && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <h2 className="text-lg font-bold text-white">İşletme Bilgileri</h2>
-                <p className="text-xs text-[#94a3b8] mt-0.5">İşletmenizi tanımlayın</p>
+                <h2 className="text-lg font-bold text-gray-800">İşletme Bilgileri</h2>
+                <p className="text-xs text-gray-400 mt-0.5">İşletmenizi tanımlayın</p>
               </div>
 
               <div>
-                <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">İşletme Adı *</label>
+                <label className="text-xs text-gray-500 font-medium block mb-1.5">İşletme Adı *</label>
                 <div className="relative">
-                  <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
+                  <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input required value={form.businessAd} onChange={(e) => set("businessAd", e.target.value)}
-                    placeholder="örn. Yılmaz Market"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm" />
+                    placeholder="örn. Yılmaz Market" className={`${INPUT} pl-10`} />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Sektör</label>
-                <select value={form.sektor} onChange={(e) => set("sektor", e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm">
-                  {SEKTORLER.map((s) => <option key={s} value={s} className="bg-[#0e172a]">{s}</option>)}
+                <label className="text-xs text-gray-500 font-medium block mb-1.5">Sektör</label>
+                <select value={form.sektor} onChange={(e) => set("sektor", e.target.value)} className={INPUT}>
+                  {SEKTORLER.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
 
-              {/* Yasal kabul checkbox */}
+              {/* Yasal kabul */}
               <div
                 role="button"
                 tabIndex={0}
-                onClick={() => setYasalKabul(v => !v)}
-                onKeyDown={e => e.key === " " && setYasalKabul(v => !v)}
+                onClick={() => setYasalKabul((v) => !v)}
+                onKeyDown={(e) => e.key === " " && setYasalKabul((v) => !v)}
                 className="flex items-start gap-3 p-3.5 rounded-xl border transition-all cursor-pointer select-none"
                 style={{
-                  borderColor:     yasalKabul ? "rgba(251,192,36,0.4)" : "rgba(255,255,255,0.1)",
-                  backgroundColor: yasalKabul ? "rgba(251,192,36,0.06)" : "rgba(255,255,255,0.02)",
+                  borderColor:     yasalKabul ? "var(--forest)" : "#E2E8F0",
+                  backgroundColor: yasalKabul ? "var(--mint)"   : "#F8FAFC",
                 }}
               >
-                <div
-                  className="w-4 h-4 rounded flex items-center justify-center shrink-0 mt-0.5 transition-colors"
+                <div className="w-4 h-4 rounded flex items-center justify-center shrink-0 mt-0.5 transition-colors"
                   style={{
-                    backgroundColor: yasalKabul ? "#fbc024" : "transparent",
-                    border: yasalKabul ? "1.5px solid #fbc024" : "1.5px solid rgba(255,255,255,0.25)",
-                  }}
-                >
-                  {yasalKabul && <Check className="w-3 h-3 text-[#0e172a]" />}
+                    background:   yasalKabul ? "var(--forest)" : "transparent",
+                    border:       yasalKabul ? "1.5px solid var(--forest)" : "1.5px solid #CBD5E1",
+                  }}>
+                  {yasalKabul && <Check className="w-3 h-3 text-white" />}
                 </div>
-                <p className="text-xs text-[#94a3b8] leading-relaxed">
-                  <Link href="/politikalar/kullanim-kosullari" target="_blank" onClick={e => e.stopPropagation()} className="text-[#fbc024] hover:underline">Kullanım Koşulları</Link>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  <Link href="/politikalar/kullanim-kosullari" target="_blank" onClick={(e) => e.stopPropagation()}
+                    className="hover:underline" style={{ color: "var(--leaf)" }}>Kullanım Koşulları</Link>
                   {", "}
-                  <Link href="/politikalar/gizlilik" target="_blank" onClick={e => e.stopPropagation()} className="text-[#fbc024] hover:underline">Gizlilik Politikası</Link>
+                  <Link href="/politikalar/gizlilik" target="_blank" onClick={(e) => e.stopPropagation()}
+                    className="hover:underline" style={{ color: "var(--leaf)" }}>Gizlilik Politikası</Link>
                   {" ve verilerimin aktarılmasına ilişkin "}
-                  <Link href="/politikalar/acik-riza" target="_blank" onClick={e => e.stopPropagation()} className="text-[#fbc024] hover:underline">Açık Rıza Metni</Link>
+                  <Link href="/politikalar/acik-riza" target="_blank" onClick={(e) => e.stopPropagation()}
+                    className="hover:underline" style={{ color: "var(--leaf)" }}>Açık Rıza Metni</Link>
                   {"'ni okudum, kabul ediyorum."}
                 </p>
               </div>
 
               <div className="flex gap-3">
                 <button type="button" onClick={() => { setAdim(1); setHata(""); }}
-                  className="flex-1 py-3 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                  className="flex-1 min-h-12 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium bg-white hover:bg-gray-50 transition-colors">
                   ← Geri
                 </button>
                 <button type="submit" disabled={yukleniyor || !yasalKabul}
-                  className="flex-1 py-3 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                  className="flex-1 min-h-12 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: "var(--forest)" }}>
                   {yukleniyor ? "Kaydediliyor..." : "Hesap Oluştur"}
                 </button>
               </div>
             </form>
           )}
 
-          <p className="text-center text-sm text-[#94a3b8]">
+          <p className="text-center text-sm text-gray-500">
             Zaten hesabınız var mı?{" "}
-            <Link href="/giris" className="text-[#fbc024] font-semibold hover:underline">Giriş Yap</Link>
+            <Link href="/giris" className="font-semibold hover:underline" style={{ color: "var(--leaf)" }}>
+              Giriş Yap
+            </Link>
           </p>
         </div>
       </motion.div>

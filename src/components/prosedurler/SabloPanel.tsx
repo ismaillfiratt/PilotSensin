@@ -161,16 +161,16 @@ export default function SabloPanel() {
   ];
 
   return (
-    <div className="glass-card rounded-2xl p-5">
+    <div className="card rounded-2xl p-5">
       <div className="flex items-start justify-between mb-5 gap-4">
         <div>
-          <h2 className="text-sm font-semibold text-white">Kontrol Listesi Şablonları</h2>
-          <p className="text-xs text-[#94a3b8] mt-0.5">Hazır şablonlar — tek tıkla kontrol listene ekle veya kaldır</p>
+          <h2 className="text-sm font-semibold text-gray-800">Kontrol Listesi Şablonları</h2>
+          <p className="text-xs text-gray-400 mt-0.5">Hazır şablonlar — tek tıkla kontrol listene ekle veya kaldır</p>
         </div>
         {/* #3: Yeni Grup Ekle */}
         <button
           onClick={() => { setYeniGrup({ baslik: "", aciklama: "", riskSeviyesi: "yuksek" }); setYeniGrupModal(true); }}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[rgba(251,192,36,0.12)] text-[#fbc024] text-xs font-bold border border-[rgba(251,192,36,0.25)] hover:bg-[rgba(251,192,36,0.2)] transition-all shrink-0"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--mint)] text-[var(--leaf)] text-xs font-bold border border-[var(--forest-200, #B3E8C8)] hover:bg-[var(--forest-100, #D9F2E4)] transition-all shrink-0"
         >
           <Plus className="w-3.5 h-3.5" /> Yeni Grup
         </button>
@@ -214,36 +214,36 @@ export default function SabloPanel() {
                             if (e.key === "Escape") setDuzenleGrup(null);
                           }}
                           autoFocus
-                          className="flex-1 text-sm bg-transparent text-white border-b border-[rgba(251,192,36,0.5)] outline-none pb-0.5"
+                          className="flex-1 text-sm bg-transparent text-gray-800 border-b border-[var(--mint)] outline-none pb-0.5"
                         />
                         <button onClick={() => { grupAdGuncelle(grup.id, yeniGrupAd); setDuzenleGrup(null); }}
-                          className="text-[#22c55e] hover:text-white transition-colors text-xs font-bold shrink-0">✓</button>
+                          className="text-[#22c55e] hover:text-gray-800 transition-colors text-xs font-bold shrink-0">✓</button>
                         <button onClick={() => setDuzenleGrup(null)}
-                          className="text-[#94a3b8] hover:text-white transition-colors shrink-0"><X className="w-3 h-3" /></button>
+                          className="text-gray-400 hover:text-gray-800 transition-colors shrink-0"><X className="w-3 h-3" /></button>
                       </div>
                     ) : (
                       <div className="flex items-center gap-1.5">
-                        <p className="text-sm font-semibold text-white truncate">{grup.baslik}</p>
+                        <p className="text-sm font-semibold text-gray-800 truncate">{grup.baslik}</p>
                         <button onClick={() => { setDuzenleGrup(grup.id); setYeniGrupAd(grup.baslik); }}
-                          className="text-[#64748b] hover:text-[#fbc024] transition-colors shrink-0">
+                          className="text-gray-500 hover:text-[var(--leaf)] transition-colors shrink-0">
                           <Pencil className="w-3 h-3" />
                         </button>
                         {isCustom && (
                           <button onClick={() => ozelGrupSil(grup.id)}
-                            className="text-[#64748b] hover:text-[#ef4444] transition-colors shrink-0">
+                            className="text-gray-500 hover:text-[#ef4444] transition-colors shrink-0">
                             <Trash2 className="w-3 h-3" />
                           </button>
                         )}
                       </div>
                     )}
-                    <p className="text-[10px] text-[#94a3b8] mt-0.5 leading-relaxed">{grup.aciklama}</p>
+                    <p className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">{grup.aciklama}</p>
                   </div>
                 </div>
 
                 {/* Özet maddeler */}
                 <div className="space-y-1 mb-3">
                   {gorunen.length === 0 ? (
-                    <p className="text-[10px] text-[#64748b]">Henüz madde yok — "Yönet" ile ekle</p>
+                    <p className="text-[10px] text-gray-500">Henüz madde yok — "Yönet" ile ekle</p>
                   ) : (
                     <>
                       {ozet.map((m, i) => {
@@ -254,11 +254,11 @@ export default function SabloPanel() {
                           <div key={i} className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full shrink-0"
                               style={{ backgroundColor: ekli ? "#22c55e" : krRenk.color }} />
-                            <span className={`text-xs truncate flex-1 ${ekli ? "text-[#22c55e]" : "text-[#94a3b8]"}`}>{m.baslik}</span>
-                            {(m as ChecklistSablon).otomatikKontrol && <Zap className="w-2.5 h-2.5 text-[#fbc024] shrink-0" />}
+                            <span className={`text-xs truncate flex-1 ${ekli ? "text-[#22c55e]" : "text-gray-400"}`}>{m.baslik}</span>
+                            {(m as ChecklistSablon).otomatikKontrol && <Zap className="w-2.5 h-2.5 text-[var(--leaf)] shrink-0" />}
                             {isOzel && (
                               <button onClick={() => ozelSablonMaddeSil((m as OzelSablonMaddesi).id)}
-                                className="w-4 h-4 flex items-center justify-center text-[#64748b] hover:text-[#ef4444] transition-colors shrink-0">
+                                className="w-4 h-4 flex items-center justify-center text-gray-500 hover:text-[#ef4444] transition-colors shrink-0">
                                 <X className="w-3 h-3" />
                               </button>
                             )}
@@ -267,13 +267,13 @@ export default function SabloPanel() {
                       })}
                       {!gorMini && fazla > 0 && (
                         <button onClick={() => toggleMini(grup.id)}
-                          className="text-[10px] text-[#fbc024] hover:text-[#d9a61f] transition-colors font-medium">
+                          className="text-[10px] text-[var(--leaf)] hover:opacity-75 transition-colors font-medium">
                           +{fazla} madde daha ▾
                         </button>
                       )}
                       {gorMini && gorunen.length > 3 && (
                         <button onClick={() => toggleMini(grup.id)}
-                          className="text-[10px] text-[#94a3b8] hover:text-white transition-colors">
+                          className="text-[10px] text-gray-400 hover:text-gray-800 transition-colors">
                           Daha az göster ▴
                         </button>
                       )}
@@ -284,7 +284,7 @@ export default function SabloPanel() {
                 {/* Aksiyonlar */}
                 <div className="flex gap-2">
                   <button onClick={() => setAcikGrup(acik ? null : grup.id)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-[#94a3b8] border border-[rgba(255,255,255,0.08)] hover:text-white hover:border-[rgba(255,255,255,0.2)] transition-all">
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-gray-400 border border-gray-200 hover:text-gray-800 hover:border-gray-200 transition-all">
                     {acik ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                     {acik ? "Kapat" : "Yönet"}
                   </button>
@@ -308,7 +308,7 @@ export default function SabloPanel() {
                 {acik && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}
-                    className="overflow-hidden border-t border-[rgba(255,255,255,0.06)]">
+                    className="overflow-hidden border-t border-gray-200">
                     <div className="p-4 space-y-2">
                       {gorunen.map((m, i) => {
                         const ekli   = ekliBasliklar.has(m.baslik);
@@ -318,16 +318,16 @@ export default function SabloPanel() {
                           <div key={i} className="flex items-center gap-3 py-2 px-3 rounded-lg"
                             style={{ backgroundColor: ekli ? "rgba(34,197,94,0.06)" : "rgba(255,255,255,0.02)", border: `1px solid ${ekli ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.05)"}` }}>
                             <div className="flex-1 min-w-0">
-                              <p className={`text-xs font-medium ${ekli ? "text-[#22c55e]" : "text-white"}`}>{m.baslik}</p>
+                              <p className={`text-xs font-medium ${ekli ? "text-[#22c55e]" : "text-gray-800"}`}>{m.baslik}</p>
                               <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                <span className="text-[10px] text-[#94a3b8]">{SIKLIGI_LABEL[m.sikligi]}</span>
+                                <span className="text-[10px] text-gray-400">{SIKLIGI_LABEL[m.sikligi]}</span>
                                 {m.sikligi === "ozel" && m.ozelGunSayisi && (
-                                  <span className="text-[10px] text-[#94a3b8]">{m.ozelGunSayisi} gün</span>
+                                  <span className="text-[10px] text-gray-400">{m.ozelGunSayisi} gün</span>
                                 )}
                                 <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
                                   style={{ color: krRenk.color, backgroundColor: krRenk.bg }}>{m.kritiklik}</span>
                                 {(m as ChecklistSablon).otomatikKontrol && (
-                                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[rgba(251,192,36,0.12)] text-[#fbc024] flex items-center gap-0.5">
+                                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[var(--mint)] text-[var(--leaf)] flex items-center gap-0.5">
                                     <Zap className="w-2.5 h-2.5" /> Otomatik
                                   </span>
                                 )}
@@ -352,7 +352,7 @@ export default function SabloPanel() {
                               {/* Düzenle */}
                               <button
                                 onClick={() => openDuzenle(m, grup.id)}
-                                className="w-7 h-7 flex items-center justify-center rounded-lg text-[#64748b] hover:text-[#fbc024] border border-[rgba(255,255,255,0.05)] hover:border-[rgba(251,192,36,0.3)] transition-all"
+                                className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 hover:text-[var(--leaf)] border border-gray-200 hover:border-[var(--forest-200, #B3E8C8)] transition-all"
                                 title="Maddeyi düzenle"
                               >
                                 <Pencil className="w-3 h-3" />
@@ -363,7 +363,7 @@ export default function SabloPanel() {
                                   ? ozelSablonMaddeSil((m as OzelSablonMaddesi).id)
                                   : sablonMaddeSil(grup.id, m.baslik)
                                 }
-                                className="w-7 h-7 flex items-center justify-center rounded-lg text-[#64748b] hover:text-[#ef4444] border border-[rgba(255,255,255,0.05)] hover:border-[rgba(239,68,68,0.3)] transition-all"
+                                className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 hover:text-[#ef4444] border border-gray-200 hover:border-[rgba(239,68,68,0.3)] transition-all"
                                 title="Maddeyi sil"
                               >
                                 <Trash2 className="w-3 h-3" />
@@ -375,7 +375,7 @@ export default function SabloPanel() {
 
                       {/* Bu gruba özel madde ekle */}
                       <button onClick={() => { setOzelModal(grup.id); setOzelForm(f => ({ ...f, baslik: "" })); }}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-[rgba(255,255,255,0.12)] text-[#94a3b8] text-xs font-medium hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] transition-all">
+                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-gray-200 text-gray-400 text-xs font-medium hover:border-[var(--forest-300, #7DD0A0)] hover:text-[var(--leaf)] transition-all">
                         <Plus className="w-3.5 h-3.5" /> Bu gruba madde ekle
                       </button>
                     </div>
@@ -395,30 +395,30 @@ export default function SabloPanel() {
             onClick={e => e.target === e.currentTarget && setOzelModal(null)}>
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 16 }} transition={{ duration: 0.18 }}
-              className="w-full max-w-sm glass-card rounded-2xl p-6 max-h-[90vh] overflow-y-auto">
+              className="w-full max-w-sm card rounded-2xl p-6 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-5">
-                <h3 className="text-base font-bold text-white">Gruba Madde Ekle</h3>
-                <button onClick={() => setOzelModal(null)} className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white transition-colors">
+                <h3 className="text-base font-bold text-gray-800">Gruba Madde Ekle</h3>
+                <button onClick={() => setOzelModal(null)} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-800 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               </div>
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Madde Başlığı *</label>
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">Madde Başlığı *</label>
                   <input value={ozelForm.baslik} onChange={e => setOzelForm(f => ({ ...f, baslik: e.target.value }))}
                     placeholder="Kontrol edilecek madde..."
-                    className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-sm transition-colors" />
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
                 </div>
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Sıklık</label>
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">Sıklık</label>
                   <div className="flex gap-1">
                     {(["gunluk", "haftalik", "aylik", "ozel"] as ChecklistSikligi[]).map(s => (
                       <button key={s} type="button" onClick={() => setOzelForm(f => ({ ...f, sikligi: s }))}
                         className="flex-1 px-1.5 py-1.5 rounded-lg text-[10px] font-medium transition-all border"
                         style={{
-                          backgroundColor: ozelForm.sikligi === s ? "rgba(251,192,36,0.15)" : "transparent",
-                          color:           ozelForm.sikligi === s ? "#fbc024" : "#94a3b8",
-                          borderColor:     ozelForm.sikligi === s ? "rgba(251,192,36,0.3)" : "rgba(255,255,255,0.08)",
+                          backgroundColor: ozelForm.sikligi === s ? "var(--mint)" : "transparent",
+                          color:           ozelForm.sikligi === s ? "var(--leaf)" : "#94a3b8",
+                          borderColor:     ozelForm.sikligi === s ? "var(--forest-200, #B3E8C8)" : "rgba(255,255,255,0.08)",
                         }}>
                         {SIKLIGI_LABEL[s]}
                       </button>
@@ -426,16 +426,16 @@ export default function SabloPanel() {
                   </div>
                   {ozelForm.sikligi === "ozel" && (
                     <div className="flex items-center gap-2 mt-2">
-                      <span className="text-xs text-[#94a3b8]">Her</span>
+                      <span className="text-xs text-gray-400">Her</span>
                       <input type="number" min="1" value={ozelForm.ozelGunSayisi ?? 30}
                         onChange={e => setOzelForm(f => ({ ...f, ozelGunSayisi: parseInt(e.target.value) || 1 }))}
-                        className="w-20 px-3 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-sm text-center focus:outline-none focus:border-[rgba(251,192,36,0.5)]" />
-                      <span className="text-xs text-[#94a3b8]">günde bir</span>
+                        className="w-20 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-sm text-center focus:outline-none focus:border-[var(--leaf)]" />
+                      <span className="text-xs text-gray-400">günde bir</span>
                     </div>
                   )}
                 </div>
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Kritiklik</label>
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">Kritiklik</label>
                   <div className="grid grid-cols-4 gap-1">
                     {(["dusuk", "orta", "yuksek", "kritik"] as Kritiklik[]).map(k => {
                       const r = KRITIKLIK_RENK[k];
@@ -463,11 +463,11 @@ export default function SabloPanel() {
 
                 <div className="flex gap-3 pt-1">
                   <button onClick={() => setOzelModal(null)}
-                    className="flex-1 py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium hover:bg-gray-50 transition-colors">
                     İptal
                   </button>
                   <button onClick={() => ozelModal && handleOzelEkle(ozelModal)}
-                    className="flex-1 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
                     Şablona Ekle
                   </button>
                 </div>
@@ -485,28 +485,28 @@ export default function SabloPanel() {
             onClick={e => e.target === e.currentTarget && setYeniGrupModal(false)}>
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 16 }} transition={{ duration: 0.18 }}
-              className="w-full max-w-sm glass-card rounded-2xl p-6">
+              className="w-full max-w-sm card rounded-2xl p-6">
               <div className="flex items-center justify-between mb-5">
-                <h3 className="text-base font-bold text-white">Yeni Şablon Grubu</h3>
-                <button onClick={() => setYeniGrupModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white transition-colors">
+                <h3 className="text-base font-bold text-gray-800">Yeni Şablon Grubu</h3>
+                <button onClick={() => setYeniGrupModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-800 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               </div>
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Grup Adı *</label>
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">Grup Adı *</label>
                   <input value={yeniGrup.baslik} onChange={e => setYeniGrup(f => ({ ...f, baslik: e.target.value }))}
                     placeholder="örn. Tedarik Zinciri Kontrolleri"
-                    className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-sm transition-colors" />
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
                 </div>
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Açıklama</label>
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama</label>
                   <input value={yeniGrup.aciklama} onChange={e => setYeniGrup(f => ({ ...f, aciklama: e.target.value }))}
                     placeholder="Bu grubun amacı..."
-                    className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-sm transition-colors" />
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
                 </div>
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Risk Seviyesi</label>
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">Risk Seviyesi</label>
                   <div className="grid grid-cols-2 gap-2">
                     {(["yuksek", "kritik"] as const).map(r => (
                       <button key={r} type="button" onClick={() => setYeniGrup(f => ({ ...f, riskSeviyesi: r }))}
@@ -523,7 +523,7 @@ export default function SabloPanel() {
                 </div>
                 <div className="flex gap-3 pt-1">
                   <button onClick={() => setYeniGrupModal(false)}
-                    className="flex-1 py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium hover:bg-gray-50 transition-colors">
                     İptal
                   </button>
                   <button
@@ -532,7 +532,7 @@ export default function SabloPanel() {
                       ozelGrupEkle({ ...yeniGrup, baslik: yeniGrup.baslik.trim() });
                       setYeniGrupModal(false);
                     }}
-                    className="flex-1 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
                     Grubu Oluştur
                   </button>
                 </div>
@@ -550,36 +550,36 @@ export default function SabloPanel() {
             onClick={e => e.target === e.currentTarget && setDuzenleModal(null)}>
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 16 }} transition={{ duration: 0.18 }}
-              className="w-full max-w-sm glass-card rounded-2xl p-6 max-h-[90vh] overflow-y-auto">
+              className="w-full max-w-sm card rounded-2xl p-6 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <h3 className="text-base font-bold text-white">Maddeyi Düzenle</h3>
-                  <p className="text-xs text-[#94a3b8] mt-0.5">Değişiklikler yalnızca bu şablonu etkiler</p>
+                  <h3 className="text-base font-bold text-gray-800">Maddeyi Düzenle</h3>
+                  <p className="text-xs text-gray-400 mt-0.5">Değişiklikler yalnızca bu şablonu etkiler</p>
                 </div>
-                <button onClick={() => setDuzenleModal(null)} className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white transition-colors">
+                <button onClick={() => setDuzenleModal(null)} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-800 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               </div>
               <div className="space-y-3">
                 {/* Başlık */}
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Madde Başlığı *</label>
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">Madde Başlığı *</label>
                   <input value={duzenleForm.baslik} onChange={e => setDuzenleForm(f => ({ ...f, baslik: e.target.value }))}
                     placeholder="Kontrol edilecek madde..."
-                    className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-sm transition-colors" />
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
                 </div>
 
                 {/* Sıklık */}
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Sıklık</label>
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">Sıklık</label>
                   <div className="flex gap-1">
                     {(["gunluk", "haftalik", "aylik", "ozel"] as ChecklistSikligi[]).map(s => (
                       <button key={s} type="button" onClick={() => setDuzenleForm(f => ({ ...f, sikligi: s }))}
                         className="flex-1 px-1.5 py-1.5 rounded-lg text-[10px] font-medium transition-all border"
                         style={{
-                          backgroundColor: duzenleForm.sikligi === s ? "rgba(251,192,36,0.15)" : "transparent",
-                          color:           duzenleForm.sikligi === s ? "#fbc024" : "#94a3b8",
-                          borderColor:     duzenleForm.sikligi === s ? "rgba(251,192,36,0.3)" : "rgba(255,255,255,0.08)",
+                          backgroundColor: duzenleForm.sikligi === s ? "var(--mint)" : "transparent",
+                          color:           duzenleForm.sikligi === s ? "var(--leaf)" : "#94a3b8",
+                          borderColor:     duzenleForm.sikligi === s ? "var(--forest-200, #B3E8C8)" : "rgba(255,255,255,0.08)",
                         }}>
                         {SIKLIGI_LABEL[s]}
                       </button>
@@ -587,18 +587,18 @@ export default function SabloPanel() {
                   </div>
                   {duzenleForm.sikligi === "ozel" && (
                     <div className="flex items-center gap-2 mt-2">
-                      <span className="text-xs text-[#94a3b8]">Her</span>
+                      <span className="text-xs text-gray-400">Her</span>
                       <input type="number" min="1" value={duzenleForm.ozelGunSayisi ?? 30}
                         onChange={e => setDuzenleForm(f => ({ ...f, ozelGunSayisi: parseInt(e.target.value) || 1 }))}
-                        className="w-20 px-3 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-sm text-center focus:outline-none focus:border-[rgba(251,192,36,0.5)]" />
-                      <span className="text-xs text-[#94a3b8]">günde bir</span>
+                        className="w-20 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-sm text-center focus:outline-none focus:border-[var(--leaf)]" />
+                      <span className="text-xs text-gray-400">günde bir</span>
                     </div>
                   )}
                 </div>
 
                 {/* Kritiklik */}
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Kritiklik</label>
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">Kritiklik</label>
                   <div className="grid grid-cols-4 gap-1">
                     {(["dusuk", "orta", "yuksek", "kritik"] as Kritiklik[]).map(k => {
                       const r = KRITIKLIK_RENK[k];
@@ -626,11 +626,11 @@ export default function SabloPanel() {
 
                 <div className="flex gap-3 pt-1">
                   <button onClick={() => setDuzenleModal(null)}
-                    className="flex-1 py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium hover:bg-gray-50 transition-colors">
                     İptal
                   </button>
                   <button onClick={handleSaveDuzenle} disabled={!duzenleForm.baslik.trim()}
-                    className="flex-1 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                     Kaydet
                   </button>
                 </div>

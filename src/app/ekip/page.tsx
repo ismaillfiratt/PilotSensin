@@ -47,7 +47,7 @@ function getSiteUrl() {
 
 const DURUM_ETIKET: Record<string, { label: string; color: string }> = {
   active:    { label: "Aktif",     color: "#22c55e" },
-  pending:   { label: "Beklemede", color: "#fbc024" },
+  pending:   { label: "Beklemede", color: "var(--leaf)" },
   suspended: { label: "Askıda",    color: "#ef4444" },
   inactive:  { label: "Pasif",     color: "#64748b" },
 };
@@ -192,22 +192,22 @@ export default function EkipPage() {
       {/* Başlık */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[rgba(251,192,36,0.12)] border border-[rgba(251,192,36,0.25)] flex items-center justify-center">
-            <Users className="w-5 h-5 text-[#fbc024]" />
+          <div className="w-10 h-10 rounded-xl bg-[var(--mint)] border border-[var(--forest-200, #B3E8C8)] flex items-center justify-center">
+            <Users className="w-5 h-5 text-[var(--leaf)]" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">Ekip Yönetimi</h1>
-            <p className="text-sm text-[#94a3b8]">{aktifUye} / {maxUye} aktif üye</p>
+            <h1 className="text-xl font-bold text-gray-800">Ekip Yönetimi</h1>
+            <p className="text-sm text-gray-400">{aktifUye} / {maxUye} aktif üye</p>
           </div>
         </div>
 
         {/* Sekmeler */}
-        <div className="flex rounded-xl overflow-hidden border border-[rgba(255,255,255,0.08)]">
+        <div className="flex rounded-xl overflow-hidden border border-gray-200">
           {(["uyeler", "roller"] as const).map((s) => (
             <button key={s} onClick={() => setSekme(s)}
               className="px-4 py-2.5 min-h-11 text-sm font-medium transition-colors"
               style={sekme === s
-                ? { background: "rgba(251,192,36,0.15)", color: "#fbc024" }
+                ? { background: "var(--mint)", color: "var(--leaf)" }
                 : { background: "transparent", color: "#94a3b8" }
               }>
               {s === "uyeler" ? "Üyeler" : "Roller"}
@@ -220,10 +220,10 @@ export default function EkipPage() {
       {sekme === "uyeler" && (
         <>
           {/* Davet formu */}
-          <div className="glass-card rounded-2xl p-6 space-y-4">
+          <div className="card rounded-2xl p-6 space-y-4">
             <div className="flex items-center gap-2">
-              <UserPlus className="w-4 h-4 text-[#fbc024]" />
-              <h2 className="text-sm font-semibold text-white">Yeni Üye Davet Et</h2>
+              <UserPlus className="w-4 h-4 text-[var(--leaf)]" />
+              <h2 className="text-sm font-semibold text-gray-800">Yeni Üye Davet Et</h2>
             </div>
             {hata && (
               <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.25)]">
@@ -233,13 +233,13 @@ export default function EkipPage() {
             )}
             {roller.filter((r) => !r.is_owner).length === 0 ? (
               /* Hiç rol yoksa → Rol Ekle butonu */
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-[rgba(251,192,36,0.06)] border border-[rgba(251,192,36,0.15)]">
-                <AlertCircle className="w-4 h-4 text-[#fbc024] shrink-0" />
-                <p className="text-sm text-[#94a3b8] flex-1">Davet etmek için önce bir rol oluşturun.</p>
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-[var(--mint)] border border-[var(--mint)]">
+                <AlertCircle className="w-4 h-4 text-[var(--leaf)] shrink-0" />
+                <p className="text-sm text-gray-400 flex-1">Davet etmek için önce bir rol oluşturun.</p>
                 <button
                   type="button"
                   onClick={() => { setSekme("roller"); setRolFormu(true); }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#fbc024] text-[#0e172a] text-xs font-bold hover:bg-[#d9a61f] transition-colors shrink-0"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--forest)] text-gray-900 text-xs font-bold hover:opacity-90 transition-colors shrink-0"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Rol Ekle
@@ -248,19 +248,19 @@ export default function EkipPage() {
             ) : (
               <form onSubmit={davetGonder} className="flex gap-3 flex-col sm:flex-row">
                 <div className="relative flex-1">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                     placeholder="calisan@isletme.com"
-                    className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.4)] text-sm transition-colors" />
+                    className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
                 </div>
                 <select value={secilenRolId} onChange={(e) => setSecRol(e.target.value)}
-                  className="px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-sm focus:outline-none focus:border-[rgba(251,192,36,0.4)]">
+                  className="px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none focus:border-[var(--leaf)]">
                   {roller.filter((r) => !r.is_owner).map((r) => (
-                    <option key={r.id} value={r.id} className="bg-[#0e172a]">{r.name}</option>
+                    <option key={r.id} value={r.id} className="bg-[var(--forest)]">{r.name}</option>
                   ))}
                 </select>
                 <button type="submit" disabled={yukleniyor}
-                  className="px-5 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-60">
+                  className="px-5 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-60">
                   {yukleniyor ? "..." : "Davet Et"}
                 </button>
               </form>
@@ -269,61 +269,61 @@ export default function EkipPage() {
 
           {/* Bekleyen davetler */}
           {davetler.length > 0 && (
-            <div className="glass-card rounded-2xl p-6 space-y-3">
-              <h2 className="text-sm font-semibold text-white mb-3">Bekleyen Davetler</h2>
+            <div className="card rounded-2xl p-6 space-y-3">
+              <h2 className="text-sm font-semibold text-gray-800 mb-3">Bekleyen Davetler</h2>
               {davetler.map((d) => (
-                <div key={d.id} className="flex items-center gap-3 p-3 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)]">
-                  <Clock className="w-4 h-4 text-[#fbc024] shrink-0" />
+                <div key={d.id} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-200">
+                  <Clock className="w-4 h-4 text-[var(--leaf)] shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white truncate">{d.email}</p>
-                    <p className="text-xs text-[#64748b]">{new Date(d.expires_at).toLocaleDateString("tr-TR")} tarihinde sona erer</p>
+                    <p className="text-sm text-gray-800 truncate">{d.email}</p>
+                    <p className="text-xs text-gray-500">{new Date(d.expires_at).toLocaleDateString("tr-TR")} tarihinde sona erer</p>
                   </div>
                   <button onClick={() => kopyala(d.token)} title="Linki kopyala"
-                    className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-[#fbc024] transition-colors">
+                    className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-[var(--leaf)] transition-colors">
                     {kopyalandi === d.token ? <Check className="w-4 h-4 text-[#22c55e]" /> : <Copy className="w-4 h-4" />}
                   </button>
                   <button onClick={() => davetSil(d.id)} title="İptal et"
-                    className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-[#ef4444] transition-colors">
+                    className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-[#ef4444] transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
               ))}
-              <p className="text-xs text-[#64748b]">💡 Link simgesine basarak davet linkini kopyalayın ve çalışana gönderin.</p>
+              <p className="text-xs text-gray-500">💡 Link simgesine basarak davet linkini kopyalayın ve çalışana gönderin.</p>
             </div>
           )}
 
           {/* Üye listesi */}
-          <div className="glass-card rounded-2xl p-6 space-y-3">
-            <h2 className="text-sm font-semibold text-white mb-3">Tüm Üyeler</h2>
+          <div className="card rounded-2xl p-6 space-y-3">
+            <h2 className="text-sm font-semibold text-gray-800 mb-3">Tüm Üyeler</h2>
             {uyeler.length === 0 ? (
-              <p className="text-sm text-[#64748b] text-center py-4">Henüz üye yok</p>
+              <p className="text-sm text-gray-500 text-center py-4">Henüz üye yok</p>
             ) : uyeler.map((u) => {
               const durum = DURUM_ETIKET[u.status] ?? DURUM_ETIKET.inactive;
               return (
-                <div key={u.id} className="flex items-center gap-3 p-3 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)]">
+                <div key={u.id} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-200">
                   <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                    style={{ background: u.role === "pilot" ? "rgba(251,192,36,0.15)" : "rgba(148,163,184,0.1)" }}>
-                    {u.role === "pilot" ? <Crown className="w-4 h-4 text-[#fbc024]" /> : <ShieldCheck className="w-4 h-4 text-[#94a3b8]" />}
+                    style={{ background: u.role === "pilot" ? "var(--mint)" : "rgba(148,163,184,0.1)" }}>
+                    {u.role === "pilot" ? <Crown className="w-4 h-4 text-[var(--leaf)]" /> : <ShieldCheck className="w-4 h-4 text-gray-400" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-white truncate">
+                      <p className="text-sm font-medium text-gray-800 truncate">
                         {u.full_name ?? u.email}
                       </p>
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full shrink-0"
                         style={{
-                          background: u.role === "pilot" ? "rgba(251,192,36,0.12)" : "rgba(148,163,184,0.1)",
-                          color:      u.role === "pilot" ? "#fbc024" : "#94a3b8",
-                          border:     u.role === "pilot" ? "1px solid rgba(251,192,36,0.25)" : "1px solid rgba(148,163,184,0.15)",
+                          background: u.role === "pilot" ? "var(--mint)" : "rgba(148,163,184,0.1)",
+                          color:      u.role === "pilot" ? "var(--leaf)" : "#94a3b8",
+                          border:     u.role === "pilot" ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid rgba(148,163,184,0.15)",
                         }}>
                         {u.company_roles?.name ?? (u.role === "pilot" ? "Pilot" : "Co-Pilot")}
                       </span>
                     </div>
-                    {u.full_name && <p className="text-xs text-[#64748b] truncate">{u.email}</p>}
+                    {u.full_name && <p className="text-xs text-gray-500 truncate">{u.email}</p>}
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-xs font-medium" style={{ color: durum.color }}>{durum.label}</span>
                       {u.joined_at && (
-                        <span className="text-[10px] text-[#475569]">
+                        <span className="text-[10px] text-gray-500">
                           · {new Date(u.joined_at).toLocaleDateString("tr-TR")} tarihinden beri
                         </span>
                       )}
@@ -334,26 +334,26 @@ export default function EkipPage() {
                       {u.status === "active" && (
                         <button onClick={() => uyeDurumGuncelle(u.id, "suspended")}
                           title="Askıya al"
-                          className="w-7 h-7 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-[#fbc024] transition-colors">
+                          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-[var(--leaf)] transition-colors">
                           <UserX className="w-3.5 h-3.5" />
                         </button>
                       )}
                       {u.status === "suspended" && (
                         <button onClick={() => uyeDurumGuncelle(u.id, "active")}
                           title="Yeniden aktif et"
-                          className="w-7 h-7 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-[#22c55e] transition-colors">
+                          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-[#22c55e] transition-colors">
                           <UserCheck className="w-3.5 h-3.5" />
                         </button>
                       )}
                       <button onClick={() => uyeSil(u.id)}
                         title="Kullanıcıyı sil"
-                        className="w-7 h-7 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-[#ef4444] transition-colors">
+                        className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-[#ef4444] transition-colors">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   )}
                   {u.status === "pending" && (
-                    <span title="Davet bekleniyor"><CheckCircle2 className="w-4 h-4 text-[#fbc024] shrink-0" /></span>
+                    <span title="Davet bekleniyor"><CheckCircle2 className="w-4 h-4 text-[var(--leaf)] shrink-0" /></span>
                   )}
                 </div>
               );
@@ -367,7 +367,7 @@ export default function EkipPage() {
         <div className="space-y-4">
           <div className="flex justify-end">
             <button onClick={() => setRolFormu(!rolFormu)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
               <Plus className="w-4 h-4" />
               Yeni Rol
             </button>
@@ -380,15 +380,15 @@ export default function EkipPage() {
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className="glass-card rounded-2xl p-6 space-y-4 border border-[rgba(251,192,36,0.2)]"
+                className="card rounded-2xl p-6 space-y-4 border border-[var(--forest-100, #D9F2E4)]"
               >
-                <h3 className="text-sm font-semibold text-white">Yeni Rol Oluştur</h3>
+                <h3 className="text-sm font-semibold text-gray-800">Yeni Rol Oluştur</h3>
                 <input value={yeniRolAdi} onChange={(e) => setYeniRolAdi(e.target.value)}
                   placeholder="Rol adı (örn: Stok Sorumlusu)"
-                  className="w-full px-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.4)] text-sm" />
+                  className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm" />
 
                 <div>
-                  <p className="text-xs text-[#94a3b8] font-medium mb-2">Modül Erişimi</p>
+                  <p className="text-xs text-gray-400 font-medium mb-2">Modül Erişimi</p>
                   <div className="grid grid-cols-2 gap-2">
                     {MODULLER.filter((m) => m.key !== "ekip").map(({ key, label }) => (
                       <label key={key} className="flex items-center gap-2 cursor-pointer">
@@ -398,9 +398,9 @@ export default function EkipPage() {
                             ...p,
                             modules: { ...p.modules, [key]: e.target.checked },
                           }))}
-                          className="w-4 h-4 rounded accent-[#fbc024]"
+                          className="w-4 h-4 rounded accent-[var(--leaf)]"
                         />
-                        <span className="text-sm text-[#94a3b8]">{label}</span>
+                        <span className="text-sm text-gray-400">{label}</span>
                       </label>
                     ))}
                   </div>
@@ -410,9 +410,9 @@ export default function EkipPage() {
                   <input type="checkbox"
                     checked={yeniRolPerms.canEdit}
                     onChange={(e) => setYeniRolPerms((p) => ({ ...p, canEdit: e.target.checked }))}
-                    className="w-4 h-4 rounded accent-[#fbc024]"
+                    className="w-4 h-4 rounded accent-[var(--leaf)]"
                   />
-                  <span className="text-sm text-white font-medium">Düzenleme yetkisi (veri ekleyebilir/silebilir)</span>
+                  <span className="text-sm text-gray-800 font-medium">Düzenleme yetkisi (veri ekleyebilir/silebilir)</span>
                 </label>
 
                 {rolHata && (
@@ -423,11 +423,11 @@ export default function EkipPage() {
                 )}
                 <div className="flex gap-3">
                   <button onClick={rolKaydet}
-                    className="flex-1 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
                     Kaydet
                   </button>
                   <button onClick={() => { setRolFormu(false); setRolHata(""); }}
-                    className="px-4 py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                    className="px-4 py-2.5 rounded-xl border border-gray-200 text-gray-400 text-sm hover:bg-gray-50 transition-colors">
                     İptal
                   </button>
                 </div>
@@ -450,28 +450,28 @@ function RolKart({ rol, onSil, onGuncelle }: { rol: Rol; onSil: (id: string) => 
   const [perms, setPerms] = useState<Permissions>(rol.permissions);
 
   return (
-    <div className="glass-card rounded-2xl overflow-hidden">
+    <div className="card rounded-2xl overflow-hidden">
       {/* Başlık — tıklanınca aç/kapa */}
       <button
         type="button"
         onClick={() => !rol.is_owner && setAcik(!acik)}
-        className={`w-full flex items-center justify-between px-5 py-4 transition-colors ${!rol.is_owner ? "hover:bg-[rgba(255,255,255,0.03)] cursor-pointer" : "cursor-default"}`}
+        className={`w-full flex items-center justify-between px-5 py-4 transition-colors ${!rol.is_owner ? "hover:bg-gray-50 cursor-pointer" : "cursor-default"}`}
       >
         <div className="flex items-center gap-2">
-          {rol.is_owner ? <Crown className="w-4 h-4 text-[#fbc024]" /> : <ShieldCheck className="w-4 h-4 text-[#94a3b8]" />}
-          <span className="text-sm font-semibold text-white">{rol.name}</span>
-          {rol.is_owner && <span className="text-[10px] text-[#fbc024] bg-[rgba(251,192,36,0.1)] px-1.5 py-0.5 rounded-full">Sahip</span>}
+          {rol.is_owner ? <Crown className="w-4 h-4 text-[var(--leaf)]" /> : <ShieldCheck className="w-4 h-4 text-gray-400" />}
+          <span className="text-sm font-semibold text-gray-800">{rol.name}</span>
+          {rol.is_owner && <span className="text-[10px] text-[var(--leaf)] bg-[var(--mint)] px-1.5 py-0.5 rounded-full">Sahip</span>}
         </div>
         <div className="flex items-center gap-2">
           {!rol.is_owner && (
             <>
               <motion.div animate={{ rotate: acik ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                <Settings className="w-3.5 h-3.5 text-[#64748b]" />
+                <Settings className="w-3.5 h-3.5 text-gray-500" />
               </motion.div>
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onSil(rol.id); }}
-                className="w-6 h-6 flex items-center justify-center rounded-lg text-[#64748b] hover:text-[#ef4444] transition-colors"
+                className="w-6 h-6 flex items-center justify-center rounded-lg text-gray-500 hover:text-[#ef4444] transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -484,7 +484,7 @@ function RolKart({ rol, onSil, onGuncelle }: { rol: Rol; onSil: (id: string) => 
       {!acik && (
         <div className="flex flex-wrap gap-1.5 px-5 pb-4">
           {MODULLER.filter((m) => rol.is_owner || perms.modules?.[m.key]).map(({ key, label }) => (
-            <span key={key} className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(251,192,36,0.08)] text-[#94a3b8] border border-[rgba(255,255,255,0.06)]">
+            <span key={key} className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--mint)] text-gray-400 border border-gray-200">
               {label}
             </span>
           ))}
@@ -505,17 +505,17 @@ function RolKart({ rol, onSil, onGuncelle }: { rol: Rol; onSil: (id: string) => 
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 border-t border-[rgba(255,255,255,0.06)] space-y-4 pt-4">
-              <p className="text-xs text-[#94a3b8] font-medium">Modül Erişimi</p>
+            <div className="px-5 pb-5 border-t border-gray-200 space-y-4 pt-4">
+              <p className="text-xs text-gray-400 font-medium">Modül Erişimi</p>
               <div className="grid grid-cols-2 gap-2">
                 {MODULLER.filter((m) => m.key !== "ekip").map(({ key, label }) => (
                   <label key={key} className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox"
                       checked={perms.modules?.[key] ?? false}
                       onChange={(e) => setPerms((p) => ({ ...p, modules: { ...p.modules, [key]: e.target.checked } }))}
-                      className="w-4 h-4 rounded accent-[#fbc024]"
+                      className="w-4 h-4 rounded accent-[var(--leaf)]"
                     />
-                    <span className="text-sm text-[#94a3b8]">{label}</span>
+                    <span className="text-sm text-gray-400">{label}</span>
                   </label>
                 ))}
               </div>
@@ -523,13 +523,13 @@ function RolKart({ rol, onSil, onGuncelle }: { rol: Rol; onSil: (id: string) => 
                 <input type="checkbox"
                   checked={perms.canEdit ?? false}
                   onChange={(e) => setPerms((p) => ({ ...p, canEdit: e.target.checked }))}
-                  className="w-4 h-4 rounded accent-[#fbc024]"
+                  className="w-4 h-4 rounded accent-[var(--leaf)]"
                 />
-                <span className="text-sm text-white font-medium">Düzenleme yetkisi (veri ekleyebilir/silebilir)</span>
+                <span className="text-sm text-gray-800 font-medium">Düzenleme yetkisi (veri ekleyebilir/silebilir)</span>
               </label>
               <button
                 onClick={() => { onGuncelle(rol.id, perms); setAcik(false); }}
-                className="w-full py-2 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors"
+                className="w-full py-2 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors"
               >
                 Kaydet
               </button>

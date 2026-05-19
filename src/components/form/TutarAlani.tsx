@@ -37,7 +37,7 @@ export default function TutarAlani({
 
   return (
     <div className="w-full">
-      {label && <label className="block text-xs font-medium text-[#94a3b8] mb-1.5" htmlFor={id}>{label}</label>}
+      {label && <label className="block text-xs font-medium text-gray-400 mb-1.5" htmlFor={id}>{label}</label>}
       <div className="relative">
         <input
           id={id}
@@ -49,9 +49,9 @@ export default function TutarAlani({
           placeholder={placeholder}
           onChange={(e) => setYazilan(e.target.value)}
           onBlur={handleBlur}
-          className="w-full min-h-12 pl-4 pr-10 rounded-xl text-base text-white font-semibold bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] placeholder-[#64748b] focus:outline-none focus:border-[rgba(251,192,36,0.5)] focus:ring-1 focus:ring-[rgba(251,192,36,0.2)] transition-colors disabled:opacity-50"
+          className="w-full min-h-12 pl-4 pr-10 rounded-xl text-base text-white font-semibold bg-gray-50 border border-gray-200 placeholder-[#64748b] focus:outline-none focus:border-[var(--mint)] focus:ring-1 focus:ring-[var(--forest-100, #D9F2E4)] transition-colors disabled:opacity-50"
         />
-        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-[#64748b] pointer-events-none">₺</span>
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-500 pointer-events-none">₺</span>
       </div>
       {hata && <p className="mt-1 text-xs text-[#ef4444]">{hata}</p>}
     </div>

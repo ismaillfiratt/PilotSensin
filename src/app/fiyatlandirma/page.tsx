@@ -62,19 +62,19 @@ export default function FiyatlandirmaPage() {
   const trialDevam   = bilgi && !bilgi.isPremium && gunKaldi > 0;
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#0e172a", color: "#ffffff" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--forest)", color: "#ffffff" }}>
 
       {/* Navbar */}
       <header className="flex items-center justify-between px-6 py-4 border-b"
         style={{ borderColor: "rgba(255,255,255,0.07)" }}>
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-black tracking-tight" style={{ color: "#fbc024" }}>
+          <span className="text-xl font-black tracking-tight" style={{ color: "var(--leaf)" }}>
             Pilot<span style={{ color: "#ffffff" }}>Sensin</span>
           </span>
         </Link>
         {user
           ? <Link href="/dashboard" className="text-sm px-4 py-2 rounded-lg"
-              style={{ background: "rgba(251,192,36,0.1)", color: "#fbc024", border: "1px solid rgba(251,192,36,0.25)" }}>
+              style={{ background: "var(--mint)", color: "var(--leaf)", border: "1px solid var(--forest-200, #B3E8C8)" }}>
               Uygulamaya Dön
             </Link>
           : <Link href="/giris" className="text-sm px-4 py-2 rounded-lg"
@@ -97,7 +97,7 @@ export default function FiyatlandirmaPage() {
         {/* Mevcut durum kartı */}
         {yuklendi && bilgi && (
           <div className="w-full max-w-lg rounded-2xl p-6 space-y-3"
-            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(251,192,36,0.2)" }}>
+            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--forest-100, #D9F2E4)" }}>
             <p className="text-xs uppercase tracking-widest" style={{ color: "#475569" }}>Mevcut Durum</p>
             <p className="font-semibold text-lg">{bilgi.sirketAdi}</p>
             <div className="flex items-center gap-2">
@@ -109,7 +109,7 @@ export default function FiyatlandirmaPage() {
                   style={{ background: "rgba(239,68,68,0.15)", color: "#ef4444" }}>Deneme Süresi Doldu</span>
               ) : (
                 <span className="text-xs px-2.5 py-1 rounded-full font-semibold"
-                  style={{ background: "rgba(251,192,36,0.15)", color: "#fbc024" }}>
+                  style={{ background: "var(--mint)", color: "var(--leaf)" }}>
                   {gunKaldi} Gün Deneme Kaldı
                 </span>
               )}
@@ -119,21 +119,21 @@ export default function FiyatlandirmaPage() {
 
         {/* Fiyat kartı */}
         <div className="w-full max-w-lg rounded-2xl overflow-hidden"
-          style={{ border: "1px solid rgba(251,192,36,0.35)" }}>
+          style={{ border: "1px solid var(--forest-200, #B3E8C8)" }}>
 
           {/* Başlık şerit */}
           <div className="px-8 pt-8 pb-6"
-            style={{ background: "rgba(251,192,36,0.06)" }}>
+            style={{ background: "var(--mint)" }}>
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "#fbc024" }}>İşletme Paketi</p>
-                <h2 className="text-4xl font-black" style={{ color: "#fbc024" }}>
+                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--leaf)" }}>İşletme Paketi</p>
+                <h2 className="text-4xl font-black" style={{ color: "var(--leaf)" }}>
                   499 <span className="text-lg font-semibold" style={{ color: "#94a3b8" }}>TL/ay</span>
                 </h2>
               </div>
               {trialDevam && (
                 <span className="text-xs px-2.5 py-1 rounded-full font-semibold mt-1"
-                  style={{ background: "rgba(251,192,36,0.15)", color: "#fbc024" }}>
+                  style={{ background: "var(--mint)", color: "var(--leaf)" }}>
                   7 Gün Ücretsiz
                 </span>
               )}
@@ -157,7 +157,7 @@ export default function FiyatlandirmaPage() {
               "Gerçek zamanlı bildirimler",
             ].map((f) => (
               <div key={f} className="flex items-center gap-3 text-sm" style={{ color: "#94a3b8" }}>
-                <span style={{ color: "#fbc024", fontWeight: 700 }}>✓</span>
+                <span style={{ color: "var(--leaf)", fontWeight: 700 }}>✓</span>
                 {f}
               </div>
             ))}
@@ -177,7 +177,7 @@ export default function FiyatlandirmaPage() {
                 </div>
               )}
               <div className="flex items-center justify-between font-bold mt-3 pt-3"
-                style={{ borderTop: "1px solid rgba(255,255,255,0.06)", color: "#fbc024" }}>
+                style={{ borderTop: "1px solid rgba(255,255,255,0.06)", color: "var(--leaf)" }}>
                 <span>Toplam</span>
                 <span>{tutar} TL/ay</span>
               </div>
@@ -189,7 +189,7 @@ export default function FiyatlandirmaPage() {
             {!user ? (
               <Link href="/kayit"
                 className="w-full block text-center py-3.5 rounded-xl font-bold text-base transition-all"
-                style={{ background: "#fbc024", color: "#0e172a" }}>
+                style={{ background: "var(--leaf)", color: "var(--forest)" }}>
                 7 Gün Ücretsiz Başla
               </Link>
             ) : bilgi?.isPremium ? (
@@ -200,7 +200,7 @@ export default function FiyatlandirmaPage() {
             ) : (
               <a href="mailto:destek@pilotsensin.com?subject=Premium Abonelik Talebi"
                 className="w-full block text-center py-3.5 rounded-xl font-bold text-base transition-all"
-                style={{ background: "#fbc024", color: "#0e172a" }}>
+                style={{ background: "var(--leaf)", color: "var(--forest)" }}>
                 Pakete Geç — Destek ile İletişime Geç
               </a>
             )}

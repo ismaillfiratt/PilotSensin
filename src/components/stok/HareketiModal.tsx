@@ -15,7 +15,7 @@ interface Props {
 const tipler = [
   { value: "giris", label: "Stok Girişi",      icon: ArrowDownCircle, color: "#22c55e",  aciklama: "Tedarikten gelen ürün — maliyet ve nakit güncellenir" },
   { value: "cikis", label: "Stok Çıkışı",       icon: ArrowUpCircle,   color: "#ef4444",  aciklama: "Fire, hasar, iç tüketim — sadece stok düzeltme" },
-  { value: "sayim", label: "Sayım Düzeltmesi",  icon: RefreshCw,       color: "#fbc024",  aciklama: "Fiziksel sayım sonucu fiili miktara göre düzelt" },
+  { value: "sayim", label: "Sayım Düzeltmesi",  icon: RefreshCw,       color: "var(--leaf)",  aciklama: "Fiziksel sayım sonucu fiili miktara göre düzelt" },
 ] as const;
 
 const KDV_ORANLARI = [0, 1, 10, 20];
@@ -98,29 +98,29 @@ export default function HareketiModal({ urun, onClose }: Props) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ duration: 0.2 }}
-          className="w-full max-w-md glass-card rounded-2xl overflow-hidden"
+          className="w-full max-w-md card rounded-2xl overflow-hidden"
         >
           {/* Başlık */}
           <div className="flex items-start justify-between px-6 pt-6 pb-4">
             <div>
               <h2 className="text-lg font-bold text-white">Stok Hareketi</h2>
-              <p className="text-sm text-[#94a3b8] mt-0.5">
+              <p className="text-sm text-gray-400 mt-0.5">
                 {urun.ad} — Mevcut: <span className="text-white font-medium">{urun.mevcutAdet} {urun.birim}</span>
               </p>
             </div>
             <button onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors">
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-gray-50 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Sekmeler */}
-          <div className="flex border-b border-[rgba(255,255,255,0.06)] px-6">
+          <div className="flex border-b border-gray-200 px-6">
             {(["yeni", "log"] as const).map((s) => (
               <button key={s} onClick={() => setSekme(s)}
                 className="pb-3 pr-5 text-sm font-medium border-b-2 transition-colors"
                 style={sekme === s
-                  ? { borderColor: "#fbc024", color: "#fbc024" }
+                  ? { borderColor: "var(--leaf)", color: "var(--leaf)" }
                   : { borderColor: "transparent", color: "#64748b" }}>
                 {s === "yeni" ? "Yeni Hareket" : `Geçmiş (${hareketler.length})`}
               </button>
@@ -146,21 +146,21 @@ export default function HareketiModal({ urun, onClose }: Props) {
                     </button>
                   ))}
                 </div>
-                <p className="text-[10px] text-[#475569] -mt-1">{tipKonfig.aciklama}</p>
+                <p className="text-[10px] text-gray-500 -mt-1">{tipKonfig.aciklama}</p>
 
                 {/* Miktar */}
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">
                     {tip === "sayim" ? "Gerçek Sayım Miktarı" : "Miktar"} ({urun.birim})
                   </label>
                   <input
                     type="number" min="0" required
                     value={miktar} onChange={(e) => setMiktar(e.target.value)}
                     placeholder="0"
-                    className="w-full px-4 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-lg font-bold [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-white placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-lg font-bold [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
                   />
                   {m > 0 && (
-                    <p className="text-xs text-[#fbc024] mt-1.5">
+                    <p className="text-xs text-[var(--leaf)] mt-1.5">
                       {tip === "giris" && `${urun.mevcutAdet} + ${m} = ${yeniAdet} ${urun.birim}`}
                       {tip === "cikis" && `${urun.mevcutAdet} − ${m} = ${yeniAdet} ${urun.birim}`}
                       {tip === "sayim" && `Fark: ${yeniAdet >= urun.mevcutAdet ? "+" : ""}${yeniAdet - urun.mevcutAdet} ${urun.birim}`}
@@ -172,18 +172,18 @@ export default function HareketiModal({ urun, onClose }: Props) {
                 {tip === "giris" && (
                   <div className="space-y-3">
                     <div>
-                      <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">
+                      <label className="text-xs text-gray-400 font-medium block mb-1.5">
                         Birim Alış Fiyatı (KDV hariç) *
                       </label>
                       <input
                         type="number" min="0" step="0.01" required
                         value={birimFiyat} onChange={(e) => setBirimFiyat(e.target.value)}
                         placeholder="0.00"
-                        className="w-full px-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(34,197,94,0.5)] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                        className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white focus:outline-none focus:border-[rgba(34,197,94,0.5)] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Alış KDV Oranı</label>
+                      <label className="text-xs text-gray-400 font-medium block mb-1.5">Alış KDV Oranı</label>
                       <div className="flex gap-2">
                         {KDV_ORANLARI.map((r) => (
                           <button key={r} type="button" onClick={() => setKdvOrani(r)}
@@ -199,7 +199,7 @@ export default function HareketiModal({ urun, onClose }: Props) {
                       </div>
                     </div>
                     {m > 0 && fiyat > 0 && (
-                      <div className="p-3 rounded-xl bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.06)] text-xs space-y-1 text-[#64748b]">
+                      <div className="p-3 rounded-xl bg-gray-50 border border-gray-200 text-xs space-y-1 text-gray-500">
                         <div className="flex justify-between">
                           <span>Toplam (KDV hariç)</span>
                           <span className="text-white">
@@ -208,11 +208,11 @@ export default function HareketiModal({ urun, onClose }: Props) {
                         </div>
                         <div className="flex justify-between">
                           <span>KDV (%{kdvOrani})</span>
-                          <span className="text-[#fbc024]">
+                          <span className="text-[var(--leaf)]">
                             {(m * fiyat * kdvOrani / 100).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}
                           </span>
                         </div>
-                        <div className="flex justify-between font-semibold border-t border-[rgba(255,255,255,0.06)] pt-1">
+                        <div className="flex justify-between font-semibold border-t border-gray-200 pt-1">
                           <span>Kasadan Çıkış</span>
                           <span className="text-[#ef4444]">
                             {(m * fiyat * (1 + kdvOrani / 100)).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}
@@ -225,13 +225,13 @@ export default function HareketiModal({ urun, onClose }: Props) {
 
                 {/* Açıklama */}
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">
                     Açıklama (opsiyonel)
                   </label>
                   <input
                     type="text" value={aciklama} onChange={(e) => setAciklama(e.target.value)}
                     placeholder="Tedarikçi, fire sebebi..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-sm"
+                    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm"
                   />
                 </div>
 
@@ -246,11 +246,11 @@ export default function HareketiModal({ urun, onClose }: Props) {
                 {/* Butonlar */}
                 <div className="flex gap-3">
                   <button type="button" onClick={onClose}
-                    className="flex-1 py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium hover:bg-gray-50 transition-colors">
                     İptal
                   </button>
                   <button type="submit" disabled={yukleniyor}
-                    className="flex-1 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors disabled:opacity-50">
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-50">
                     {yukleniyor ? "Kaydediliyor..." : "Kaydet"}
                   </button>
                 </div>
@@ -259,24 +259,24 @@ export default function HareketiModal({ urun, onClose }: Props) {
               /* Geçmiş sekmesi */
               <div className="space-y-2 max-h-72 overflow-y-auto">
                 {hareketler.length === 0 ? (
-                  <div className="text-center py-8 text-sm text-[#64748b]">
+                  <div className="text-center py-8 text-sm text-gray-500">
                     <Clock className="w-8 h-8 mx-auto mb-2 opacity-40" />
                     Henüz hareket kaydı yok
                   </div>
                 ) : hareketler.map((h: StokHareketi) => {
-                  const renk = h.tip === "giris" ? "#22c55e" : h.tip === "cikis" ? "#ef4444" : "#fbc024";
+                  const renk = h.tip === "giris" ? "#22c55e" : h.tip === "cikis" ? "#ef4444" : "var(--leaf)";
                   return (
-                    <div key={h.id} className="flex items-start gap-3 p-3 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)]">
+                    <div key={h.id} className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-200">
                       <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: renk }} />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-xs font-semibold" style={{ color: renk }}>
                             {h.tip === "giris" ? "+" : h.tip === "cikis" ? "−" : "="}{h.miktar} {urun.birim}
                           </span>
-                          <span className="text-[10px] text-[#475569]">{h.onceki} → {h.sonraki}</span>
+                          <span className="text-[10px] text-gray-500">{h.onceki} → {h.sonraki}</span>
                         </div>
-                        <p className="text-xs text-[#94a3b8] truncate mt-0.5">{h.aciklama}</p>
-                        <p className="text-[10px] text-[#475569] mt-0.5">{h.kimin} · {zaman(h.tarih)}</p>
+                        <p className="text-xs text-gray-400 truncate mt-0.5">{h.aciklama}</p>
+                        <p className="text-[10px] text-gray-500 mt-0.5">{h.kimin} · {zaman(h.tarih)}</p>
                       </div>
                     </div>
                   );

@@ -13,8 +13,8 @@ export default function ProsedurlerPage() {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-white">Standart Operasyon Prosedürleri</h1>
-        <p className="text-xs md:text-sm text-[#94a3b8] mt-1">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-800">Standart Operasyon Prosedürleri</h1>
+        <p className="text-xs md:text-sm text-gray-400 mt-1">
           SOP belgeleri · kontrol listeleri · hazır şablonlar
         </p>
       </div>
@@ -24,7 +24,7 @@ export default function ProsedurlerPage() {
 
       {/* SOP Belge Şablonları */}
       <div className="space-y-3">
-        <h2 className="text-xs font-semibold text-[#94a3b8] uppercase tracking-widest">
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
           SOP Belge Şablonları
         </h2>
         <SopSablonPanel />
@@ -32,7 +32,7 @@ export default function ProsedurlerPage() {
 
       {/* SOP Belgeleri — tam genişlik */}
       <div className="space-y-3">
-        <h2 className="text-xs font-semibold text-[#94a3b8] uppercase tracking-widest">
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
           SOP Belgeleri
         </h2>
         <ProsedurListesi />
@@ -40,7 +40,7 @@ export default function ProsedurlerPage() {
 
       {/* Kontrol Listesi Şablonları */}
       <div className="space-y-3">
-        <h2 className="text-xs font-semibold text-[#94a3b8] uppercase tracking-widest">
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
           Kontrol Listesi Şablonları
         </h2>
         <SabloPanel />
@@ -48,7 +48,7 @@ export default function ProsedurlerPage() {
 
       {/* Kontrol Listesi — tam genişlik */}
       <div className="space-y-3">
-        <h2 className="text-xs font-semibold text-[#94a3b8] uppercase tracking-widest">
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
           Kontrol Listesi
         </h2>
         <ChecklistPanel />

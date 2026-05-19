@@ -49,9 +49,9 @@ function RangeSelector({
           <button key={value} onClick={() => setAralik(value)}
             className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all border"
             style={{
-              borderColor:     aralik === value ? "#fbc024" : "rgba(255,255,255,0.08)",
-              backgroundColor: aralik === value ? "rgba(251,192,36,0.15)" : "transparent",
-              color:           aralik === value ? "#fbc024" : "#94a3b8",
+              borderColor:     aralik === value ? "var(--leaf)" : "rgba(255,255,255,0.08)",
+              backgroundColor: aralik === value ? "var(--mint)" : "transparent",
+              color:           aralik === value ? "var(--leaf)" : "#94a3b8",
             }}>
             {label}
           </button>
@@ -59,12 +59,12 @@ function RangeSelector({
       </div>
       {aralik === "ozel" && (
         <div className="flex items-center gap-2 mt-3 flex-wrap">
-          <Calendar className="w-4 h-4 text-[#94a3b8] shrink-0" />
+          <Calendar className="w-4 h-4 text-gray-400 shrink-0" />
           <input type="month" value={ozelBas} onChange={(e) => setOzelBas(e.target.value)}
-            className="px-2 py-1 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-xs focus:outline-none focus:border-[rgba(251,192,36,0.4)] scheme-dark" />
-          <span className="text-[#94a3b8] text-xs">—</span>
+            className="px-2 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-xs focus:outline-none focus:border-[var(--leaf)] scheme-dark" />
+          <span className="text-gray-400 text-xs">—</span>
           <input type="month" value={ozelBit} onChange={(e) => setOzelBit(e.target.value)}
-            className="px-2 py-1 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-xs focus:outline-none focus:border-[rgba(251,192,36,0.4)] scheme-dark" />
+            className="px-2 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-xs focus:outline-none focus:border-[var(--leaf)] scheme-dark" />
         </div>
       )}
     </div>
@@ -74,8 +74,8 @@ function RangeSelector({
 const PieTooltip = ({ active, payload }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="glass-card rounded-xl p-3 text-xs space-y-1">
-      <p className="text-white font-bold">{payload[0].name}</p>
+    <div className="card rounded-xl p-3 text-xs space-y-1">
+      <p className="text-gray-800 font-bold">{payload[0].name}</p>
       <p style={{ color: payload[0].payload.color }}>{formatTL(payload[0].value)}</p>
     </div>
   );
@@ -124,51 +124,51 @@ export default function BirikimPanel() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
       {/* SOL — Birikim Geçmişi - Tablo (bağımsız date range) */}
-      <div className="glass-card rounded-2xl p-5 flex flex-col">
+      <div className="card rounded-2xl p-5 flex flex-col">
         <div className="mb-4">
-          <h2 className="text-sm font-semibold text-white">Birikim Geçmişi — Tablo</h2>
-          <p className="text-xs text-[#94a3b8] mt-0.5">Aylık özet — seçili dönem</p>
+          <h2 className="text-sm font-semibold text-gray-800">Birikim Geçmişi — Tablo</h2>
+          <p className="text-xs text-gray-400 mt-0.5">Aylık özet — seçili dönem</p>
         </div>
         <RangeSelector aralik={tAralik} setAralik={setTAralik} ozelBas={tOzelBas} setOzelBas={setTOzelBas} ozelBit={tOzelBit} setOzelBit={setTOzelBit} />
 
         {islemler.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center text-[#94a3b8] text-sm">Henüz işlem eklenmedi.</div>
+          <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">Henüz işlem eklenmedi.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-[rgba(255,255,255,0.06)]">
+                <tr className="border-b border-gray-200">
                   {["Dönem", "Yatırılan", "Çekilen", "Net", "Bakiye"].map(h => (
-                    <th key={h} className="text-[#94a3b8] font-semibold uppercase tracking-wide text-left py-2 pr-3 last:pr-0">{h}</th>
+                    <th key={h} className="text-gray-400 font-semibold uppercase tracking-wide text-left py-2 pr-3 last:pr-0">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[rgba(255,255,255,0.04)]">
+              <tbody className="divide-y divide-gray-100">
                 {tabloData.map(({ ay, yatirma, cekme, bakiye }) => {
                   const net = yatirma - cekme;
                   return (
-                    <tr key={ay} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors">
-                      <td className="py-2.5 pr-3 text-white font-medium whitespace-nowrap">{ay}</td>
+                    <tr key={ay} className="hover:bg-gray-50 transition-colors">
+                      <td className="py-2.5 pr-3 text-gray-800 font-medium whitespace-nowrap">{ay}</td>
                       <td className="py-2.5 pr-3 text-[#22c55e] font-semibold">{yatirma > 0 ? formatTL(yatirma) : "—"}</td>
                       <td className="py-2.5 pr-3 text-[#ef4444] font-semibold">{cekme > 0 ? formatTL(cekme) : "—"}</td>
                       <td className="py-2.5 pr-3 font-bold" style={{ color: net >= 0 ? "#22c55e" : "#ef4444" }}>
                         {net !== 0 ? `${net > 0 ? "+" : ""}${formatTL(Math.abs(net))}` : "—"}
                       </td>
-                      <td className="py-2.5 text-[#fbc024] font-bold">{bakiye > 0 ? formatTL(bakiye) : "—"}</td>
+                      <td className="py-2.5 text-[var(--leaf)] font-bold">{bakiye > 0 ? formatTL(bakiye) : "—"}</td>
                     </tr>
                   );
                 })}
               </tbody>
               {tabloData.length > 1 && (
                 <tfoot>
-                  <tr className="border-t border-[rgba(255,255,255,0.1)]">
-                    <td className="py-2.5 pr-3 text-[#94a3b8] font-semibold uppercase text-[10px]">Toplam</td>
+                  <tr className="border-t border-gray-200">
+                    <td className="py-2.5 pr-3 text-gray-400 font-semibold uppercase text-[10px]">Toplam</td>
                     <td className="py-2.5 pr-3 text-[#22c55e] font-bold">{formatTL(tabloToplam.yatirma)}</td>
                     <td className="py-2.5 pr-3 text-[#ef4444] font-bold">{formatTL(tabloToplam.cekme)}</td>
                     <td className="py-2.5 pr-3 font-bold" style={{ color: tabloToplam.yatirma - tabloToplam.cekme >= 0 ? "#22c55e" : "#ef4444" }}>
                       {tabloToplam.yatirma - tabloToplam.cekme > 0 ? "+" : ""}{formatTL(Math.abs(tabloToplam.yatirma - tabloToplam.cekme))}
                     </td>
-                    <td className="py-2.5 text-[#fbc024] font-bold">
+                    <td className="py-2.5 text-[var(--leaf)] font-bold">
                       {tabloData.length > 0 ? formatTL(tabloData[tabloData.length - 1].bakiye) : "—"}
                     </td>
                   </tr>
@@ -180,15 +180,15 @@ export default function BirikimPanel() {
       </div>
 
       {/* SAĞ — Birikim Geçmişi - Grafiksel (bağımsız date range, dairesel) */}
-      <div className="glass-card rounded-2xl p-5 flex flex-col">
+      <div className="card rounded-2xl p-5 flex flex-col">
         <div className="mb-4">
-          <h2 className="text-sm font-semibold text-white">Birikim Geçmişi — Grafiksel</h2>
-          <p className="text-xs text-[#94a3b8] mt-0.5">Seçili dönem için dağılım</p>
+          <h2 className="text-sm font-semibold text-gray-800">Birikim Geçmişi — Grafiksel</h2>
+          <p className="text-xs text-gray-400 mt-0.5">Seçili dönem için dağılım</p>
         </div>
         <RangeSelector aralik={gAralik} setAralik={setGAralik} ozelBas={gOzelBas} setOzelBas={setGOzelBas} ozelBit={gOzelBit} setOzelBit={setGOzelBit} />
 
         {pieData.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center text-[#94a3b8] text-sm">Seçili dönemde işlem yok.</div>
+          <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">Seçili dönemde işlem yok.</div>
         ) : (
           <>
             <div className="h-52">
@@ -206,15 +206,15 @@ export default function BirikimPanel() {
             </div>
             <div className="grid grid-cols-2 gap-3 mt-4">
               <div className="bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.2)] rounded-xl p-3">
-                <p className="text-[10px] text-[#94a3b8] mb-1">Toplam Yatırılan</p>
+                <p className="text-[10px] text-gray-400 mb-1">Toplam Yatırılan</p>
                 <p className="text-sm font-bold text-[#22c55e]">{formatTL(totalYatirma)}</p>
               </div>
               <div className="bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.2)] rounded-xl p-3">
-                <p className="text-[10px] text-[#94a3b8] mb-1">Toplam Çekilen</p>
+                <p className="text-[10px] text-gray-400 mb-1">Toplam Çekilen</p>
                 <p className="text-sm font-bold text-[#ef4444]">{formatTL(totalCekme)}</p>
               </div>
-              <div className="bg-[rgba(251,192,36,0.08)] border border-[rgba(251,192,36,0.2)] rounded-xl p-3 col-span-2">
-                <p className="text-[10px] text-[#94a3b8] mb-1">Net Dönem Birikimi</p>
+              <div className="bg-[var(--mint)] border border-[var(--forest-100, #D9F2E4)] rounded-xl p-3 col-span-2">
+                <p className="text-[10px] text-gray-400 mb-1">Net Dönem Birikimi</p>
                 <p className="text-sm font-bold" style={{ color: totalYatirma - totalCekme >= 0 ? "#22c55e" : "#ef4444" }}>
                   {totalYatirma - totalCekme > 0 ? "+" : ""}{formatTL(Math.abs(totalYatirma - totalCekme))}
                 </p>

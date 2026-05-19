@@ -104,30 +104,30 @@ export default function AramaModal({ acik, onKapat }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-[100] flex flex-col bg-[#0e172a] md:inset-auto md:bg-transparent md:block md:left-1/2 md:top-[10vh] md:-translate-x-1/2 md:w-full md:max-w-xl"
+            className="fixed inset-0 z-[100] flex flex-col bg-white md:inset-auto md:bg-transparent md:block md:left-1/2 md:top-[10vh] md:-translate-x-1/2 md:w-full md:max-w-xl"
           >
-          <div className="flex flex-col h-full md:h-auto md:glass-card md:rounded-2xl md:overflow-hidden md:shadow-2xl">
+          <div className="flex flex-col h-full md:h-auto md:card md:rounded-2xl md:overflow-hidden md:shadow-2xl">
             {/* Input */}
-            <div className="flex items-center gap-3 px-4 py-4 border-b border-[rgba(255,255,255,0.06)] shrink-0">
-              <Search className="w-5 h-5 text-[#94a3b8] shrink-0" />
+            <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-200 shrink-0">
+              <Search className="w-5 h-5 text-gray-400 shrink-0" />
               <input
                 ref={inputRef}
                 type="text"
                 placeholder="Ürün, görev, prosedür, işlem ara..."
                 value={sorgu}
                 onChange={(e) => setSorgu(e.target.value)}
-                className="flex-1 bg-transparent text-white placeholder-[#94a3b8] text-base focus:outline-none"
+                className="flex-1 bg-transparent text-gray-800 placeholder-gray-400 text-base focus:outline-none"
               />
               {sorgu ? (
-                <button onClick={() => setSorgu("")} className="text-[#94a3b8] active:text-white transition-colors">
+                <button onClick={() => setSorgu("")} className="text-gray-400 active:text-gray-800 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               ) : (
-                <button onClick={onKapat} className="md:hidden min-w-11 min-h-11 flex items-center justify-center rounded-xl text-[#94a3b8] active:bg-white/5 transition-colors">
+                <button onClick={onKapat} className="md:hidden min-w-11 min-h-11 flex items-center justify-center rounded-xl text-gray-400 active:bg-white/5 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               )}
-              <kbd className="hidden md:inline px-2 py-1 rounded-lg text-[10px] bg-[rgba(255,255,255,0.06)] text-[#94a3b8] border border-[rgba(255,255,255,0.1)]">
+              <kbd className="hidden md:inline px-2 py-1 rounded-lg text-[10px] bg-gray-50 text-gray-400 border border-gray-200">
                 ESC
               </kbd>
             </div>
@@ -136,18 +136,18 @@ export default function AramaModal({ acik, onKapat }: Props) {
             <div className="max-h-[60vh] overflow-y-auto">
               {sorgu.length < 2 ? (
                 <div className="px-5 py-8 text-center">
-                  <p className="text-sm text-[#94a3b8]">En az 2 karakter gir</p>
-                  <div className="flex items-center justify-center gap-4 mt-4 text-[10px] text-[#94a3b8]">
-                    <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)]">↑↓</kbd> seç</span>
-                    <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)]">↵</kbd> git</span>
-                    <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)]">ESC</kbd> kapat</span>
+                  <p className="text-sm text-gray-400">En az 2 karakter gir</p>
+                  <div className="flex items-center justify-center gap-4 mt-4 text-[10px] text-gray-400">
+                    <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-gray-50 border border-gray-200">↑↓</kbd> seç</span>
+                    <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-gray-50 border border-gray-200">↵</kbd> git</span>
+                    <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-gray-50 border border-gray-200">ESC</kbd> kapat</span>
                   </div>
                 </div>
               ) : sonuclar.length === 0 ? (
                 <div className="px-5 py-10 text-center">
-                  <Search className="w-8 h-8 text-[#94a3b8] mx-auto mb-3 opacity-40" />
-                  <p className="text-sm text-[#94a3b8]">
-                    <span className="text-white font-medium">&ldquo;{sorgu}&rdquo;</span> için sonuç bulunamadı
+                  <Search className="w-8 h-8 text-gray-400 mx-auto mb-3 opacity-40" />
+                  <p className="text-sm text-gray-400">
+                    <span className="text-gray-800 font-medium">&ldquo;{sorgu}&rdquo;</span> için sonuç bulunamadı
                   </p>
                 </div>
               ) : (
@@ -172,13 +172,13 @@ export default function AramaModal({ acik, onKapat }: Props) {
                               onClick={() => git(sonuc)}
                               onMouseEnter={() => setSecili(idx)}
                               className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors"
-                              style={{ backgroundColor: aktif ? "rgba(251,192,36,0.08)" : "transparent" }}
+                              style={{ backgroundColor: aktif ? "var(--mint)" : "transparent" }}
                             >
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm text-white font-medium truncate">{sonuc.baslik}</p>
-                                <p className="text-xs text-[#94a3b8] truncate mt-0.5">{sonuc.altBilgi}</p>
+                                <p className="text-xs text-gray-400 truncate mt-0.5">{sonuc.altBilgi}</p>
                               </div>
-                              {aktif && <ArrowRight className="w-4 h-4 text-[#fbc024] shrink-0" />}
+                              {aktif && <ArrowRight className="w-4 h-4 text-[var(--leaf)] shrink-0" />}
                             </button>
                           );
                         })}
@@ -190,7 +190,7 @@ export default function AramaModal({ acik, onKapat }: Props) {
             </div>
 
             {sonuclar.length > 0 && (
-              <div className="px-4 py-2.5 border-t border-[rgba(255,255,255,0.06)] flex items-center justify-between text-[11px] text-[#94a3b8]">
+              <div className="px-4 py-2.5 border-t border-gray-200 flex items-center justify-between text-[11px] text-gray-400">
                 <span>{sonuclar.length} sonuç</span>
                 <span>↑↓ ile seç, ↵ ile git</span>
               </div>

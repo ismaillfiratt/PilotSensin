@@ -73,48 +73,48 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
         drag="y" dragConstraints={{ top: 0 }} dragElastic={{ top: 0, bottom: 0.3 }}
         onDragEnd={(_, info) => { if (info.velocity.y > 300 || info.offset.y > 120) onClose(); }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
-        className="fixed z-50 bg-[#0e172a] bottom-0 inset-x-0 rounded-t-2xl border-t border-white/10 max-h-[90vh] overflow-y-auto md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-sm md:w-full"
+        className="fixed z-50 bg-white bottom-0 inset-x-0 rounded-t-2xl border-t border-gray-200 max-h-[90vh] overflow-y-auto md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-sm md:w-full"
       >
         <div className="md:hidden flex justify-center pt-3 pb-1">
-          <div className="w-12 h-1 rounded-full bg-white/20" />
+          <div className="w-12 h-1 rounded-full bg-gray-200" />
         </div>
         <form onSubmit={handleSubmit}>
           <div className="px-5 pt-4 pb-1 flex items-start justify-between">
             <div>
-              <h2 className="text-base font-bold text-white">{duzenleMi ? "Hedefi Düzenle" : "Yeni Hedef Ekle"}</h2>
-              <p className="text-xs text-[#94a3b8] mt-0.5">Tasarruf hedefini tanımla</p>
+              <h2 className="text-base font-bold text-gray-800">{duzenleMi ? "Hedefi Düzenle" : "Yeni Hedef Ekle"}</h2>
+              <p className="text-xs text-gray-400 mt-0.5">Tasarruf hedefini tanımla</p>
             </div>
-            <button type="button" onClick={onClose} className="min-w-11 min-h-11 flex items-center justify-center rounded-xl text-[#94a3b8] active:bg-white/5 transition-colors">
+            <button type="button" onClick={onClose} className="min-w-11 min-h-11 flex items-center justify-center rounded-xl text-gray-400 active:bg-white/5 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
           <div className="px-5 pt-2 pb-3 space-y-4">
             {/* Hedef adı */}
             <div>
-              <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Hedef Adı *</label>
+              <label className="text-xs text-gray-400 font-medium block mb-1.5">Hedef Adı *</label>
               <input type="text" required value={ad} onChange={(e) => setAd(e.target.value)}
                 placeholder="örn. Makine Alımı, İşletme Güvenliği"
-                className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
             </div>
 
             {/* Toplam hedef */}
             <div>
-              <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Toplam Hedef Tutarı (₺) *</label>
+              <label className="text-xs text-gray-400 font-medium block mb-1.5">Toplam Hedef Tutarı (₺) *</label>
               <input type="text" inputMode="numeric" required
                 value={toplam.display} onChange={toplam.onChange}
                 placeholder="50.000"
-                className="w-full px-4 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-lg font-bold" />
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-lg font-bold" />
             </div>
 
             {/* Aylık ödeme */}
             <div>
-              <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Aylık Ödeme (₺) *</label>
+              <label className="text-xs text-gray-400 font-medium block mb-1.5">Aylık Ödeme (₺) *</label>
               <input type="text" inputMode="numeric" required
                 value={aylik.display} onChange={aylik.onChange}
                 placeholder="2.000"
-                className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm font-bold" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm font-bold" />
               {aylarSayisi > 0 && (
-                <p className="text-xs text-[#fbc024] mt-1">
+                <p className="text-xs text-[var(--leaf)] mt-1">
                   ~{aylarSayisi} ay ({Math.floor(aylarSayisi / 12) > 0 ? `${Math.floor(aylarSayisi / 12)} yıl ` : ""}{aylarSayisi % 12 > 0 ? `${aylarSayisi % 12} ay` : ""})
                 </p>
               )}
@@ -122,36 +122,36 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
 
             {/* Ödeme günü */}
             <div>
-              <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Her Ayın Kaçında Ödensin? *</label>
+              <label className="text-xs text-gray-400 font-medium block mb-1.5">Her Ayın Kaçında Ödensin? *</label>
               <div className="flex items-center gap-3">
                 <input type="number" min="1" max="31" required
                   value={odemeGun} onChange={(e) => setOdemeGun(e.target.value)}
-                  className="w-24 px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-center text-lg font-bold focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors" />
-                <p className="text-sm text-[#94a3b8]">
-                  Her ayın <span className="text-white font-bold">{odemeGun}.</span> günü hatırlatma
+                  className="w-24 px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-center text-lg font-bold focus:outline-none focus:border-[var(--leaf)] transition-colors" />
+                <p className="text-sm text-gray-400">
+                  Her ayın <span className="text-gray-800 font-bold">{odemeGun}.</span> günü hatırlatma
                 </p>
               </div>
             </div>
 
             {/* Açıklama */}
             <div>
-              <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Açıklama / Not</label>
+              <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama / Not</label>
               <input type="text" value={aciklama} onChange={(e) => setAciklama(e.target.value)}
                 placeholder="örn. Depo binası için birikim"
-                className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
             </div>
           </div>
 
           {/* Sticky footer */}
-          <div className="sticky bottom-0 bg-[#0e172a] px-5 pt-3 border-t border-white/10"
+          <div className="sticky bottom-0 bg-white px-5 pt-3 border-t border-gray-200"
             style={{ paddingBottom: "max(env(safe-area-inset-bottom), 16px)" }}>
             <div className="flex gap-3">
               <button type="button" onClick={onClose}
-                className="flex-1 min-h-12 rounded-xl border border-white/10 text-[#94a3b8] text-sm font-medium active:bg-white/5 transition-colors">
+                className="flex-1 min-h-12 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium active:bg-white/5 transition-colors">
                 İptal
               </button>
               <button type="submit"
-                className="flex-1 min-h-12 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold active:bg-[#d9a61f] transition-colors">
+                className="flex-1 min-h-12 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
                 {duzenleMi ? "Güncelle" : "Kaydet"}
               </button>
             </div>

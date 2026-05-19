@@ -95,7 +95,7 @@ export default function ChecklistPanel() {
   const tamamlananSayisi = manuellar.filter(c => !isDue(c)).length;
   const toplamManuel     = manuellar.length;
   const oran     = toplamManuel > 0 ? (tamamlananSayisi / toplamManuel) * 100 : 0;
-  const oranRenk = oran >= 80 ? "#22c55e" : oran >= 50 ? "#fbc024" : "#ef4444";
+  const oranRenk = oran >= 80 ? "#22c55e" : oran >= 50 ? "var(--leaf)" : "#ef4444";
   const uyum     = useMemo(() => uyumSkoru(checklist), [checklist]);
 
   const tarihFormat = (iso?: string) => iso
@@ -130,29 +130,29 @@ export default function ChecklistPanel() {
 
   return (
     <>
-      <div className="glass-card rounded-2xl p-5">
+      <div className="card rounded-2xl p-5">
         {/* Başlık */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-sm font-semibold text-white">Kontrol Listesi</h2>
-            <p className="text-xs text-[#94a3b8] mt-0.5">
-              Genel uyum: <span className="font-bold" style={{ color: uyum >= 75 ? "#22c55e" : uyum >= 40 ? "#fbc024" : "#ef4444" }}>%{uyum}</span>
+            <h2 className="text-sm font-semibold text-gray-800">Kontrol Listesi</h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Genel uyum: <span className="font-bold" style={{ color: uyum >= 75 ? "#22c55e" : uyum >= 40 ? "var(--leaf)" : "#ef4444" }}>%{uyum}</span>
             </p>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => checklistSifirla(sekme)} title="Dönemi sıfırla"
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] border border-[rgba(255,255,255,0.08)] hover:text-[#fbc024] hover:border-[rgba(251,192,36,0.3)] transition-all">
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 border border-gray-200 hover:text-[var(--leaf)] hover:border-[var(--forest-200, #B3E8C8)] transition-all">
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
             <button onClick={() => setMaddeModal(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[rgba(251,192,36,0.15)] text-[#fbc024] text-xs font-bold border border-[rgba(251,192,36,0.3)] hover:bg-[rgba(251,192,36,0.25)] transition-all">
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--mint)] text-[var(--leaf)] text-xs font-bold border border-[var(--forest-200, #B3E8C8)] hover:bg-[var(--forest-200, #B3E8C8)] transition-all">
               <Plus className="w-3.5 h-3.5" /> Madde Ekle
             </button>
           </div>
         </div>
 
         {/* Sekme butonları: Günlük | Haftalık | Aylık | Özel */}
-        <div className="flex gap-1 p-1 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)] mb-4">
+        <div className="flex gap-1 p-1 rounded-xl bg-gray-50 border border-gray-200 mb-4">
           {SEKME_LISTESI.map(({ value, label }) => {
             const pending = checklist.filter(c => {
               const sikMatch = c.sikligi === value || (value === "ozel" && (c as any).sikligi === "uc_aylik");
@@ -162,13 +162,13 @@ export default function ChecklistPanel() {
               <button key={value} onClick={() => acSekme(value)}
                 className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all"
                 style={{
-                  backgroundColor: sekme === value ? "rgba(251,192,36,0.15)" : "transparent",
-                  color:           sekme === value ? "#fbc024" : "#94a3b8",
-                  border:          sekme === value ? "1px solid rgba(251,192,36,0.3)" : "1px solid transparent",
+                  backgroundColor: sekme === value ? "var(--mint)" : "transparent",
+                  color:           sekme === value ? "var(--leaf)" : "#94a3b8",
+                  border:          sekme === value ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid transparent",
                 }}>
                 {label}
                 {pending > 0 && (
-                  <span className="w-4 h-4 rounded-full bg-[#ef4444] text-white text-[9px] font-bold flex items-center justify-center">
+                  <span className="w-4 h-4 rounded-full bg-[#ef4444] text-gray-800 text-[9px] font-bold flex items-center justify-center">
                     {pending > 9 ? "9+" : pending}
                   </span>
                 )}
@@ -179,7 +179,7 @@ export default function ChecklistPanel() {
 
         {/* Özel sekme: gün açıklaması */}
         {sekme === "ozel" && (
-          <p className="text-xs text-[#94a3b8] mb-3">
+          <p className="text-xs text-gray-400 mb-3">
             Özel aralıkla tanımlanmış kontroller — her madde kendi gün sayısına göre hatırlatılır.
           </p>
         )}
@@ -188,10 +188,10 @@ export default function ChecklistPanel() {
         {toplamManuel > 0 && (
           <div className="mb-4">
             <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs text-[#94a3b8]">{tamamlananSayisi}/{toplamManuel} tamamlandı</span>
+              <span className="text-xs text-gray-400">{tamamlananSayisi}/{toplamManuel} tamamlandı</span>
               <span className="text-xs font-bold" style={{ color: oranRenk }}>%{Math.round(oran)}</span>
             </div>
-            <div className="h-1.5 rounded-full bg-[rgba(255,255,255,0.06)]">
+            <div className="h-1.5 rounded-full bg-gray-50">
               <motion.div className="h-full rounded-full" style={{ width: `${oran}%`, backgroundColor: oranRenk }}
                 initial={{ width: 0 }} animate={{ width: `${oran}%` }} transition={{ duration: 0.5 }} />
             </div>
@@ -201,21 +201,21 @@ export default function ChecklistPanel() {
         {/* Otomatik kontroller */}
         {otomatikler.length > 0 && (
           <div className="mb-3 space-y-2">
-            <p className="text-[10px] text-[#64748b] font-semibold uppercase tracking-wider flex items-center gap-1.5">
-              <Zap className="w-3 h-3 text-[#fbc024]" /> Otomatik İzleme
+            <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider flex items-center gap-1.5">
+              <Zap className="w-3 h-3 text-[var(--leaf)]" /> Otomatik İzleme
             </p>
             {otomatikler.map(item => (
               <div key={item.id}
                 className="flex items-center gap-3 px-4 py-2.5 rounded-xl border"
-                style={{ backgroundColor: "rgba(251,192,36,0.04)", borderColor: "rgba(251,192,36,0.15)" }}>
-                <Lock className="w-4 h-4 text-[#fbc024] shrink-0" />
+                style={{ backgroundColor: "var(--mint)", borderColor: "var(--mint)" }}>
+                <Lock className="w-4 h-4 text-[var(--leaf)] shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-white font-medium truncate">{item.baslik}</p>
-                  <p className="text-[10px] text-[#94a3b8]">{item.sorumlu}</p>
+                  <p className="text-sm text-gray-800 font-medium truncate">{item.baslik}</p>
+                  <p className="text-[10px] text-gray-400">{item.sorumlu}</p>
                 </div>
                 {item.otomatikKontrol && <OtomatikBadge tip={item.otomatikKontrol} />}
                 <button onClick={() => handleChecklistSil(item)}
-                  className="w-6 h-6 flex items-center justify-center rounded text-[#64748b] hover:text-[#ef4444] transition-colors shrink-0">
+                  className="w-6 h-6 flex items-center justify-center rounded text-gray-500 hover:text-[#ef4444] transition-colors shrink-0">
                   <Trash2 className="w-3 h-3" />
                 </button>
               </div>
@@ -226,10 +226,10 @@ export default function ChecklistPanel() {
         {/* Manuel kontroller */}
         <div className="space-y-2">
           {manuellar.length === 0 && otomatikler.length === 0 && (
-            <p className="text-center text-sm text-[#94a3b8] py-8">Bu dönem için madde yok.</p>
+            <p className="text-center text-sm text-gray-400 py-8">Bu dönem için madde yok.</p>
           )}
           {manuellar.length > 0 && otomatikler.length > 0 && (
-            <p className="text-[10px] text-[#64748b] font-semibold uppercase tracking-wider mb-1">Manuel Kontroller</p>
+            <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider mb-1">Manuel Kontroller</p>
           )}
           {manuellar.map((item, i) => {
             const done   = !isDue(item);
@@ -247,19 +247,19 @@ export default function ChecklistPanel() {
                 <button onClick={() => checklistToggle(item.id)} className="shrink-0">
                   {done
                     ? <CheckCircle2 className="w-5 h-5 text-[#22c55e]" />
-                    : <Circle       className="w-5 h-5 text-[#94a3b8] group-hover:text-[#fbc024] transition-colors" />
+                    : <Circle       className="w-5 h-5 text-gray-400 group-hover:text-[var(--leaf)] transition-colors" />
                   }
                 </button>
 
                 {/* İçerik */}
                 <div className="flex-1 min-w-0 cursor-pointer" onClick={() => checklistToggle(item.id)}>
-                  <p className={`text-sm font-medium leading-snug ${done ? "line-through text-[#94a3b8]" : "text-white"}`}>
+                  <p className={`text-sm font-medium leading-snug ${done ? "line-through text-gray-400" : "text-gray-800"}`}>
                     {item.baslik}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                    <p className="text-[10px] text-[#94a3b8]">{item.sorumlu}</p>
+                    <p className="text-[10px] text-gray-400">{item.sorumlu}</p>
                     {item.sikligi === "ozel" && item.ozelGunSayisi && (
-                      <span className="text-[10px] text-[#64748b]">her {item.ozelGunSayisi} günde</span>
+                      <span className="text-[10px] text-gray-500">her {item.ozelGunSayisi} günde</span>
                     )}
                     {done && item.sonTamamlanma && (
                       <span className="text-[10px] text-[#22c55e]">✓ {tarihFormat(item.sonTamamlanma)}</span>
@@ -281,7 +281,7 @@ export default function ChecklistPanel() {
 
                 {/* Sil */}
                 <button onClick={() => handleChecklistSil(item)}
-                  className="w-6 h-6 flex items-center justify-center rounded text-[#475569] hover:text-[#ef4444] transition-colors shrink-0">
+                  className="w-6 h-6 flex items-center justify-center rounded text-gray-500 hover:text-[#ef4444] transition-colors shrink-0">
                   <Trash2 className="w-3 h-3" />
                 </button>
               </motion.div>
@@ -298,10 +298,10 @@ export default function ChecklistPanel() {
             onClick={e => e.target === e.currentTarget && setMaddeModal(false)}>
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 16 }} transition={{ duration: 0.18 }}
-              className="w-full max-w-sm glass-card rounded-2xl p-6 max-h-[90vh] overflow-y-auto">
+              className="w-full max-w-sm card rounded-2xl p-6 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-5">
-                <h3 className="text-base font-bold text-white">Yeni Kontrol Maddesi</h3>
-                <button onClick={() => setMaddeModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white transition-colors">
+                <h3 className="text-base font-bold text-gray-800">Yeni Kontrol Maddesi</h3>
+                <button onClick={() => setMaddeModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-800 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -309,23 +309,23 @@ export default function ChecklistPanel() {
               <div className="space-y-3">
                 {/* Başlık */}
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Madde Başlığı *</label>
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">Madde Başlığı *</label>
                   <input value={yeni.baslik} onChange={e => setYeni(f => ({ ...f, baslik: e.target.value }))}
                     placeholder="örn. Haftalık kasa sayımı yap"
-                    className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] text-sm transition-colors" />
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
                 </div>
 
                 {/* Sıklık */}
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Sıklık</label>
-                  <div className="flex gap-1 p-1 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)]">
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">Sıklık</label>
+                  <div className="flex gap-1 p-1 rounded-xl bg-gray-50 border border-gray-200">
                     {SEKME_LISTESI.map(({ value, label }) => (
                       <button key={value} type="button" onClick={() => setYeni(f => ({ ...f, sikligi: value }))}
                         className="flex-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all"
                         style={{
-                          backgroundColor: yeni.sikligi === value ? "rgba(251,192,36,0.15)" : "transparent",
-                          color:           yeni.sikligi === value ? "#fbc024" : "#94a3b8",
-                          border:          yeni.sikligi === value ? "1px solid rgba(251,192,36,0.3)" : "1px solid transparent",
+                          backgroundColor: yeni.sikligi === value ? "var(--mint)" : "transparent",
+                          color:           yeni.sikligi === value ? "var(--leaf)" : "#94a3b8",
+                          border:          yeni.sikligi === value ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid transparent",
                         }}>
                         {label}
                       </button>
@@ -334,19 +334,19 @@ export default function ChecklistPanel() {
                   {/* Özel gün girişi */}
                   {yeni.sikligi === "ozel" && (
                     <div className="flex items-center gap-2 mt-2">
-                      <span className="text-xs text-[#94a3b8]">Her</span>
+                      <span className="text-xs text-gray-400">Her</span>
                       <input type="number" min="1" max="365"
                         value={yeni.ozelGunSayisi}
                         onChange={e => setYeni(f => ({ ...f, ozelGunSayisi: parseInt(e.target.value) || 1 }))}
-                        className="w-20 px-3 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-sm text-center focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors" />
-                      <span className="text-xs text-[#94a3b8]">günde bir</span>
+                        className="w-20 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-sm text-center focus:outline-none focus:border-[var(--leaf)] transition-colors" />
+                      <span className="text-xs text-gray-400">günde bir</span>
                     </div>
                   )}
                 </div>
 
                 {/* Kritiklik */}
                 <div>
-                  <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Kritiklik</label>
+                  <label className="text-xs text-gray-400 font-medium block mb-1.5">Kritiklik</label>
                   <div className="grid grid-cols-4 gap-1">
                     {(["dusuk", "orta", "yuksek", "kritik"] as Kritiklik[]).map(k => {
                       const r = KRITIKLIK_RENK[k];
@@ -377,11 +377,11 @@ export default function ChecklistPanel() {
 
                 <div className="flex gap-3 pt-1">
                   <button onClick={() => setMaddeModal(false)}
-                    className="flex-1 py-2.5 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium hover:bg-gray-50 transition-colors">
                     İptal
                   </button>
                   <button onClick={handleEkle}
-                    className="flex-1 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
                     Ekle
                   </button>
                 </div>

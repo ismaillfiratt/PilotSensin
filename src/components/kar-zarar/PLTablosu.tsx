@@ -35,7 +35,7 @@ function Satir({
       className="flex items-center justify-between px-5 py-2.5 rounded-lg"
       style={{ backgroundColor: bg }}
     >
-      <span className={`text-sm ${bold ? "font-bold text-white" : "text-[#94a3b8]"} ${indent ? "pl-4" : ""}`}>
+      <span className={`text-sm ${bold ? "font-bold text-gray-800" : "text-gray-400"} ${indent ? "pl-4" : ""}`}>
         {label}
       </span>
       <span className={`text-sm tabular-nums ${bold ? "font-bold" : "font-medium"}`} style={{ color: renk }}>
@@ -48,8 +48,8 @@ function Satir({
 function Ayrac({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-3 px-5 pt-4 pb-1">
-      <span className="text-[10px] font-bold text-[#94a3b8] uppercase tracking-widest">{label}</span>
-      <div className="flex-1 h-px bg-[rgba(255,255,255,0.06)]" />
+      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{label}</span>
+      <div className="flex-1 h-px bg-gray-50" />
     </div>
   );
 }
@@ -75,10 +75,10 @@ export default function PLTablosu({ baslangic, bitis }: Props) {
   ];
 
   return (
-    <div className="glass-card rounded-2xl py-4 w-full lg:w-80 shrink-0">
-      <div className="px-5 pb-3 border-b border-[rgba(255,255,255,0.06)]">
-        <h2 className="text-sm font-semibold text-white">Kâr &amp; Zarar Özeti</h2>
-        <p className="text-xs text-[#94a3b8] mt-0.5">
+    <div className="card rounded-2xl py-4 w-full lg:w-80 shrink-0">
+      <div className="px-5 pb-3 border-b border-gray-200">
+        <h2 className="text-sm font-semibold text-gray-800">Kâr &amp; Zarar Özeti</h2>
+        <p className="text-xs text-gray-400 mt-0.5">
           Gerçek satış verisi · {pl.donemBaslangic} – {pl.donemBitis}
         </p>
       </div>
@@ -95,7 +95,7 @@ export default function PLTablosu({ baslangic, bitis }: Props) {
 
         <Ayrac label="İşletme Giderleri" />
         {giderler.length === 0 ? (
-          <div className="px-5 py-2 text-xs text-[#64748b] italic">
+          <div className="px-5 py-2 text-xs text-gray-500 italic">
             Henüz işletme gideri eklenmedi
           </div>
         ) : (
@@ -118,7 +118,7 @@ export default function PLTablosu({ baslangic, bitis }: Props) {
           delay={0.38}
         />
 
-        <div className="mx-5 my-1 h-px bg-[rgba(255,255,255,0.08)]" />
+        <div className="mx-5 my-1 h-px bg-gray-50" />
 
         <Satir
           label={`Net Kâr  (%${(pl.netMarj * 100).toFixed(1)} marj)`}

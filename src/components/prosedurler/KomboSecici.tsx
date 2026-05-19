@@ -31,15 +31,15 @@ export default function KomboSecici({
 
   return (
     <div className="relative">
-      <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">{label}</label>
+      <label className="text-xs text-gray-400 font-medium block mb-1.5">{label}</label>
 
       <button
         type="button"
         onClick={() => setAcik(a => !a)}
-        className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-sm text-left flex items-center justify-between focus:outline-none hover:border-[rgba(255,255,255,0.2)] transition-colors"
+        className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm text-left flex items-center justify-between focus:outline-none hover:border-gray-200 transition-colors"
       >
         <span className="truncate">{secili || placeholder}</span>
-        <span className="text-[#94a3b8] text-xs ml-2 shrink-0">{acik ? "▴" : "▾"}</span>
+        <span className="text-gray-400 text-xs ml-2 shrink-0">{acik ? "▴" : "▾"}</span>
       </button>
 
       <AnimatePresence>
@@ -75,18 +75,18 @@ export default function KomboSecici({
                   key={m}
                   className="flex items-center gap-2 px-3 py-2.5 cursor-pointer group transition-colors"
                   style={{
-                    backgroundColor: secili === m ? "rgba(251,192,36,0.12)" : "transparent",
+                    backgroundColor: secili === m ? "var(--mint)" : "transparent",
                   }}
                   onMouseEnter={e => {
                     if (secili !== m) (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(255,255,255,0.06)";
                   }}
                   onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.backgroundColor = secili === m ? "rgba(251,192,36,0.12)" : "transparent";
+                    (e.currentTarget as HTMLElement).style.backgroundColor = secili === m ? "var(--mint)" : "transparent";
                   }}
                 >
                   <span
                     className="flex-1 text-sm"
-                    style={{ color: secili === m ? "#fbc024" : "white" }}
+                    style={{ color: secili === m ? "var(--leaf)" : "white" }}
                     onClick={() => { onSecim(m); setAcik(false); }}
                   >
                     {m}
@@ -95,7 +95,7 @@ export default function KomboSecici({
                     <button
                       type="button"
                       onClick={e => { e.stopPropagation(); onSil(m); }}
-                      className="w-5 h-5 flex items-center justify-center rounded text-[#475569] hover:text-[#ef4444] transition-colors shrink-0"
+                      className="w-5 h-5 flex items-center justify-center rounded text-gray-500 hover:text-[#ef4444] transition-colors shrink-0"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -104,18 +104,18 @@ export default function KomboSecici({
               ))}
 
               {/* Yeni ekle */}
-              <div className="flex items-center gap-2 px-3 py-2.5 border-t border-[rgba(255,255,255,0.08)]">
+              <div className="flex items-center gap-2 px-3 py-2.5 border-t border-gray-200">
                 <input
                   value={yeni}
                   onChange={e => setYeni(e.target.value)}
                   onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleEkle(); } }}
                   placeholder="Yeni ekle..."
-                  className="flex-1 text-sm bg-transparent text-white placeholder-[#475569] outline-none"
+                  className="flex-1 text-sm bg-transparent text-gray-800 placeholder-[#475569] outline-none"
                 />
                 <button
                   type="button"
                   onClick={handleEkle}
-                  className="w-6 h-6 flex items-center justify-center rounded bg-[rgba(251,192,36,0.15)] text-[#fbc024] hover:bg-[rgba(251,192,36,0.3)] transition-colors shrink-0"
+                  className="w-6 h-6 flex items-center justify-center rounded bg-[var(--mint)] text-[var(--leaf)] hover:bg-[var(--forest-200, #B3E8C8)] transition-colors shrink-0"
                 >
                   <Plus className="w-3 h-3" />
                 </button>

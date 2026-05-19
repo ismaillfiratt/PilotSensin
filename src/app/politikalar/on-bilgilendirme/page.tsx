@@ -8,25 +8,25 @@ const GUNCELLEME = "19 Mayıs 2026";
 export default function OnBilgilendirmePage() {
   return (
     <div className="space-y-6">
-      <div className="glass-card rounded-2xl p-6 md:p-8">
+      <div className="card rounded-2xl p-6 md:p-8">
         <h1 className="text-2xl font-bold text-white mb-1">Ön Bilgilendirme Formu</h1>
-        <p className="text-sm text-[#64748b]">Son güncelleme: {GUNCELLEME}</p>
-        <p className="text-sm text-[#94a3b8] mt-3">
+        <p className="text-sm text-gray-500">Son güncelleme: {GUNCELLEME}</p>
+        <p className="text-sm text-gray-400 mt-3">
           Mesafeli Sözleşmeler Yönetmeliği madde 5 uyarınca ödeme işleminden önce tüketiciye
           sunulması zorunlu bilgilendirme formudur.
         </p>
       </div>
 
-      <div className="glass-card rounded-2xl p-6 md:p-8 space-y-8 text-[#94a3b8] leading-relaxed">
+      <div className="card rounded-2xl p-6 md:p-8 space-y-8 text-gray-400 leading-relaxed">
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white">1. Satıcı Bilgileri</h2>
-          <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-4 text-sm space-y-1">
-            <div className="flex gap-3"><span className="text-[#64748b] min-w-24">Ticaret Unvanı</span><span>İsmail Fırat (Şahıs Şirketi)</span></div>
-            <div className="flex gap-3"><span className="text-[#64748b] min-w-24">Adres</span><span>Güveren Mah. 3746. Sk. No:13 Kepez / Antalya</span></div>
-            <div className="flex gap-3"><span className="text-[#64748b] min-w-24">E-posta</span><span className="text-[#fbc024]">destek@pilotsensin.com</span></div>
-            <div className="flex gap-3"><span className="text-[#64748b] min-w-24">Web</span><span>https://pilotsensin.com</span></div>
-            <div className="flex gap-3"><span className="text-[#64748b] min-w-24">Vergi / T.C.</span><span>[SONRADAN_EKLENECEK]</span></div>
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm space-y-1">
+            <div className="flex gap-3"><span className="text-gray-500 min-w-24">Ticaret Unvanı</span><span>İsmail Fırat (Şahıs Şirketi)</span></div>
+            <div className="flex gap-3"><span className="text-gray-500 min-w-24">Adres</span><span>Güveren Mah. 3746. Sk. No:13 Kepez / Antalya</span></div>
+            <div className="flex gap-3"><span className="text-gray-500 min-w-24">E-posta</span><span className="text-[var(--leaf)]">destek@pilotsensin.com</span></div>
+            <div className="flex gap-3"><span className="text-gray-500 min-w-24">Web</span><span>https://pilotsensin.com</span></div>
+            <div className="flex gap-3"><span className="text-gray-500 min-w-24">Vergi / T.C.</span><span>[SONRADAN_EKLENECEK]</span></div>
           </div>
         </section>
 
@@ -46,29 +46,29 @@ export default function OnBilgilendirmePage() {
               "Ekip yönetimi",
               "Destek ve iletişim modülü",
             ].map(m => (
-              <li key={m} className="flex items-center gap-2 bg-[rgba(255,255,255,0.02)] rounded-lg px-3 py-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#fbc024] shrink-0" />
+              <li key={m} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--forest)] shrink-0" />
                 {m}
               </li>
             ))}
           </ul>
-          <p className="text-sm mt-2">Hizmet kesintisiz 7/24 erişim imkânı sunmakla birlikte %99,5 uptime garantisi taahhüt edilmektedir. Detaylar için <Link href="/politikalar/sla" className="text-[#fbc024] hover:underline">SLA</Link> dokümanını inceleyiniz.</p>
+          <p className="text-sm mt-2">Hizmet kesintisiz 7/24 erişim imkânı sunmakla birlikte %99,5 uptime garantisi taahhüt edilmektedir. Detaylar için <Link href="/politikalar/sla" className="text-[var(--leaf)] hover:underline">SLA</Link> dokümanını inceleyiniz.</p>
         </section>
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white">3. Toplam Fiyat</h2>
           <div className="space-y-2 text-sm">
-            <div className="bg-[rgba(251,192,36,0.06)] border border-[rgba(251,192,36,0.2)] rounded-xl p-4 space-y-2">
-              <div className="flex justify-between"><span>Aylık Plan</span><span className="text-[#fbc024] font-bold">499 TL / ay (KDV dahil)</span></div>
+            <div className="bg-[var(--mint)] border border-[var(--forest-100, #D9F2E4)] rounded-xl p-4 space-y-2">
+              <div className="flex justify-between"><span>Aylık Plan</span><span className="text-[var(--leaf)] font-bold">499 TL / ay (KDV dahil)</span></div>
               <div className="flex justify-between">
                 <div>
                   <span>Yıllık Plan</span>
                   <span className="ml-2 text-xs text-[#22c55e]">(%20 indirim)</span>
                 </div>
-                <span className="text-[#fbc024] font-bold">4.790 TL / yıl (KDV dahil)</span>
+                <span className="text-[var(--leaf)] font-bold">4.790 TL / yıl (KDV dahil)</span>
               </div>
             </div>
-            <p className="text-xs text-[#64748b]">Belirtilen fiyatlar KDV dahildir. Türk Lirası cinsinden tahsil edilir.</p>
+            <p className="text-xs text-gray-500">Belirtilen fiyatlar KDV dahildir. Türk Lirası cinsinden tahsil edilir.</p>
           </div>
         </section>
 
@@ -123,9 +123,9 @@ export default function OnBilgilendirmePage() {
           </ul>
         </section>
 
-        <div className="border-t border-[rgba(255,255,255,0.07)] pt-6 text-sm text-[#64748b]">
-          <p>İlgili belgeler: <Link href="/politikalar/mesafeli-satis" className="text-[#fbc024] hover:underline mr-3">Mesafeli Satış Sözleşmesi</Link><Link href="/politikalar/iade-iptal" className="text-[#fbc024] hover:underline">İade &amp; İptal Politikası</Link></p>
-          <p className="mt-2">Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[#fbc024] hover:underline">destek@pilotsensin.com</Link></p>
+        <div className="border-t border-gray-200 pt-6 text-sm text-gray-500">
+          <p>İlgili belgeler: <Link href="/politikalar/mesafeli-satis" className="text-[var(--leaf)] hover:underline mr-3">Mesafeli Satış Sözleşmesi</Link><Link href="/politikalar/iade-iptal" className="text-[var(--leaf)] hover:underline">İade &amp; İptal Politikası</Link></p>
+          <p className="mt-2">Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[var(--leaf)] hover:underline">destek@pilotsensin.com</Link></p>
           <p className="mt-1">Son güncelleme: {GUNCELLEME}</p>
         </div>
       </div>

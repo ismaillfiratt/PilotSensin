@@ -143,8 +143,8 @@ export default function CopKutusuPage() {
 
       {/* Başlık */}
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-white">Çöp Kutusu</h1>
-        <p className="text-xs md:text-sm text-[#94a3b8] mt-1">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-800">Çöp Kutusu</h1>
+        <p className="text-xs md:text-sm text-gray-400 mt-1">
           Silinen kayıtlar 30 gün burada kalır, sonra otomatik silinir
         </p>
       </div>
@@ -161,9 +161,9 @@ export default function CopKutusuPage() {
               onClick={() => setModulFiltre(tipler)}
               className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all"
               style={{
-                borderColor:     aktif ? "#fbc024" : "rgba(255,255,255,0.08)",
-                backgroundColor: aktif ? "rgba(251,192,36,0.12)" : "transparent",
-                color:           aktif ? "#fbc024" : "#94a3b8",
+                borderColor:     aktif ? "var(--leaf)" : "rgba(255,255,255,0.08)",
+                backgroundColor: aktif ? "var(--mint)" : "transparent",
+                color:           aktif ? "var(--leaf)" : "#94a3b8",
               }}
             >
               <Icon className="w-3 h-3" />
@@ -175,17 +175,17 @@ export default function CopKutusuPage() {
 
       {/* Arama */}
       <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#475569]" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
         <input
           type="text"
           placeholder="Kayıt veya modül ara…"
           value={aramaMetni}
           onChange={(e) => setAramaMetni(e.target.value)}
-          className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.07)] text-white placeholder-[#475569] text-sm focus:outline-none focus:border-[rgba(251,192,36,0.3)] transition-colors"
+          className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#475569] text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors"
         />
         {aramaMetni && (
           <button onClick={() => setAramaMetni("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#475569] hover:text-white transition-colors">
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 transition-colors">
             <X className="w-4 h-4" />
           </button>
         )}
@@ -196,9 +196,9 @@ export default function CopKutusuPage() {
         {seciliIdler.size > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-            className="flex flex-wrap items-center gap-3 px-4 py-3 rounded-2xl glass-card border border-[rgba(251,192,36,0.2)]"
+            className="flex flex-wrap items-center gap-3 px-4 py-3 rounded-2xl card border border-[var(--forest-100, #D9F2E4)]"
           >
-            <span className="text-sm font-semibold text-[#fbc024]">
+            <span className="text-sm font-semibold text-[var(--leaf)]">
               {seciliIdler.size} öğe seçili
             </span>
             <div className="flex gap-2 ml-auto flex-wrap">
@@ -217,21 +217,21 @@ export default function CopKutusuPage() {
 
       {/* Boş durum */}
       {tumSilinenler.length === 0 && (
-        <div className="glass-card rounded-2xl py-20 text-center space-y-3">
-          <Trash2 className="w-12 h-12 text-[#334155] mx-auto" />
-          <p className="text-sm font-semibold text-[#64748b]">Çöp kutusu boş</p>
-          <p className="text-xs text-[#475569]">Sildiğin kayıtlar burada görünür</p>
+        <div className="card rounded-2xl py-20 text-center space-y-3">
+          <Trash2 className="w-12 h-12 text-gray-600 mx-auto" />
+          <p className="text-sm font-semibold text-gray-500">Çöp kutusu boş</p>
+          <p className="text-xs text-gray-500">Sildiğin kayıtlar burada görünür</p>
         </div>
       )}
 
       {/* Liste */}
       {filtrelenmis.length > 0 && (
-        <div className="glass-card rounded-2xl overflow-hidden">
+        <div className="card rounded-2xl overflow-hidden">
           {/* Tümünü seç satırı */}
           <div className="flex items-center gap-3 px-5 py-3 border-b border-white/5">
-            <button onClick={tumunuSec} className="flex items-center gap-2 text-xs text-[#94a3b8] hover:text-white transition-colors">
+            <button onClick={tumunuSec} className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-800 transition-colors">
               {hepsSecili
-                ? <CheckSquare className="w-4 h-4 text-[#fbc024]" />
+                ? <CheckSquare className="w-4 h-4 text-[var(--leaf)]" />
                 : <Square className="w-4 h-4" />}
               Tümünü Seç ({filtrelenmis.length})
             </button>
@@ -252,27 +252,27 @@ export default function CopKutusuPage() {
                     exit={{ opacity: 0, x: 20, height: 0 }}
                     transition={{ duration: 0.18, delay: i * 0.02 }}
                     className="flex items-start gap-3 px-5 py-4 hover:bg-white/2 transition-colors"
-                    style={{ backgroundColor: secili ? "rgba(251,192,36,0.04)" : undefined }}
+                    style={{ backgroundColor: secili ? "var(--mint)" : undefined }}
                   >
                     {/* Checkbox */}
                     <button onClick={() => toggleSec(oge.id)} className="mt-0.5 shrink-0">
                       {secili
-                        ? <CheckSquare className="w-4 h-4 text-[#fbc024]" />
-                        : <Square className="w-4 h-4 text-[#475569]" />}
+                        ? <CheckSquare className="w-4 h-4 text-[var(--leaf)]" />
+                        : <Square className="w-4 h-4 text-gray-500" />}
                     </button>
 
                     {/* İçerik */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                        <span className="text-sm font-semibold text-white truncate">{oge.isim}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/6 text-[#94a3b8] shrink-0">
+                        <span className="text-sm font-semibold text-gray-800 truncate">{oge.isim}</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/6 text-gray-400 shrink-0">
                           {oge.modulAdi}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-[#64748b] flex-wrap">
+                      <div className="flex items-center gap-2 text-xs text-gray-500 flex-wrap">
                         <span>{tarihEtiket(oge.silinmeTarihi)}</span>
                         {oge.silenKullaniciAd && <span>· {oge.silenKullaniciAd}</span>}
-                        <span className={`font-medium ${acil ? "text-[#ef4444]" : "text-[#94a3b8]"}`}>
+                        <span className={`font-medium ${acil ? "text-[#ef4444]" : "text-gray-400"}`}>
                           {acil && <AlertTriangle className="w-3 h-3 inline mr-0.5" />}
                           {kalan} gün kaldı
                         </span>
@@ -292,7 +292,7 @@ export default function CopKutusuPage() {
                       <button
                         onClick={() => kaliciSil(oge)}
                         title="Kalıcı Sil"
-                        className="w-8 h-8 flex items-center justify-center rounded-lg text-[#475569] hover:text-[#ef4444] hover:bg-[rgba(239,68,68,0.08)] transition-colors"
+                        className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-[#ef4444] hover:bg-[rgba(239,68,68,0.08)] transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>

@@ -72,22 +72,22 @@ export default function IslemGecmisi() {
 
   return (
     <>
-      <div className="glass-card rounded-2xl overflow-hidden">
+      <div className="card rounded-2xl overflow-hidden">
 
         {/* ÜST — arama + filtreler + ekle */}
-        <div className="px-5 py-4 border-b border-[rgba(255,255,255,0.06)] space-y-3">
+        <div className="px-5 py-4 border-b border-gray-200 space-y-3">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             {/* Arama */}
             <div className="relative flex-1 min-w-48">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 value={arama} onChange={(e) => setAramaSayfa(e.target.value)}
                 placeholder="Açıklama ara..."
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] text-sm focus:outline-none focus:border-[rgba(251,192,36,0.4)] transition-colors"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors"
               />
             </div>
             {/* Tip filtresi */}
-            <div className="flex gap-1 p-1 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)]">
+            <div className="flex gap-1 p-1 rounded-xl bg-gray-50 border border-gray-200">
               {([
                 { v: "tumu",    l: "Tümü"    },
                 { v: "yatirma", l: "Yatırma" },
@@ -96,9 +96,9 @@ export default function IslemGecmisi() {
                 <button key={v} onClick={() => setFiltreSayfa(v)}
                   className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                   style={{
-                    backgroundColor: filtre === v ? "rgba(251,192,36,0.15)" : "transparent",
-                    color:           filtre === v ? "#fbc024" : "#94a3b8",
-                    border:          filtre === v ? "1px solid rgba(251,192,36,0.3)" : "1px solid transparent",
+                    backgroundColor: filtre === v ? "var(--mint)" : "transparent",
+                    color:           filtre === v ? "var(--leaf)" : "#94a3b8",
+                    border:          filtre === v ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid transparent",
                   }}>
                   {l}
                 </button>
@@ -107,7 +107,7 @@ export default function IslemGecmisi() {
             {/* Ekle butonu */}
             <button
               onClick={() => { setDuzenle(null); setModalAcik(true); }}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors shrink-0"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors shrink-0"
             >
               <Plus className="w-4 h-4" /> Hareket Ekle
             </button>
@@ -115,24 +115,24 @@ export default function IslemGecmisi() {
 
           {/* Tarih aralığı */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-[#94a3b8]">Tarih:</span>
+            <span className="text-xs text-gray-400">Tarih:</span>
             <input type="date" value={tarihBas} onChange={(e) => { setTarihBas(e.target.value); setSayfaNo(1); }}
-              className="px-2 py-1 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-xs focus:outline-none focus:border-[rgba(251,192,36,0.4)] scheme-dark" />
-            <span className="text-[#94a3b8] text-xs">—</span>
+              className="px-2 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-xs focus:outline-none focus:border-[var(--leaf)] scheme-dark" />
+            <span className="text-gray-400 text-xs">—</span>
             <input type="date" value={tarihBit} onChange={(e) => { setTarihBit(e.target.value); setSayfaNo(1); }}
-              className="px-2 py-1 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white text-xs focus:outline-none focus:border-[rgba(251,192,36,0.4)] scheme-dark" />
+              className="px-2 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-xs focus:outline-none focus:border-[var(--leaf)] scheme-dark" />
             {(tarihBas || tarihBit) && (
               <button onClick={() => { setTarihBas(""); setTarihBit(""); setSayfaNo(1); }}
-                className="text-xs text-[#94a3b8] hover:text-white transition-colors px-2 py-0.5 rounded-lg border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.2)]">
+                className="text-xs text-gray-400 hover:text-gray-800 transition-colors px-2 py-0.5 rounded-lg border border-gray-200 hover:border-gray-200">
                 Temizle
               </button>
             )}
-            <span className="text-xs text-[#94a3b8] ml-auto">{filtrelenmis.length} kayıt</span>
+            <span className="text-xs text-gray-400 ml-auto">{filtrelenmis.length} kayıt</span>
           </div>
         </div>
 
         {/* Tablo başlıkları */}
-        <div className="grid grid-cols-[44px_140px_1fr_1fr_120px_80px] gap-3 px-5 py-3 border-b border-[rgba(255,255,255,0.06)] text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">
+        <div className="grid grid-cols-[44px_140px_1fr_1fr_120px_80px] gap-3 px-5 py-3 border-b border-gray-200 text-xs font-semibold text-gray-400 uppercase tracking-wider">
           <span>Tip</span>
           <span>Hedef</span>
           <span>Açıklama</span>
@@ -142,9 +142,9 @@ export default function IslemGecmisi() {
         </div>
 
         {/* Satırlar */}
-        <div className="divide-y divide-[rgba(255,255,255,0.04)] min-h-[120px]">
+        <div className="divide-y divide-gray-100 min-h-[120px]">
           {sayfaIslemler.length === 0 ? (
-            <div className="py-16 text-center text-[#94a3b8] text-sm">
+            <div className="py-16 text-center text-gray-400 text-sm">
               {filtrelenmis.length === 0 && islemler.length > 0 ? "Filtre sonucu bulunamadı." : "Henüz işlem yok."}
             </div>
           ) : (
@@ -159,7 +159,7 @@ export default function IslemGecmisi() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: i * 0.02 }}
-                  className="grid grid-cols-[44px_140px_1fr_1fr_120px_80px] gap-3 px-5 py-3.5 items-center hover:bg-[rgba(251,192,36,0.02)] transition-colors"
+                  className="grid grid-cols-[44px_140px_1fr_1fr_120px_80px] gap-3 px-5 py-3.5 items-center hover:bg-[var(--mint)] transition-colors"
                 >
                   {/* Tip */}
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
@@ -173,19 +173,19 @@ export default function IslemGecmisi() {
                   {hedefAdi ? (
                     <span
                       className="text-xs font-semibold px-2 py-1 rounded-lg truncate"
-                      style={{ backgroundColor: "rgba(251,192,36,0.12)", color: "#fbc024", border: "1px solid rgba(251,192,36,0.25)" }}
+                      style={{ backgroundColor: "var(--mint)", color: "var(--leaf)", border: "1px solid var(--forest-200, #B3E8C8)" }}
                     >
                       {hedefAdi}
                     </span>
                   ) : (
-                    <span className="text-xs text-[#475569]">—</span>
+                    <span className="text-xs text-gray-500">—</span>
                   )}
 
                   {/* Açıklama */}
-                  <p className="text-sm text-white font-medium truncate">{islem.aciklama || "—"}</p>
+                  <p className="text-sm text-gray-800 font-medium truncate">{islem.aciklama || "—"}</p>
 
                   {/* Tarih */}
-                  <p className="text-xs text-[#94a3b8]">{tarihFormat(islem.tarih)}</p>
+                  <p className="text-xs text-gray-400">{tarihFormat(islem.tarih)}</p>
 
                   {/* Tutar */}
                   <p className="text-sm font-bold text-right whitespace-nowrap" style={{ color: yatirmaMi ? "#22c55e" : "#ef4444" }}>
@@ -195,11 +195,11 @@ export default function IslemGecmisi() {
                   {/* Aksiyonlar */}
                   <div className="flex items-center justify-end gap-1">
                     <button onClick={() => { setDuzenle(islem); setModalAcik(true); }}
-                      className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] border border-[rgba(255,255,255,0.08)] hover:border-[rgba(251,192,36,0.4)] hover:text-[#fbc024] transition-all">
+                      className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 border border-gray-200 hover:border-[var(--forest-300, #7DD0A0)] hover:text-[var(--leaf)] transition-all">
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button onClick={() => handleIslemSil(islem)}
-                      className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] border border-[rgba(255,255,255,0.08)] hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] transition-all">
+                      className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 border border-gray-200 hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] transition-all">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -211,13 +211,13 @@ export default function IslemGecmisi() {
 
         {/* ALT — sayfalama */}
         {toplamSayfa > 1 && (
-          <div className="flex items-center justify-between px-5 py-3 border-t border-[rgba(255,255,255,0.06)]">
-            <span className="text-xs text-[#94a3b8]">
+          <div className="flex items-center justify-between px-5 py-3 border-t border-gray-200">
+            <span className="text-xs text-gray-400">
               {(sayfaNo - 1) * SAYFA_BOYUTU + 1}–{Math.min(sayfaNo * SAYFA_BOYUTU, filtrelenmis.length)} / {filtrelenmis.length} kayıt
             </span>
             <div className="flex items-center gap-1">
               <button onClick={() => setSayfaNo(p => Math.max(1, p - 1))} disabled={sayfaNo === 1}
-                className="w-8 h-8 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:text-white hover:border-[rgba(255,255,255,0.2)] transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+                className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:text-gray-800 hover:border-gray-200 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
                 <ChevronLeft className="w-4 h-4" />
               </button>
               {Array.from({ length: Math.min(toplamSayfa, 5) }, (_, i) => {
@@ -229,16 +229,16 @@ export default function IslemGecmisi() {
                   <button key={p} onClick={() => setSayfaNo(p)}
                     className="w-8 h-8 flex items-center justify-center rounded-lg text-xs font-medium transition-all border"
                     style={{
-                      borderColor:     sayfaNo === p ? "#fbc024" : "rgba(255,255,255,0.08)",
-                      backgroundColor: sayfaNo === p ? "rgba(251,192,36,0.15)" : "transparent",
-                      color:           sayfaNo === p ? "#fbc024" : "#94a3b8",
+                      borderColor:     sayfaNo === p ? "var(--leaf)" : "rgba(255,255,255,0.08)",
+                      backgroundColor: sayfaNo === p ? "var(--mint)" : "transparent",
+                      color:           sayfaNo === p ? "var(--leaf)" : "#94a3b8",
                     }}>
                     {p}
                   </button>
                 );
               })}
               <button onClick={() => setSayfaNo(p => Math.min(toplamSayfa, p + 1))} disabled={sayfaNo === toplamSayfa}
-                className="w-8 h-8 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#94a3b8] hover:text-white hover:border-[rgba(255,255,255,0.2)] transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+                className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:text-gray-800 hover:border-gray-200 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>

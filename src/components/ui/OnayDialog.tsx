@@ -23,10 +23,10 @@ export default function OnayDialog({
 }: Props) {
   if (!open) return null;
 
-  const onayRenk = tehlikeli ? "#ef4444" : "#fbc024";
-  const onayBg   = tehlikeli ? "#ef4444" : "#fbc024";
-  const ikonBg   = tehlikeli ? "rgba(239,68,68,0.12)" : "rgba(251,192,36,0.12)";
-  const ikonBorder = tehlikeli ? "rgba(239,68,68,0.25)" : "rgba(251,192,36,0.25)";
+  const onayRenk = tehlikeli ? "#ef4444" : "var(--leaf)";
+  const onayBg   = tehlikeli ? "#ef4444" : "var(--leaf)";
+  const ikonBg   = tehlikeli ? "rgba(239,68,68,0.12)" : "var(--mint)";
+  const ikonBorder = tehlikeli ? "rgba(239,68,68,0.25)" : "var(--forest-200, #B3E8C8)";
 
   return (
     <AnimatePresence>
@@ -44,10 +44,10 @@ export default function OnayDialog({
             drag="y" dragConstraints={{ top: 0 }} dragElastic={{ top: 0, bottom: 0.3 }}
             onDragEnd={(_, info) => { if (info.velocity.y > 300 || info.offset.y > 100) onClose(); }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed z-50 bg-[#0e172a] glass-card bottom-0 inset-x-0 rounded-t-2xl border-t border-white/10 md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-sm md:w-full"
+            className="fixed z-50 bg-white card bottom-0 inset-x-0 rounded-t-2xl border-t border-gray-200 md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-sm md:w-full"
           >
             <div className="md:hidden flex justify-center pt-3 pb-1 cursor-grab">
-              <div className="w-12 h-1 rounded-full bg-white/20" />
+              <div className="w-12 h-1 rounded-full bg-gray-200" />
             </div>
 
             <div className="px-6 pt-5 pb-2">
@@ -56,19 +56,19 @@ export default function OnayDialog({
                 <AlertTriangle className="w-6 h-6" style={{ color: onayRenk }} />
               </div>
               <h3 className="text-base font-bold text-white mb-1">{baslik}</h3>
-              <div className="text-sm text-[#94a3b8]">{aciklama}</div>
+              <div className="text-sm text-gray-400">{aciklama}</div>
             </div>
 
-            <div className="sticky bottom-0 bg-[#0e172a] px-6 pt-3 pb-4 md:pb-4"
+            <div className="sticky bottom-0 bg-white px-6 pt-3 pb-4 md:pb-4"
               style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 16px)" }}>
               <div className="flex gap-3">
                 <button onClick={onClose}
-                  className="flex-1 min-h-12 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                  className="flex-1 min-h-12 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium hover:bg-gray-50 transition-colors">
                   {iptalLabel}
                 </button>
                 <button onClick={() => { onOnayla(); onClose(); }}
                   className="flex-1 min-h-12 rounded-xl text-white text-sm font-bold transition-colors"
-                  style={{ backgroundColor: onayBg, color: tehlikeli ? "white" : "#0e172a" }}>
+                  style={{ backgroundColor: onayBg, color: tehlikeli ? "white" : "var(--forest)" }}>
                   {onayLabel}
                 </button>
               </div>

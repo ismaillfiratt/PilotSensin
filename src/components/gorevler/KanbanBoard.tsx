@@ -54,7 +54,7 @@ function KanbanSutun({ durum, liste, aktifId, onEkle, onDuzenle, onSil, onTasi }
           </span>
         </div>
         <button onClick={onEkle}
-          className="w-7 h-7 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors"
+          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-800 hover:bg-gray-50 transition-colors"
           title="Görev ekle">
           <Plus className="w-4 h-4" />
         </button>

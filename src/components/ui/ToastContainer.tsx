@@ -5,10 +5,10 @@ import { CheckCircle2, XCircle, AlertTriangle, Info, X } from "lucide-react";
 import { useToast, type ToastTip } from "@/store/toast";
 
 const KONFIG: Record<ToastTip, { renk: string; bg: string; border: string; Icon: typeof CheckCircle2 }> = {
-  basari: { renk: "#22c55e", bg: "rgba(34,197,94,0.12)",   border: "rgba(34,197,94,0.3)",   Icon: CheckCircle2  },
-  hata:   { renk: "#ef4444", bg: "rgba(239,68,68,0.12)",   border: "rgba(239,68,68,0.3)",   Icon: XCircle       },
-  uyari:  { renk: "#fbc024", bg: "rgba(251,192,36,0.12)",  border: "rgba(251,192,36,0.3)",  Icon: AlertTriangle },
-  bilgi:  { renk: "#94a3b8", bg: "rgba(148,163,184,0.12)", border: "rgba(148,163,184,0.3)", Icon: Info          },
+  basari: { renk: "#10B981", bg: "#F0FDF4", border: "#BBF7D0", Icon: CheckCircle2  },
+  hata:   { renk: "#EF4444", bg: "#FEF2F2", border: "#FECACA", Icon: XCircle       },
+  uyari:  { renk: "#F59E0B", bg: "#FFFBEB", border: "#FDE68A", Icon: AlertTriangle },
+  bilgi:  { renk: "#3B82F6", bg: "#EFF6FF", border: "#BFDBFE", Icon: Info          },
 };
 
 export default function ToastContainer() {
@@ -27,7 +27,7 @@ export default function ToastContainer() {
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 64, scale: 0.95 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="pointer-events-auto flex items-start gap-3 px-4 py-3 rounded-2xl shadow-xl backdrop-blur-lg"
+              className="pointer-events-auto flex items-start gap-3 px-4 py-3 rounded-2xl shadow-lg"
               style={{ backgroundColor: cfg.bg, border: `1px solid ${cfg.border}` }}
             >
               <cfg.Icon className="w-4 h-4 mt-0.5 shrink-0" style={{ color: cfg.renk }} />
@@ -35,11 +35,11 @@ export default function ToastContainer() {
                 {t.baslik && (
                   <p className="text-xs font-bold mb-0.5" style={{ color: cfg.renk }}>{t.baslik}</p>
                 )}
-                <p className="text-xs text-white leading-relaxed">{t.mesaj}</p>
+                <p className="text-xs text-gray-600 leading-relaxed">{t.mesaj}</p>
               </div>
               <button
                 onClick={() => sil(t.id)}
-                className="shrink-0 w-5 h-5 flex items-center justify-center rounded-md text-[#64748b] hover:text-white transition-colors"
+                className="shrink-0 w-5 h-5 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <X className="w-3 h-3" />
               </button>

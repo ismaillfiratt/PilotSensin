@@ -27,7 +27,7 @@ const POLITIKALAR = [
     ikon:     FileText,
     baslik:   "Kullanım Koşulları",
     aciklama: "Platformu kullanırken geçerli olan hak ve yükümlülükler",
-    renk:     "#fbc024",
+    renk:     "var(--leaf)",
   },
   {
     href:     "/politikalar/cerez",
@@ -76,9 +76,9 @@ const POLITIKALAR = [
 export default function PolitikalarPage() {
   return (
     <div className="space-y-6">
-      <div className="glass-card rounded-2xl p-6 md:p-8">
+      <div className="card rounded-2xl p-6 md:p-8">
         <h1 className="text-2xl font-bold text-white mb-1">📋 Yasal Bilgiler</h1>
-        <p className="text-sm text-[#94a3b8] mt-2">
+        <p className="text-sm text-gray-400 mt-2">
           PilotSensin hizmetine ilişkin tüm yasal belgelere buradan ulaşabilirsiniz.
         </p>
       </div>
@@ -86,7 +86,7 @@ export default function PolitikalarPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
         {POLITIKALAR.map(({ href, ikon: Ikon, baslik, aciklama, renk }) => (
           <Link key={href} href={href}
-            className="glass-card rounded-2xl p-5 hover:bg-[rgba(255,255,255,0.02)] transition-all hover:scale-[1.01] group border border-transparent hover:border-[rgba(255,255,255,0.08)]">
+            className="card rounded-2xl p-5 hover:bg-gray-50 transition-all hover:scale-[1.01] group border border-transparent hover:border-gray-200">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3"
               style={{ backgroundColor: renk + "20", border: `1px solid ${renk}40` }}>
               <Ikon className="w-4 h-4" style={{ color: renk }} />
@@ -94,15 +94,15 @@ export default function PolitikalarPage() {
             <p className="text-sm font-semibold text-white group-hover:text-[#e2e8f0] transition-colors leading-snug mb-1">
               {baslik}
             </p>
-            <p className="text-xs text-[#64748b] leading-relaxed">{aciklama}</p>
+            <p className="text-xs text-gray-500 leading-relaxed">{aciklama}</p>
           </Link>
         ))}
       </div>
 
-      <div className="glass-card rounded-2xl p-5 text-center">
-        <p className="text-xs text-[#64748b]">
+      <div className="card rounded-2xl p-5 text-center">
+        <p className="text-xs text-gray-500">
           Sorularınız için{" "}
-          <Link href="mailto:destek@pilotsensin.com" className="text-[#fbc024] hover:underline">
+          <Link href="mailto:destek@pilotsensin.com" className="text-[var(--leaf)] hover:underline">
             destek@pilotsensin.com
           </Link>
           {" "}adresine yazabilirsiniz.

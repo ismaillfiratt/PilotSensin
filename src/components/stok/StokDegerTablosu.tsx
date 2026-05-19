@@ -5,7 +5,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { useStok } from "@/store/stok";
 
 const RENKLER = [
-  "#fbc024", "#22c55e", "#3b82f6", "#a855f7",
+  "var(--leaf)", "#22c55e", "#3b82f6", "#a855f7",
   "#ef4444", "#f97316", "#06b6d4", "#ec4899",
 ];
 
@@ -40,9 +40,9 @@ export default function StokDegerTablosu() {
 
   if (genelToplam === 0) {
     return (
-      <div className="glass-card rounded-2xl p-5 space-y-3">
+      <div className="card rounded-2xl p-5 space-y-3">
         <h2 className="text-base font-bold text-white">Stok Değeri Dağılımı</h2>
-        <p className="text-sm text-[#64748b] text-center py-6">
+        <p className="text-sm text-gray-500 text-center py-6">
           Stok değerini görmek için ürünlere birim alış fiyatı girin
           <br />
           <span className="text-xs">({maliyetliUrun}/{urunSayisi} ürünün fiyatı girildi)</span>
@@ -54,12 +54,12 @@ export default function StokDegerTablosu() {
   const pieData = kategoriler.map((k) => ({ name: k.ad, value: k.deger }));
 
   return (
-    <div className="glass-card rounded-2xl p-5 space-y-4">
+    <div className="card rounded-2xl p-5 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-base font-bold text-white">Stok Değeri Dağılımı</h2>
         <div className="text-right">
-          <p className="text-xs text-[#94a3b8]">Toplam Stok Serveti</p>
-          <p className="text-lg font-black text-[#fbc024]">{tl(genelToplam)}</p>
+          <p className="text-xs text-gray-400">Toplam Stok Serveti</p>
+          <p className="text-lg font-black text-[var(--leaf)]">{tl(genelToplam)}</p>
         </div>
       </div>
 
@@ -78,14 +78,14 @@ export default function StokDegerTablosu() {
                       <span className="text-white font-medium truncate">{k.ad}</span>
                     </div>
                     <div className="flex items-center gap-3 shrink-0 text-right">
-                      <span className="text-xs text-[#64748b]">{k.adet} birim</span>
+                      <span className="text-xs text-gray-500">{k.adet} birim</span>
                       <span className="text-sm font-semibold text-white w-20 text-right">{tl(k.deger)}</span>
                       <span className="text-xs font-bold w-10 text-right" style={{ color: renk }}>
                         %{yuzde.toFixed(1)}
                       </span>
                     </div>
                   </div>
-                  <div className="h-1.5 rounded-full bg-[rgba(255,255,255,0.06)] overflow-hidden">
+                  <div className="h-1.5 rounded-full bg-gray-50 overflow-hidden">
                     <div className="h-full rounded-full transition-all duration-500"
                       style={{ width: `${yuzde}%`, backgroundColor: renk }} />
                   </div>
@@ -94,9 +94,9 @@ export default function StokDegerTablosu() {
             })}
           </div>
 
-          <div className="mt-3 pt-3 border-t border-[rgba(255,255,255,0.06)] flex justify-between text-xs text-[#64748b]">
+          <div className="mt-3 pt-3 border-t border-gray-200 flex justify-between text-xs text-gray-500">
             <span>{maliyetliUrun}/{urunSayisi} ürünün fiyatı girildi</span>
-            <span className="text-[#94a3b8] font-medium">Toplam: {tl(genelToplam)}</span>
+            <span className="text-gray-400 font-medium">Toplam: {tl(genelToplam)}</span>
           </div>
         </div>
 
@@ -119,13 +119,13 @@ export default function StokDegerTablosu() {
               </Pie>
               <Tooltip
                 formatter={(v) => [tl(Number(v)), "Değer"]}
-                contentStyle={{ background: "#0e172a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                contentStyle={{ background: "var(--forest)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
                 labelStyle={{ color: "#94a3b8" }}
-                itemStyle={{ color: "#fbc024" }}
+                itemStyle={{ color: "var(--leaf)" }}
               />
             </PieChart>
           </ResponsiveContainer>
-          <p className="text-center text-xs text-[#64748b] -mt-2">Kategori Dağılımı</p>
+          <p className="text-center text-xs text-gray-500 -mt-2">Kategori Dağılımı</p>
         </div>
       </div>
     </div>

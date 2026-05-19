@@ -125,18 +125,18 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
         dragElastic={{ top: 0, bottom: 0.3 }}
         onDragEnd={(_, info) => { if (info.velocity.y > 300 || info.offset.y > 120) onClose(); }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
-        className="fixed z-50 bg-[#0e172a] glass-card bottom-0 inset-x-0 rounded-t-2xl border-t border-white/10 max-h-[92vh] overflow-y-auto md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-md md:w-full"
+        className="fixed z-50 bg-white card bottom-0 inset-x-0 rounded-t-2xl border-t border-gray-200 max-h-[92vh] overflow-y-auto md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-md md:w-full"
       >
         <div className="md:hidden flex justify-center pt-3 pb-1 cursor-grab">
-          <div className="w-12 h-1 rounded-full bg-white/20" />
+          <div className="w-12 h-1 rounded-full bg-gray-200" />
         </div>
 
         <div className="flex items-start justify-between px-6 pt-4 pb-2 md:pt-6">
-          <h2 className="text-lg font-bold text-white">
+          <h2 className="text-lg font-bold text-gray-800">
             {duzenlemeModu ? "İşlemi Düzenle" : "Yeni İşlem Ekle"}
           </h2>
           <button onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#94a3b8] hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-colors">
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-800 hover:bg-gray-50 transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -164,13 +164,13 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
 
             {/* Tutar */}
             <div>
-              <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Tutar (₺) *</label>
+              <label className="text-xs text-gray-400 font-medium block mb-1.5">Tutar (₺) *</label>
               <input
                 type="number" min="0.01" step="0.01" required
                 value={form.tutarKurus}
                 onChange={(e) => set("tutar", e.target.value)}
                 placeholder="0.00"
-                className="w-full px-4 py-3 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-xl font-bold [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-xl font-bold [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />
             </div>
 
@@ -178,31 +178,31 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
               {/* Kategori */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs text-[#94a3b8] font-medium">Kategori *</label>
+                  <label className="text-xs text-gray-400 font-medium">Kategori *</label>
                   <button type="button" onClick={() => { setKatDuzenle((v) => !v); setOdemeDuzenle(false); }}
-                    className={`flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded border transition-colors ${katDuzenle ? "border-[rgba(251,192,36,0.4)] text-[#fbc024]" : "border-[rgba(255,255,255,0.08)] text-[#475569]"}`}>
+                    className={`flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded border transition-colors ${katDuzenle ? "border-[var(--forest-300, #7DD0A0)] text-[var(--leaf)]" : "border-gray-200 text-gray-500"}`}>
                     <Settings2 className="w-2.5 h-2.5" />Düzenle
                   </button>
                 </div>
                 <select value={form.kategori} onChange={(e) => set("kategori", e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm">
-                  {kategoriler.map((k) => <option key={k} value={k} className="bg-[#0e172a]">{k}</option>)}
+                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm">
+                  {kategoriler.map((k) => <option key={k} value={k} className="bg-white">{k}</option>)}
                 </select>
               </div>
 
               {/* Ödeme yöntemi */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs text-[#94a3b8] font-medium">Ödeme Yöntemi</label>
+                  <label className="text-xs text-gray-400 font-medium">Ödeme Yöntemi</label>
                   <button type="button" onClick={() => { setOdemeDuzenle((v) => !v); setKatDuzenle(false); }}
-                    className={`flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded border transition-colors ${odemeDuzenle ? "border-[rgba(251,192,36,0.4)] text-[#fbc024]" : "border-[rgba(255,255,255,0.08)] text-[#475569]"}`}>
+                    className={`flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded border transition-colors ${odemeDuzenle ? "border-[var(--forest-300, #7DD0A0)] text-[var(--leaf)]" : "border-gray-200 text-gray-500"}`}>
                     <Settings2 className="w-2.5 h-2.5" />Düzenle
                   </button>
                 </div>
                 <select value={form.odemeYontemi} onChange={(e) => set("odemeYontemi", e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm">
+                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm">
                   {odemeYontemleri.map(({ value, label }) => (
-                    <option key={value} value={value} className="bg-[#0e172a]">{label}</option>
+                    <option key={value} value={value} className="bg-white">{label}</option>
                   ))}
                 </select>
               </div>
@@ -213,16 +213,16 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
               {katDuzenle && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                  <div className="p-3 rounded-xl bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.07)] space-y-2">
-                    <p className="text-[10px] text-[#64748b] uppercase tracking-wide font-semibold">
+                  <div className="p-3 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wide font-semibold">
                       {form.tip === "gelir" ? "Gelir" : "Gider"} Kategorileri
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {kategoriler.map((k) => (
-                        <div key={k} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)]">
-                          <span className="text-xs text-white">{k}</span>
+                        <div key={k} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-50 border border-gray-200">
+                          <span className="text-xs text-gray-800">{k}</span>
                           <button type="button" onClick={() => kategoriSil(form.tip, k)}
-                            className="text-[#475569] hover:text-[#ef4444] transition-colors">
+                            className="text-gray-500 hover:text-[#ef4444] transition-colors">
                             <X className="w-2.5 h-2.5" />
                           </button>
                         </div>
@@ -232,7 +232,7 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
                       <input type="text" value={yeniKat} onChange={(e) => setYeniKat(e.target.value)}
                         onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleKatEkle(); } }}
                         placeholder="Yeni kategori adı"
-                        className="flex-1 px-2.5 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#475569] text-xs focus:outline-none" />
+                        className="flex-1 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#475569] text-xs focus:outline-none" />
                       <button type="button" onClick={handleKatEkle}
                         className="px-2.5 py-1.5 rounded-lg bg-[rgba(34,197,94,0.15)] text-[#22c55e] hover:bg-[rgba(34,197,94,0.25)] transition-colors">
                         <Plus className="w-3.5 h-3.5" />
@@ -248,14 +248,14 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
               {odemeDuzenle && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                  <div className="p-3 rounded-xl bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.07)] space-y-2">
-                    <p className="text-[10px] text-[#64748b] uppercase tracking-wide font-semibold">Ödeme Yöntemleri</p>
+                  <div className="p-3 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wide font-semibold">Ödeme Yöntemleri</p>
                     <div className="flex flex-wrap gap-1.5">
                       {odemeYontemleri.map((o) => (
-                        <div key={o.value} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)]">
-                          <span className="text-xs text-white">{o.label}</span>
+                        <div key={o.value} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-50 border border-gray-200">
+                          <span className="text-xs text-gray-800">{o.label}</span>
                           <button type="button" onClick={() => odemeSil(o.value)}
-                            className="text-[#475569] hover:text-[#ef4444] transition-colors">
+                            className="text-gray-500 hover:text-[#ef4444] transition-colors">
                             <X className="w-2.5 h-2.5" />
                           </button>
                         </div>
@@ -264,10 +264,10 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
                     <div className="flex gap-1.5">
                       <input type="text" value={yeniOdemeLabel} onChange={(e) => setYeniOdemeLabel(e.target.value)}
                         placeholder="Yöntem adı (ör: POS)"
-                        className="flex-1 px-2.5 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#475569] text-xs focus:outline-none" />
+                        className="flex-1 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#475569] text-xs focus:outline-none" />
                       <input type="text" value={yeniOdemeVal} onChange={(e) => setYeniOdemeVal(e.target.value)}
                         placeholder="ID (ör: pos)"
-                        className="w-20 px-2.5 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#475569] text-xs focus:outline-none" />
+                        className="w-20 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#475569] text-xs focus:outline-none" />
                       <button type="button" onClick={handleOdemeEkle}
                         className="px-2.5 py-1.5 rounded-lg bg-[rgba(34,197,94,0.15)] text-[#22c55e] hover:bg-[rgba(34,197,94,0.25)] transition-colors">
                         <Plus className="w-3.5 h-3.5" />
@@ -280,34 +280,34 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
 
             {/* İşlem Tarihi (renamed from Tarih) */}
             <div>
-              <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">İşlem Tarihi *</label>
+              <label className="text-xs text-gray-400 font-medium block mb-1.5">İşlem Tarihi *</label>
               <input
                 type="date" required
                 value={form.tarih}
                 max={localDateStr()}
                 onChange={(e) => set("tarih", e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm [color-scheme:dark]"
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm [color-scheme:dark]"
               />
             </div>
 
             {/* Açıklama */}
             <div>
-              <label className="text-xs text-[#94a3b8] font-medium block mb-1.5">Açıklama</label>
+              <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama</label>
               <input type="text" value={form.aciklama} onChange={(e) => set("aciklama", e.target.value)}
                 placeholder="Kısa not..."
-                className="w-full px-3 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(251,192,36,0.5)] transition-colors text-sm" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
             </div>
 
         </form>
-        <div className="sticky bottom-0 bg-[#0e172a] px-6 pt-3 pb-4 border-t border-white/10 md:relative md:border-0 md:pt-2"
+        <div className="sticky bottom-0 bg-white px-6 pt-3 pb-4 border-t border-gray-200 md:relative md:border-0 md:pt-2"
           style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 16px)" }}>
           <div className="flex gap-3">
             <button type="button" onClick={onClose}
-              className="flex-1 min-h-12 rounded-xl border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+              className="flex-1 min-h-12 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium hover:bg-gray-50 transition-colors">
               İptal
             </button>
             <button type="submit" form="islem-modal-form"
-              className="flex-1 min-h-12 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] transition-colors">
+              className="flex-1 min-h-12 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
               {duzenlemeModu ? "Kaydet" : "Ekle"}
             </button>
           </div>

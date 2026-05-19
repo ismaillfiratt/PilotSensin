@@ -13,8 +13,8 @@ export default function PolitikalarLayout({ children }: { children: React.ReactN
         style={{ background: "var(--bg-secondary)", borderColor: "var(--border-subtle)" }}
       >
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#fbc024] flex items-center justify-center">
-            <Plane className="w-3.5 h-3.5 text-[#0e172a] rotate-45" />
+          <div className="w-7 h-7 rounded-lg bg-[var(--forest)] flex items-center justify-center">
+            <Plane className="w-3.5 h-3.5 text-gray-900 rotate-45" />
           </div>
           <span className="font-bold text-sm" style={{ color: "var(--text-primary)" }}>
             Pilot Sensin

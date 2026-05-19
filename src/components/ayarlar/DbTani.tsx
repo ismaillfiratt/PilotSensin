@@ -47,15 +47,15 @@ export default function DbTani() {
   };
 
   return (
-    <div className="glass-card rounded-2xl p-6 space-y-4">
+    <div className="card rounded-2xl p-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-white">Veritabanı Bağlantı Testi</h3>
-          <p className="text-xs text-[#94a3b8] mt-0.5">Supabase bağlantısını ve yazma iznini kontrol eder</p>
+          <h3 className="text-base font-semibold text-gray-800">Veritabanı Bağlantı Testi</h3>
+          <p className="text-xs text-gray-400 mt-0.5">Supabase bağlantısını ve yazma iznini kontrol eder</p>
         </div>
         <button
           onClick={() => setAcik(!acik)}
-          className="text-xs text-[#fbc024] hover:underline"
+          className="text-xs text-[var(--leaf)] hover:underline"
         >
           {acik ? "Gizle" : "Göster"}
         </button>
@@ -66,13 +66,13 @@ export default function DbTani() {
           <button
             onClick={test}
             disabled={yukleniyor}
-            className="w-full py-2 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold disabled:opacity-60"
+            className="w-full py-2 rounded-xl bg-white text-gray-900 text-sm font-bold disabled:opacity-60"
           >
             {yukleniyor ? "Test yapılıyor..." : "Bağlantıyı Test Et"}
           </button>
 
           {sonuc && (
-            <pre className="text-xs bg-[rgba(0,0,0,0.3)] rounded-xl p-4 text-[#e2e8f0] whitespace-pre-wrap leading-6">
+            <pre className="text-xs bg-gray-50 rounded-xl p-4 text-[#e2e8f0] whitespace-pre-wrap leading-6">
               {sonuc}
             </pre>
           )}

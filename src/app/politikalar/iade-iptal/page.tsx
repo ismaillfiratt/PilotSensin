@@ -8,16 +8,16 @@ const GUNCELLEME = "19 Mayıs 2026";
 export default function IadeIptalPage() {
   return (
     <div className="space-y-6">
-      <div className="glass-card rounded-2xl p-6 md:p-8">
+      <div className="card rounded-2xl p-6 md:p-8">
         <h1 className="text-2xl font-bold text-white mb-1">İade &amp; İptal Politikası</h1>
-        <p className="text-sm text-[#64748b]">Son güncelleme: {GUNCELLEME}</p>
-        <p className="text-sm text-[#94a3b8] mt-3">
+        <p className="text-sm text-gray-500">Son güncelleme: {GUNCELLEME}</p>
+        <p className="text-sm text-gray-400 mt-3">
           PilotSensin aboneliğinizi iptal etme ve olası iade işlemlerine ilişkin tüm bilgiler
           bu sayfada yer almaktadır.
         </p>
       </div>
 
-      <div className="glass-card rounded-2xl p-6 md:p-8 space-y-8 text-[#94a3b8] leading-relaxed">
+      <div className="card rounded-2xl p-6 md:p-8 space-y-8 text-gray-400 leading-relaxed">
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white">1. Deneme Süresi</h2>
@@ -86,7 +86,7 @@ export default function IadeIptalPage() {
             <li>Çift tahsilat yapılması</li>
             <li>Abonelik iptaline rağmen yenileme ücretinin hatalı olarak tahsil edilmesi</li>
           </ul>
-          <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-4 text-sm space-y-1.5 mt-2">
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm space-y-1.5 mt-2">
             <p className="text-white font-semibold">İade Prosedürü</p>
             <p>1. destek@pilotsensin.com adresine konu: &quot;İade Talebi&quot; başlığıyla yazın.</p>
             <p>2. Talebiniz 7 iş günü içinde incelenir; sonuç e-posta ile bildirilir.</p>
@@ -94,9 +94,9 @@ export default function IadeIptalPage() {
           </div>
         </section>
 
-        <div className="border-t border-[rgba(255,255,255,0.07)] pt-6 text-sm text-[#64748b]">
-          <p>İlgili belgeler: <Link href="/politikalar/mesafeli-satis" className="text-[#fbc024] hover:underline mr-3">Mesafeli Satış Sözleşmesi</Link><Link href="/politikalar/on-bilgilendirme" className="text-[#fbc024] hover:underline">Ön Bilgilendirme</Link></p>
-          <p className="mt-2">Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[#fbc024] hover:underline">destek@pilotsensin.com</Link></p>
+        <div className="border-t border-gray-200 pt-6 text-sm text-gray-500">
+          <p>İlgili belgeler: <Link href="/politikalar/mesafeli-satis" className="text-[var(--leaf)] hover:underline mr-3">Mesafeli Satış Sözleşmesi</Link><Link href="/politikalar/on-bilgilendirme" className="text-[var(--leaf)] hover:underline">Ön Bilgilendirme</Link></p>
+          <p className="mt-2">Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[var(--leaf)] hover:underline">destek@pilotsensin.com</Link></p>
           <p className="mt-1">Son güncelleme: {GUNCELLEME}</p>
         </div>
       </div>

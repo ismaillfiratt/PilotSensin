@@ -38,7 +38,7 @@ function tarihEtiket(iso: string) {
 }
 
 const odemeRenk: Record<string, string> = {
-  nakit: "#22c55e", kart: "#fbc024", havale: "#94a3b8", cek: "#a78bfa",
+  nakit: "#22c55e", kart: "var(--leaf)", havale: "#94a3b8", cek: "#a78bfa",
 };
 const odemeEmoji: Record<string, string> = {
   nakit: "💵", kart: "💳", havale: "🏦", cek: "📄",
@@ -173,7 +173,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
                 <Icon className="w-4.5 h-4.5" style={{ color: renk }} />
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] font-semibold text-[#64748b] uppercase tracking-wider">{label}</p>
+                <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">{label}</p>
                 <p className="text-sm font-bold truncate" style={{ color: renk }}>
                   {tutarKurus >= 0 ? "" : "-"}{formatTL(Math.abs(tutarKurus))}
                 </p>
@@ -187,14 +187,14 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
           {/* Üst satır: dönem chipleri + ekle */}
           <div className="flex items-center justify-between gap-3 flex-wrap">
             {/* Dönem chipleri */}
-            <div className="overflow-x-auto flex gap-1 p-1 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)]">
+            <div className="overflow-x-auto flex gap-1 p-1 rounded-xl bg-gray-50 border border-gray-200">
               {DONEMLER.map(({ v, label }) => (
                 <button key={v} onClick={() => setDonem(v)}
                   className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                   style={{
-                    backgroundColor: donem === v ? "rgba(251,192,36,0.15)" : "transparent",
-                    color:           donem === v ? "#fbc024" : "#64748b",
-                    border:          donem === v ? "1px solid rgba(251,192,36,0.3)" : "1px solid transparent",
+                    backgroundColor: donem === v ? "var(--mint)" : "transparent",
+                    color:           donem === v ? "var(--leaf)" : "#64748b",
+                    border:          donem === v ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid transparent",
                   }}>
                   {label}
                 </button>
@@ -203,7 +203,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
 
             {/* Tip filtresi + Ekle */}
             <div className="flex items-center gap-2">
-              <div className="flex gap-1 p-1 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)]">
+              <div className="flex gap-1 p-1 rounded-xl bg-gray-50 border border-gray-200">
                 {([
                   { v: "tumu",  label: "Tümü",  renk: "#94a3b8" },
                   { v: "gelir", label: "Gelir", renk: "#22c55e" },
@@ -223,7 +223,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
 
               <button
                 onClick={() => { setDuzenle(null); setModalAcik(true); }}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#fbc024] text-[#0e172a] text-sm font-bold hover:bg-[#d9a61f] active:scale-95 transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 active:scale-95 transition-all"
               >
                 <Plus className="w-4 h-4" />
                 İşlem Ekle
@@ -239,20 +239,20 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
                 exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }}
                 style={{ overflow: "hidden" }}
               >
-                <div className="flex flex-wrap items-center gap-3 px-4 py-3 rounded-xl border border-[rgba(251,192,36,0.2)] bg-[rgba(251,192,36,0.04)]">
-                  <CalendarDays className="w-4 h-4 text-[#fbc024] shrink-0" />
+                <div className="flex flex-wrap items-center gap-3 px-4 py-3 rounded-xl border border-[var(--forest-100, #D9F2E4)] bg-[var(--mint)]">
+                  <CalendarDays className="w-4 h-4 text-[var(--leaf)] shrink-0" />
                   <div className="flex items-center gap-2">
-                    <label className="text-xs text-[#94a3b8] whitespace-nowrap">Başlangıç</label>
+                    <label className="text-xs text-gray-400 whitespace-nowrap">Başlangıç</label>
                     <input type="date" value={ozelBas} max={ozelBit}
                       onChange={(e) => setOzelBas(e.target.value)}
-                      className="px-3 py-1.5 rounded-lg text-xs text-white border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.05)] focus:outline-none focus:border-[rgba(251,192,36,0.4)] scheme-dark" />
+                      className="px-3 py-1.5 rounded-lg text-xs text-gray-800 border border-gray-200 bg-gray-50 focus:outline-none focus:border-[var(--leaf)] scheme-dark" />
                   </div>
-                  <span className="text-[#475569]">—</span>
+                  <span className="text-gray-500">—</span>
                   <div className="flex items-center gap-2">
-                    <label className="text-xs text-[#94a3b8] whitespace-nowrap">Bitiş</label>
+                    <label className="text-xs text-gray-400 whitespace-nowrap">Bitiş</label>
                     <input type="date" value={ozelBit} min={ozelBas} max={bugunIso()}
                       onChange={(e) => setOzelBit(e.target.value)}
-                      className="px-3 py-1.5 rounded-lg text-xs text-white border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.05)] focus:outline-none focus:border-[rgba(251,192,36,0.4)] scheme-dark" />
+                      className="px-3 py-1.5 rounded-lg text-xs text-gray-800 border border-gray-200 bg-gray-50 focus:outline-none focus:border-[var(--leaf)] scheme-dark" />
                   </div>
                 </div>
               </motion.div>
@@ -261,15 +261,15 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
 
           {/* Arama */}
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#475569]" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <input
               type="text" placeholder="İşlem veya kategori ara…"
               value={arama} onChange={(e) => setArama(e.target.value)}
-              className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.07)] text-white placeholder-[#475569] text-sm focus:outline-none focus:border-[rgba(251,192,36,0.3)] transition-colors"
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#475569] text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors"
             />
             {arama && (
               <button onClick={() => setArama("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#475569] hover:text-white transition-colors">
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 transition-colors">
                 <X className="w-4 h-4" />
               </button>
             )}
@@ -277,24 +277,24 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
         </div>
 
         {/* ─── Liste ─── */}
-        <div className="glass-card rounded-2xl overflow-hidden">
+        <div className="card rounded-2xl overflow-hidden">
           {filtrelenmis.length === 0 ? (
             <div className="py-16 text-center space-y-3">
-              <div className="w-14 h-14 rounded-2xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.07)] flex items-center justify-center mx-auto">
-                {arama ? <Search className="w-6 h-6 text-[#334155]" /> : <Wallet className="w-6 h-6 text-[#334155]" />}
+              <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-center mx-auto">
+                {arama ? <Search className="w-6 h-6 text-gray-600" /> : <Wallet className="w-6 h-6 text-gray-600" />}
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#64748b]">
+                <p className="text-sm font-semibold text-gray-500">
                   {arama ? `"${arama}" için sonuç yok` : "Bu dönemde işlem yok"}
                 </p>
-                <p className="text-xs text-[#475569] mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   {arama ? "Arama terimini değiştirmeyi deneyin" : "İşlem Ekle butonuna tıklayarak başlayın"}
                 </p>
               </div>
               {!arama && (
                 <button
                   onClick={() => { setDuzenle(null); setModalAcik(true); }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[rgba(251,192,36,0.1)] border border-[rgba(251,192,36,0.2)] text-[#fbc024] text-sm font-medium hover:bg-[rgba(251,192,36,0.15)] transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--mint)] border border-[var(--forest-100, #D9F2E4)] text-[var(--leaf)] text-sm font-medium hover:bg-[var(--mint)] transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   İlk İşlemi Ekle
@@ -302,7 +302,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
               )}
             </div>
           ) : (
-            <div className="divide-y divide-[rgba(255,255,255,0.04)]">
+            <div className="divide-y divide-gray-100">
               <AnimatePresence mode="popLayout">
                 {sayfadakiIslemler.map((islem, i) => {
                   const gelirMi = islem.tip === "gelir";
@@ -315,7 +315,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ delay: i * 0.025, duration: 0.18 }}
-                      className="flex items-center gap-4 px-5 py-4 hover:bg-[rgba(255,255,255,0.02)] transition-colors group"
+                      className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50 transition-colors group"
                     >
                       {/* Sol aksan çizgisi */}
                       <div className="w-0.5 h-10 rounded-full shrink-0 self-center"
@@ -330,7 +330,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
                       {/* Ana içerik */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <p className="text-sm font-semibold text-white truncate">
+                          <p className="text-sm font-semibold text-gray-800 truncate">
                             {islem.aciklama || islem.kategori}
                           </p>
                           <span className="text-[9px] px-1.5 py-0.5 rounded-md shrink-0 font-medium"
@@ -338,7 +338,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
                             {islem.kategori}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 text-[11px] text-[#475569]">
+                        <div className="flex items-center gap-2 text-[11px] text-gray-500">
                           <span>{tarihEtiket(islem.tarih)}</span>
                           {islem.odemeYontemi && (
                             <>
@@ -362,13 +362,13 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
                       <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
                         <button
                           onClick={() => { setDuzenle(islem); setModalAcik(true); }}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-[#475569] hover:text-[#fbc024] hover:bg-[rgba(251,192,36,0.08)] transition-all"
+                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-[var(--leaf)] hover:bg-[var(--mint)] transition-all"
                         >
                           <Pencil className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => handleSil(islem)}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-[#475569] hover:text-[#ef4444] hover:bg-[rgba(239,68,68,0.08)] transition-all"
+                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-[#ef4444] hover:bg-[rgba(239,68,68,0.08)] transition-all"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -382,9 +382,9 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
 
           {/* ─── Alt bar: sayı + sayfalama ─── */}
           {filtrelenmis.length > 0 && (
-            <div className="px-5 py-3 border-t border-[rgba(255,255,255,0.05)] flex items-center justify-between gap-4">
-              <p className="text-xs text-[#475569]">
-                <span className="text-white font-medium">
+            <div className="px-5 py-3 border-t border-gray-200 flex items-center justify-between gap-4">
+              <p className="text-xs text-gray-500">
+                <span className="text-gray-800 font-medium">
                   {(sayfa - 1) * SAYFA_BOYUTU + 1}–{Math.min(sayfa * SAYFA_BOYUTU, filtrelenmis.length)}
                 </span>
                 {" / "}{filtrelenmis.length} işlem
@@ -393,7 +393,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
               {toplamSayfa > 1 && (
                 <div className="flex items-center gap-1">
                   <button onClick={() => setSayfa(p => Math.max(1, p - 1))} disabled={sayfa === 1}
-                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#64748b] hover:border-[rgba(251,192,36,0.3)] hover:text-[#fbc024] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:border-[var(--forest-200, #B3E8C8)] hover:text-[var(--leaf)] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
                     <ChevronLeft className="w-3.5 h-3.5" />
                   </button>
 
@@ -406,14 +406,14 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
                     }, [])
                     .map((item, idx) =>
                       item === "…" ? (
-                        <span key={`d${idx}`} className="w-7 h-7 flex items-center justify-center text-xs text-[#475569]">…</span>
+                        <span key={`d${idx}`} className="w-7 h-7 flex items-center justify-center text-xs text-gray-500">…</span>
                       ) : (
                         <button key={item} onClick={() => setSayfa(item as number)}
                           className="w-7 h-7 flex items-center justify-center rounded-lg text-xs font-medium border transition-all"
                           style={{
-                            borderColor:     sayfa === item ? "rgba(251,192,36,0.4)" : "rgba(255,255,255,0.07)",
-                            backgroundColor: sayfa === item ? "rgba(251,192,36,0.12)" : "transparent",
-                            color:           sayfa === item ? "#fbc024" : "#64748b",
+                            borderColor:     sayfa === item ? "var(--forest-300, #7DD0A0)" : "rgba(255,255,255,0.07)",
+                            backgroundColor: sayfa === item ? "var(--mint)" : "transparent",
+                            color:           sayfa === item ? "var(--leaf)" : "#64748b",
                           }}>
                           {item}
                         </button>
@@ -421,7 +421,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
                     )}
 
                   <button onClick={() => setSayfa(p => Math.min(toplamSayfa, p + 1))} disabled={sayfa === toplamSayfa}
-                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(255,255,255,0.08)] text-[#64748b] hover:border-[rgba(251,192,36,0.3)] hover:text-[#fbc024] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:border-[var(--forest-200, #B3E8C8)] hover:text-[var(--leaf)] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

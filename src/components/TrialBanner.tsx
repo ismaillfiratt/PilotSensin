@@ -18,11 +18,11 @@ export default function TrialBanner() {
     <div
       className="w-full px-4 py-2.5 flex items-center justify-between gap-4 text-sm"
       style={{
-        background:   "rgba(251,192,36,0.10)",
-        borderBottom: "1px solid rgba(251,192,36,0.25)",
+        background:   "var(--mint)",
+        borderBottom: "1px solid var(--forest-200, #B3E8C8)",
       }}
     >
-      <p style={{ color: "#fbc024" }}>
+      <p style={{ color: "var(--leaf)" }}>
         <span className="font-semibold">Ücretsiz deneme süreniz:</span>{" "}
         {gun === 0
           ? "Bugün sona eriyor."
@@ -32,8 +32,8 @@ export default function TrialBanner() {
         href="/fiyatlandirma"
         className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
         style={{
-          background: "#fbc024",
-          color:      "#0e172a",
+          background: "var(--leaf)",
+          color:      "var(--forest)",
         }}
       >
         Pakete Geç

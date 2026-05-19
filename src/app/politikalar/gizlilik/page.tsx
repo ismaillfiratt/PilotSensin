@@ -8,16 +8,16 @@ const GUNCELLEME = "19 Mayıs 2026";
 export default function GizlilikPage() {
   return (
     <div className="space-y-6">
-      <div className="glass-card rounded-2xl p-6 md:p-8">
+      <div className="card rounded-2xl p-6 md:p-8">
         <h1 className="text-2xl font-bold text-white mb-1">Gizlilik Politikası</h1>
-        <p className="text-sm text-[#64748b]">Son güncelleme: {GUNCELLEME}</p>
-        <p className="text-sm text-[#94a3b8] mt-3">
+        <p className="text-sm text-gray-500">Son güncelleme: {GUNCELLEME}</p>
+        <p className="text-sm text-gray-400 mt-3">
           PilotSensin olarak gizliliğinizi ciddiye alıyoruz. Bu politika, hangi bilgileri
           topladığımızı, nasıl kullandığımızı ve nasıl koruduğumuzu açıklamaktadır.
         </p>
       </div>
 
-      <div className="glass-card rounded-2xl p-6 md:p-8 space-y-8 text-[#94a3b8] leading-relaxed">
+      <div className="card rounded-2xl p-6 md:p-8 space-y-8 text-gray-400 leading-relaxed">
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white">1. Hangi Bilgileri Topluyoruz?</h2>
@@ -30,7 +30,7 @@ export default function GizlilikPage() {
           <h3 className="text-base font-semibold text-[#e2e8f0]">1.4 İşletme Verileri</h3>
           <p className="text-sm">Platforma girdiğiniz satış kayıtları, stok bilgileri, nakit akışı, görevler ve diğer işletme verileri tamamen size aittir. Bu veriler yalnızca hizmetin sunulması amacıyla sistemde tutulur, üçüncü taraflarla paylaşılmaz.</p>
           <h3 className="text-base font-semibold text-[#e2e8f0]">1.5 Çerezler</h3>
-          <p className="text-sm">Çerezler hakkında detaylı bilgi için <Link href="/politikalar/cerez" className="text-[#fbc024] hover:underline">Çerez Politikamızı</Link> inceleyiniz.</p>
+          <p className="text-sm">Çerezler hakkında detaylı bilgi için <Link href="/politikalar/cerez" className="text-[var(--leaf)] hover:underline">Çerez Politikamızı</Link> inceleyiniz.</p>
         </section>
 
         <section className="space-y-3">
@@ -52,15 +52,15 @@ export default function GizlilikPage() {
           <h2 className="text-lg font-bold text-white">3. Üçüncü Taraflarla Paylaşım</h2>
           <p className="text-sm">Verileriniz yalnızca hizmetin sunulması için zorunlu olan altyapı sağlayıcılarıyla paylaşılmaktadır:</p>
           <div className="space-y-2 text-sm">
-            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
               <p className="text-white font-semibold mb-1">Supabase Inc. — Veritabanı, Kimlik Doğrulama ve Depolama</p>
               <p>Hesap verileri ve işletme verileriniz Supabase Inc. altyapısında barındırılmaktadır. Supabase sunucuları Singapur konumludur. SOC 2 Type II ve ISO 27001 sertifikalıdır.</p>
             </div>
-            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
               <p className="text-white font-semibold mb-1">Vercel Inc. — Uygulama Barındırma (Global CDN)</p>
               <p>Uygulama kodumuz Vercel global ağı üzerinden sunulmaktadır.</p>
             </div>
-            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
               <p className="text-white font-semibold mb-1">Resend Inc. — E-posta Servisi (ABD)</p>
               <p>Hesap doğrulama, destek yanıtları ve sistem bildirimleri için kullanılır.</p>
             </div>
@@ -89,11 +89,11 @@ export default function GizlilikPage() {
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white">8. Haklarınız</h2>
-          <p className="text-sm">KVKK kapsamındaki tüm haklarınız için <Link href="/politikalar/kvkk" className="text-[#fbc024] hover:underline">KVKK Aydınlatma Metni</Link>ni inceleyiniz.</p>
+          <p className="text-sm">KVKK kapsamındaki tüm haklarınız için <Link href="/politikalar/kvkk" className="text-[var(--leaf)] hover:underline">KVKK Aydınlatma Metni</Link>ni inceleyiniz.</p>
         </section>
 
-        <div className="border-t border-[rgba(255,255,255,0.07)] pt-6 text-sm text-[#64748b]">
-          <p>Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[#fbc024] hover:underline">destek@pilotsensin.com</Link></p>
+        <div className="border-t border-gray-200 pt-6 text-sm text-gray-500">
+          <p>Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[var(--leaf)] hover:underline">destek@pilotsensin.com</Link></p>
           <p className="mt-1">Son güncelleme: {GUNCELLEME}</p>
         </div>
       </div>

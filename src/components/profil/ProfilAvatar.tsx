@@ -31,7 +31,7 @@ export default function ProfilAvatar({ ad, soyad, email }: Props) {
     acilFonSkoru(fonIslemler, fonHedefler),
   ]);
 
-  const skorRenk = skor >= 80 ? "#22c55e" : skor >= 60 ? "#fbc024" : "#ef4444";
+  const skorRenk = skor >= 80 ? "#22c55e" : skor >= 60 ? "var(--leaf)" : "#ef4444";
 
   // Görev sayısı
   const acikGorev  = gorevler.filter((g) => g.durum !== "tamamlandi").length;
@@ -55,19 +55,19 @@ export default function ProfilAvatar({ ad, soyad, email }: Props) {
   ];
 
   return (
-    <div className="glass-card rounded-2xl p-6 flex flex-col items-center gap-4">
+    <div className="card rounded-2xl p-6 flex flex-col items-center gap-4">
       <div className="relative group">
-        <div className="w-24 h-24 rounded-2xl bg-[#fbc024] flex items-center justify-center text-3xl font-black text-[#0e172a] select-none">
+        <div className="w-24 h-24 rounded-2xl bg-white flex items-center justify-center text-3xl font-black text-gray-900 select-none">
           {initials}
         </div>
         <button className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Camera className="w-6 h-6 text-white" />
+          <Camera className="w-6 h-6 text-gray-800" />
         </button>
       </div>
 
       <div className="text-center">
-        <p className="text-lg font-bold text-white">{ad} {soyad}</p>
-        <p className="text-sm text-[#94a3b8] mt-0.5">{email}</p>
+        <p className="text-lg font-bold text-gray-800">{ad} {soyad}</p>
+        <p className="text-sm text-gray-400 mt-0.5">{email}</p>
       </div>
 
       <motion.div
@@ -77,15 +77,15 @@ export default function ProfilAvatar({ ad, soyad, email }: Props) {
         className="flex items-center gap-2 px-4 py-2 rounded-xl border"
         style={{ backgroundColor: `${skorRenk}15`, borderColor: `${skorRenk}40` }}
       >
-        <span className="text-xs text-[#94a3b8]">Pilot Skoru</span>
+        <span className="text-xs text-gray-400">Pilot Skoru</span>
         <span className="text-sm font-black" style={{ color: skorRenk }}>%{skor}</span>
       </motion.div>
 
-      <div className="w-full grid grid-cols-3 gap-2 pt-2 border-t border-[rgba(255,255,255,0.06)]">
+      <div className="w-full grid grid-cols-3 gap-2 pt-2 border-t border-gray-200">
         {istatistikler.map(({ label, value }) => (
           <div key={label} className="text-center">
-            <p className="text-base font-bold text-white">{value}</p>
-            <p className="text-[11px] text-[#94a3b8]">{label}</p>
+            <p className="text-base font-bold text-gray-800">{value}</p>
+            <p className="text-[11px] text-gray-400">{label}</p>
           </div>
         ))}
       </div>

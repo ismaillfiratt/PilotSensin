@@ -8,16 +8,16 @@ const GUNCELLEME = "19 Mayıs 2026";
 export default function KVKKPage() {
   return (
     <div className="space-y-6">
-      <div className="glass-card rounded-2xl p-6 md:p-8">
+      <div className="card rounded-2xl p-6 md:p-8">
         <h1 className="text-2xl font-bold text-white mb-1">KVKK Aydınlatma Metni</h1>
-        <p className="text-sm text-[#64748b]">Son güncelleme: {GUNCELLEME}</p>
-        <p className="text-sm text-[#94a3b8] mt-3">
+        <p className="text-sm text-gray-500">Son güncelleme: {GUNCELLEME}</p>
+        <p className="text-sm text-gray-400 mt-3">
           6698 sayılı Kişisel Verilerin Korunması Kanunu&apos;nun 10. maddesi uyarınca, kişisel verilerinizin
           işlenmesine ilişkin aşağıda yer alan bilgileri dikkatinize sunarız.
         </p>
       </div>
 
-      <div className="glass-card rounded-2xl p-6 md:p-8 space-y-8 text-[#94a3b8] leading-relaxed">
+      <div className="card rounded-2xl p-6 md:p-8 space-y-8 text-gray-400 leading-relaxed">
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white">1. Veri Sorumlusunun Kimliği</h2>
@@ -25,12 +25,12 @@ export default function KVKKPage() {
             Kişisel verileriniz; aşağıda kimlik ve iletişim bilgileri yer alan veri sorumlusu
             tarafından 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında işlenmektedir.
           </p>
-          <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.07)] rounded-xl p-4 space-y-1.5 text-sm">
-            <div className="flex gap-3"><span className="text-[#64748b] min-w-32">Unvan</span><span className="text-white">İsmail Fırat (Şahıs Şirketi)</span></div>
-            <div className="flex gap-3"><span className="text-[#64748b] min-w-32">Adres</span><span className="text-white">Güveren Mah. 3746. Sk. No:13 Kepez / Antalya</span></div>
-            <div className="flex gap-3"><span className="text-[#64748b] min-w-32">E-posta</span><span className="text-[#fbc024]">destek@pilotsensin.com</span></div>
-            <div className="flex gap-3"><span className="text-[#64748b] min-w-32">Web</span><span className="text-white">https://pilotsensin.com</span></div>
-            <div className="flex gap-3"><span className="text-[#64748b] min-w-32">Vergi No</span><span className="text-white">[SONRADAN_EKLENECEK]</span></div>
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-1.5 text-sm">
+            <div className="flex gap-3"><span className="text-gray-500 min-w-32">Unvan</span><span className="text-white">İsmail Fırat (Şahıs Şirketi)</span></div>
+            <div className="flex gap-3"><span className="text-gray-500 min-w-32">Adres</span><span className="text-white">Güveren Mah. 3746. Sk. No:13 Kepez / Antalya</span></div>
+            <div className="flex gap-3"><span className="text-gray-500 min-w-32">E-posta</span><span className="text-[var(--leaf)]">destek@pilotsensin.com</span></div>
+            <div className="flex gap-3"><span className="text-gray-500 min-w-32">Web</span><span className="text-white">https://pilotsensin.com</span></div>
+            <div className="flex gap-3"><span className="text-gray-500 min-w-32">Vergi No</span><span className="text-white">[SONRADAN_EKLENECEK]</span></div>
           </div>
         </section>
 
@@ -48,8 +48,8 @@ export default function KVKKPage() {
               ["Teknik Veriler", "IP adresi, tarayıcı türü ve sürümü, cihaz bilgisi, oturum tokenları"],
               ["Çerez Verileri", "Oturum çerezleri, tercih çerezleri, analitik çerezler (rıza alındığında)"],
             ].map(([kategori, aciklama]) => (
-              <li key={kategori} className="flex gap-3 bg-[rgba(255,255,255,0.02)] rounded-lg px-4 py-2.5 text-sm">
-                <span className="text-[#fbc024] font-semibold min-w-40 shrink-0">{kategori}</span>
+              <li key={kategori} className="flex gap-3 bg-gray-50 rounded-lg px-4 py-2.5 text-sm">
+                <span className="text-[var(--leaf)] font-semibold min-w-40 shrink-0">{kategori}</span>
                 <span>{aciklama}</span>
               </li>
             ))}
@@ -89,19 +89,19 @@ export default function KVKKPage() {
           <h2 className="text-lg font-bold text-white">5. Hukuki Sebepler</h2>
           <p>Kişisel verileriniz, 6698 sayılı Kanun madde 5/2 ile madde 9 kapsamında aşağıdaki hukuki sebeplere dayalı olarak işlenmektedir:</p>
           <div className="space-y-2 text-sm">
-            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-lg p-3">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <span className="text-white font-semibold">Sözleşmenin Kurulması veya İfası (md. 5/2-c):</span>
               <span className="ml-2">Hesap oluşturma, abonelik yönetimi, hizmet sunumu</span>
             </div>
-            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-lg p-3">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <span className="text-white font-semibold">Hukuki Yükümlülük (md. 5/2-ç):</span>
               <span className="ml-2">Vergi kanunları kapsamında saklama, adli/idari makam talepleri</span>
             </div>
-            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-lg p-3">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <span className="text-white font-semibold">Meşru Menfaat (md. 5/2-f):</span>
               <span className="ml-2">Platform güvenliği, dolandırıcılık önleme, hizmet iyileştirme</span>
             </div>
-            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-lg p-3">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <span className="text-white font-semibold">Açık Rıza (md. 5/1 ve md. 9):</span>
               <span className="ml-2">Analitik çerezler, pazarlama bildirimleri, yurt dışına veri aktarımı</span>
             </div>
@@ -138,13 +138,13 @@ export default function KVKKPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-b border-[rgba(255,255,255,0.08)]">
-                  <th className="text-left py-2.5 pr-4 text-[#64748b] font-medium">Veri Kategorisi</th>
-                  <th className="text-left py-2.5 pr-4 text-[#64748b] font-medium">Saklama Süresi</th>
-                  <th className="text-left py-2.5 text-[#64748b] font-medium">Dayanak</th>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-2.5 pr-4 text-gray-500 font-medium">Veri Kategorisi</th>
+                  <th className="text-left py-2.5 pr-4 text-gray-500 font-medium">Saklama Süresi</th>
+                  <th className="text-left py-2.5 text-gray-500 font-medium">Dayanak</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[rgba(255,255,255,0.04)]">
+              <tbody className="divide-y divide-gray-100">
                 {[
                   ["Hesap ve profil bilgileri", "Hesap silme + 30 gün", "Kanun md. 7"],
                   ["Mali kayıtlar (fatura, ödeme)", "10 yıl", "VUK md. 253"],
@@ -154,9 +154,9 @@ export default function KVKKPage() {
                   ["Çerez verileri", "Çerez tercihine göre (azami 1 yıl)", "Kanun md. 7"],
                 ].map(([kategori, sure, dayanak]) => (
                   <tr key={kategori}>
-                    <td className="py-2.5 pr-4 text-[#94a3b8]">{kategori}</td>
+                    <td className="py-2.5 pr-4 text-gray-400">{kategori}</td>
                     <td className="py-2.5 pr-4 text-white">{sure}</td>
-                    <td className="py-2.5 text-[#64748b] text-xs">{dayanak}</td>
+                    <td className="py-2.5 text-gray-500 text-xs">{dayanak}</td>
                   </tr>
                 ))}
               </tbody>
@@ -201,11 +201,11 @@ export default function KVKKPage() {
             Haklarınızı kullanmak için aşağıdaki kanallar aracılığıyla veri sorumlusuna başvurabilirsiniz:
           </p>
           <div className="space-y-2 text-sm">
-            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-lg p-3">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <span className="text-white font-semibold">E-posta:</span>
               <span className="ml-2">destek@pilotsensin.com — konu satırına &quot;KVKK Başvurusu&quot; yazınız</span>
             </div>
-            <div className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-lg p-3">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <span className="text-white font-semibold">Posta:</span>
               <span className="ml-2">Güveren Mah. 3746. Sk. No:13 Kepez / Antalya</span>
             </div>
@@ -216,8 +216,8 @@ export default function KVKKPage() {
           </p>
         </section>
 
-        <div className="border-t border-[rgba(255,255,255,0.07)] pt-6 text-sm text-[#64748b]">
-          <p>Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[#fbc024] hover:underline">destek@pilotsensin.com</Link></p>
+        <div className="border-t border-gray-200 pt-6 text-sm text-gray-500">
+          <p>Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[var(--leaf)] hover:underline">destek@pilotsensin.com</Link></p>
           <p className="mt-1">Son güncelleme: {GUNCELLEME}</p>
         </div>
       </div>

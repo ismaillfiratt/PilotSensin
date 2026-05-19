@@ -55,7 +55,7 @@ export const VARSAYILAN_SORUMLULAR: string[] = [
 export const SORUMLULAR = VARSAYILAN_SORUMLULAR;
 
 export const VARSAYILAN_KATEGORI_RENK: Record<string, { color: string; bg: string }> = {
-  "Açılış & Kapanış":      { color: "#fbc024", bg: "rgba(251,192,36,0.12)"  },
+  "Açılış & Kapanış":      { color: "#fbc024", bg: "var(--mint)"  },
   "Temizlik & Hijyen":     { color: "#22c55e", bg: "rgba(34,197,94,0.12)"   },
   "Müşteri Hizmetleri":    { color: "#60a5fa", bg: "rgba(96,165,250,0.12)"  },
   "Stok & Tedarik":        { color: "#a78bfa", bg: "rgba(167,139,250,0.12)" },
@@ -86,7 +86,7 @@ export const SIKLIGI_LABEL: Record<ChecklistSikligi, string> = {
 
 export const KRITIKLIK_RENK: Record<Kritiklik, { color: string; bg: string }> = {
   dusuk:   { color: "#94a3b8", bg: "rgba(148,163,184,0.12)" },
-  orta:    { color: "#fbc024", bg: "rgba(251,192,36,0.12)"  },
+  orta:    { color: "#fbc024", bg: "var(--mint)"  },
   yuksek:  { color: "#f97316", bg: "rgba(249,115,22,0.12)"  },
   kritik:  { color: "#ef4444", bg: "rgba(239,68,68,0.12)"   },
 };

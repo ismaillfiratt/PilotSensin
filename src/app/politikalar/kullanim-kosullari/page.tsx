@@ -8,16 +8,16 @@ const GUNCELLEME = "19 Mayıs 2026";
 export default function KullanimKosullariPage() {
   return (
     <div className="space-y-6">
-      <div className="glass-card rounded-2xl p-6 md:p-8">
+      <div className="card rounded-2xl p-6 md:p-8">
         <h1 className="text-2xl font-bold text-white mb-1">Kullanım Koşulları</h1>
-        <p className="text-sm text-[#64748b]">Son güncelleme: {GUNCELLEME}</p>
-        <p className="text-sm text-[#94a3b8] mt-3">
+        <p className="text-sm text-gray-500">Son güncelleme: {GUNCELLEME}</p>
+        <p className="text-sm text-gray-400 mt-3">
           PilotSensin platformunu kullanmadan önce aşağıdaki koşulları lütfen dikkatlice okuyunuz.
           Platforma erişim veya kayıt ile bu koşulları kabul etmiş sayılırsınız.
         </p>
       </div>
 
-      <div className="glass-card rounded-2xl p-6 md:p-8 space-y-8 text-[#94a3b8] leading-relaxed">
+      <div className="card rounded-2xl p-6 md:p-8 space-y-8 text-gray-400 leading-relaxed">
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white">1. Hizmet Tanımı</h2>
@@ -48,11 +48,11 @@ export default function KullanimKosullariPage() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white">3. Ücretlendirme</h2>
           <div className="space-y-3 text-sm">
-            <div className="bg-[rgba(251,192,36,0.06)] border border-[rgba(251,192,36,0.2)] rounded-xl p-4">
+            <div className="bg-[var(--mint)] border border-[var(--forest-100, #D9F2E4)] rounded-xl p-4">
               <p className="text-white font-semibold mb-2">Abonelik Planları</p>
               <div className="space-y-1.5">
-                <div className="flex justify-between"><span>Aylık Plan</span><span className="text-[#fbc024] font-bold">499 TL / ay (KDV dahil)</span></div>
-                <div className="flex justify-between"><span>Yıllık Plan</span><span className="text-[#fbc024] font-bold">4.790 TL / yıl (KDV dahil, aylık plana göre %20 indirimli)</span></div>
+                <div className="flex justify-between"><span>Aylık Plan</span><span className="text-[var(--leaf)] font-bold">499 TL / ay (KDV dahil)</span></div>
+                <div className="flex justify-between"><span>Yıllık Plan</span><span className="text-[var(--leaf)] font-bold">4.790 TL / yıl (KDV dahil, aylık plana göre %20 indirimli)</span></div>
               </div>
             </div>
             <p>Fiyatlar Türk Lirası cinsindendir ve KDV dahildir. PilotSensin fiyatları önceden bildirmek kaydıyla değiştirme hakkını saklı tutar.</p>
@@ -159,8 +159,8 @@ export default function KullanimKosullariPage() {
           </p>
         </section>
 
-        <div className="border-t border-[rgba(255,255,255,0.07)] pt-6 text-sm text-[#64748b]">
-          <p>Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[#fbc024] hover:underline">destek@pilotsensin.com</Link></p>
+        <div className="border-t border-gray-200 pt-6 text-sm text-gray-500">
+          <p>Soru ve itirazlarınız için: <Link href="mailto:destek@pilotsensin.com" className="text-[var(--leaf)] hover:underline">destek@pilotsensin.com</Link></p>
           <p className="mt-1">Son güncelleme: {GUNCELLEME}</p>
         </div>
       </div>

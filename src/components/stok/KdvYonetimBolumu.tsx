@@ -45,16 +45,16 @@ export default function KdvYonetimBolumu() {
   ];
 
   return (
-    <div className="glass-card rounded-2xl overflow-hidden">
+    <div className="card rounded-2xl overflow-hidden">
       {/* ─── Başlık ─── */}
-      <div className="px-5 pt-5 pb-4 border-b border-[rgba(255,255,255,0.06)]">
+      <div className="px-5 pt-5 pb-4 border-b border-gray-200">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-[rgba(34,197,94,0.12)] border border-[rgba(34,197,94,0.2)] flex items-center justify-center shrink-0">
             <Receipt className="w-4.5 h-4.5 text-[#22c55e]" />
           </div>
           <div>
             <h2 className="text-base font-bold text-white">KDV Yönetimi</h2>
-            <p className="text-xs text-[#64748b]">
+            <p className="text-xs text-gray-500">
               Girdi/çıktı KDV takibi · mahsuplaşma projeksiyonu · hareket geçmişi
             </p>
           </div>
@@ -94,9 +94,9 @@ export default function KdvYonetimBolumu() {
             >
               {havuzBos ? (
                 <div className="py-10 text-center space-y-2">
-                  <Receipt className="w-8 h-8 mx-auto text-[#334155] opacity-50" />
-                  <p className="text-sm text-[#64748b]">Henüz KDV hareketi yok</p>
-                  <p className="text-xs text-[#475569]">
+                  <Receipt className="w-8 h-8 mx-auto text-gray-600 opacity-50" />
+                  <p className="text-sm text-gray-500">Henüz KDV hareketi yok</p>
+                  <p className="text-xs text-gray-500">
                     Stok girişi veya çıkışı yaptığınızda KDV otomatik izlenir
                   </p>
                 </div>
@@ -129,17 +129,17 @@ export default function KdvYonetimBolumu() {
                     <div className={`p-4 rounded-xl border space-y-1 ${
                       devreden
                         ? "bg-[rgba(34,197,94,0.07)] border-[rgba(34,197,94,0.2)]"
-                        : "bg-[rgba(251,192,36,0.07)] border-[rgba(251,192,36,0.2)]"
+                        : "bg-[var(--mint)] border-[var(--forest-100, #D9F2E4)]"
                     }`}>
                       <div className="flex items-center gap-1.5">
                         {devreden
                           ? <CheckCircle className="w-3.5 h-3.5 text-[#22c55e]" />
-                          : <AlertTriangle className="w-3.5 h-3.5 text-[#fbc024]" />}
-                        <p className={`text-[10px] font-semibold uppercase tracking-wide ${devreden ? "text-[#22c55e]" : "text-[#fbc024]"}`}>
+                          : <AlertTriangle className="w-3.5 h-3.5 text-[var(--leaf)]" />}
+                        <p className={`text-[10px] font-semibold uppercase tracking-wide ${devreden ? "text-[#22c55e]" : "text-[var(--leaf)]"}`}>
                           {devreden ? "Devreden KDV" : "Ödenecek KDV"}
                         </p>
                       </div>
-                      <p className={`text-xl font-black ${devreden ? "text-[#22c55e]" : "text-[#fbc024]"}`}>
+                      <p className={`text-xl font-black ${devreden ? "text-[#22c55e]" : "text-[var(--leaf)]"}`}>
                         {tlK(Math.abs(netKdv))}
                       </p>
                       <p className={`text-[10px] ${devreden ? "text-[#16a34a]" : "text-[#b45309]"}`}>
@@ -151,15 +151,15 @@ export default function KdvYonetimBolumu() {
                   {/* Formül */}
                   <div className="flex items-center gap-2 px-1 text-xs flex-wrap">
                     <span className="text-[#ef4444] font-semibold">{tlK(ciktiKdv)}</span>
-                    <span className="text-[#475569]">Hesaplanan</span>
-                    <span className="text-[#475569]">−</span>
+                    <span className="text-gray-500">Hesaplanan</span>
+                    <span className="text-gray-500">−</span>
                     <span className="text-[#22c55e] font-semibold">{tlK(girdiKdv)}</span>
-                    <span className="text-[#475569]">İndirilecek</span>
-                    <span className="text-[#475569]">=</span>
-                    <span className={`font-bold ${devreden ? "text-[#22c55e]" : "text-[#fbc024]"}`}>
+                    <span className="text-gray-500">İndirilecek</span>
+                    <span className="text-gray-500">=</span>
+                    <span className={`font-bold ${devreden ? "text-[#22c55e]" : "text-[var(--leaf)]"}`}>
                       {devreden ? `−${tlK(Math.abs(netKdv))}` : tlK(netKdv)}
                     </span>
-                    <span className={devreden ? "text-[#22c55e]" : "text-[#fbc024]"}>
+                    <span className={devreden ? "text-[#22c55e]" : "text-[var(--leaf)]"}>
                       {devreden ? "Devreden" : "Ödenecek"}
                     </span>
                   </div>
@@ -168,18 +168,18 @@ export default function KdvYonetimBolumu() {
                   <div className={`flex items-start gap-2.5 p-3.5 rounded-xl border ${
                     devreden
                       ? "bg-[rgba(34,197,94,0.05)] border-[rgba(34,197,94,0.15)]"
-                      : "bg-[rgba(251,192,36,0.05)] border-[rgba(251,192,36,0.15)]"
+                      : "bg-[var(--mint)] border-[var(--mint)]"
                   }`}>
                     {devreden
                       ? <CheckCircle className="w-4 h-4 text-[#22c55e] shrink-0 mt-0.5" />
-                      : <AlertTriangle className="w-4 h-4 text-[#fbc024] shrink-0 mt-0.5" />}
+                      : <AlertTriangle className="w-4 h-4 text-[var(--leaf)] shrink-0 mt-0.5" />}
                     <div>
-                      <p className={`text-sm font-semibold ${devreden ? "text-[#22c55e]" : "text-[#fbc024]"}`}>
+                      <p className={`text-sm font-semibold ${devreden ? "text-[#22c55e]" : "text-[var(--leaf)]"}`}>
                         {devreden
                           ? `Bu dönemde ödenecek KDV yok — devreden: ${tlK(Math.abs(netKdv))}`
                           : `Bu dönemde vergi dairesine ödenecek net KDV: ${tlK(netKdv)}`}
                       </p>
-                      <p className="text-[10px] text-[#475569] mt-0.5">
+                      <p className="text-[10px] text-gray-500 mt-0.5">
                         Veriler stok hareketi kaydedildiğinde otomatik güncellenir.
                         Ürüne maliyet girilmemişse o hareket izlenmez.
                       </p>
@@ -200,26 +200,26 @@ export default function KdvYonetimBolumu() {
             >
               {havuzKayitlari.length === 0 ? (
                 <div className="py-10 text-center space-y-2">
-                  <Receipt className="w-8 h-8 mx-auto text-[#334155] opacity-50" />
-                  <p className="text-sm text-[#64748b]">Henüz KDV hareketi yok</p>
+                  <Receipt className="w-8 h-8 mx-auto text-gray-600 opacity-50" />
+                  <p className="text-sm text-gray-500">Henüz KDV hareketi yok</p>
                 </div>
               ) : (
-                <div className="rounded-xl border border-[rgba(255,255,255,0.07)] overflow-hidden">
-                  <div className="grid grid-cols-[1fr_80px_60px_80px_90px] gap-3 px-4 py-2.5 bg-[rgba(255,255,255,0.03)] text-[10px] font-semibold text-[#475569] uppercase tracking-wider">
+                <div className="rounded-xl border border-gray-200 overflow-hidden">
+                  <div className="grid grid-cols-[1fr_80px_60px_80px_90px] gap-3 px-4 py-2.5 bg-gray-50 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
                     <span>Ürün / Tarih</span>
                     <span>Hareket</span>
                     <span className="text-right">Adet</span>
                     <span className="text-right">Birim KDV</span>
                     <span className="text-right">Toplam KDV</span>
                   </div>
-                  <div className="divide-y divide-[rgba(255,255,255,0.04)] max-h-80 overflow-y-auto">
+                  <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
                     {[...havuzKayitlari]
                       .sort((a, b) => new Date(b.tarih).getTime() - new Date(a.tarih).getTime())
                       .map((k) => (
-                        <div key={k.id} className="grid grid-cols-[1fr_80px_60px_80px_90px] gap-3 px-4 py-3 items-center hover:bg-[rgba(255,255,255,0.02)]">
+                        <div key={k.id} className="grid grid-cols-[1fr_80px_60px_80px_90px] gap-3 px-4 py-3 items-center hover:bg-gray-50">
                           <div className="min-w-0">
                             <p className="text-xs text-white truncate">{k.urunAd}</p>
-                            <p className="text-[10px] text-[#475569]">{zaman(k.tarih)}</p>
+                            <p className="text-[10px] text-gray-500">{zaman(k.tarih)}</p>
                           </div>
                           <div>
                             <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold ${
@@ -230,8 +230,8 @@ export default function KdvYonetimBolumu() {
                               {k.tip === "giris" ? "Alış" : "Satış"}
                             </span>
                           </div>
-                          <p className="text-[#94a3b8] text-right text-xs">{k.adet}</p>
-                          <p className="text-[#94a3b8] text-right text-xs">{tl(k.birimKdvKurus)}</p>
+                          <p className="text-gray-400 text-right text-xs">{k.adet}</p>
+                          <p className="text-gray-400 text-right text-xs">{tl(k.birimKdvKurus)}</p>
                           <p className={`text-right text-xs font-semibold ${
                             k.tip === "giris" ? "text-[#22c55e]" : "text-[#ef4444]"
                           }`}>
@@ -241,12 +241,12 @@ export default function KdvYonetimBolumu() {
                       ))}
                   </div>
                   {/* Footer: toplam */}
-                  <div className="grid grid-cols-[1fr_80px_60px_80px_90px] gap-3 px-4 py-2.5 bg-[rgba(255,255,255,0.03)] border-t border-[rgba(255,255,255,0.07)] text-xs font-bold">
-                    <span className="text-[#64748b]">{havuzKayitlari.length} kayıt</span>
+                  <div className="grid grid-cols-[1fr_80px_60px_80px_90px] gap-3 px-4 py-2.5 bg-gray-50 border-t border-gray-200 text-xs font-bold">
+                    <span className="text-gray-500">{havuzKayitlari.length} kayıt</span>
                     <span />
                     <span />
-                    <span className="text-right text-[#64748b]">Net:</span>
-                    <span className={`text-right ${devreden ? "text-[#22c55e]" : "text-[#fbc024]"}`}>
+                    <span className="text-right text-gray-500">Net:</span>
+                    <span className={`text-right ${devreden ? "text-[#22c55e]" : "text-[var(--leaf)]"}`}>
                       {devreden ? `−${tl(Math.abs(netKdv))}` : tl(netKdv)}
                     </span>
                   </div>

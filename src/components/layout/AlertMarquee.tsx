@@ -36,7 +36,7 @@ export default function AlertMarquee() {
         style={{ background: "var(--bg-secondary)", borderTop: "1px solid var(--border-subtle)" }}
       >
         <CheckCircle className="w-3.5 h-3.5 text-[#22c55e]" />
-        <span className="text-xs text-[#94a3b8]">Aktif uyarı yok</span>
+        <span className="text-xs text-gray-400">Aktif uyarı yok</span>
       </div>
     );
   }
@@ -51,9 +51,9 @@ export default function AlertMarquee() {
       style={{ background: "var(--bg-secondary)", borderTop: "1px solid var(--border-subtle)" }}
     >
       {/* Sabit etiket */}
-      <div className="flex items-center gap-1 px-3 shrink-0 border-r border-[rgba(251,192,36,0.15)] h-full">
-        <AlertTriangle className="w-3.5 h-3.5 text-[#fbc024]" />
-        <span className="text-[10px] font-bold text-[#fbc024] uppercase tracking-widest">Uyarılar</span>
+      <div className="flex items-center gap-1 px-3 shrink-0 border-r border-gray-200 h-full">
+        <AlertTriangle className="w-3.5 h-3.5 text-[var(--leaf)]" />
+        <span className="text-[10px] font-bold text-[var(--leaf)] uppercase tracking-widest">Uyarılar</span>
         <span className="ml-1 text-[10px] font-bold bg-[#ef4444] text-white rounded-full w-4 h-4 flex items-center justify-center">
           {aktif.length}
         </span>
@@ -77,7 +77,7 @@ export default function AlertMarquee() {
                   href={MODUL_HREF[b.modul] ?? "/dashboard"}
                   onClick={() => okunduYap(b.id)}
                   className={`text-xs font-medium hover:underline ${
-                    b.tip === "kritik" ? "text-[#ef4444]" : "text-[#fbc024]"
+                    b.tip === "kritik" ? "text-[#ef4444]" : "text-[var(--leaf)]"
                   }`}
                 >
                   {b.tip === "kritik" ? "🔴" : "🟡"} {b.baslik}: {b.mesaj}

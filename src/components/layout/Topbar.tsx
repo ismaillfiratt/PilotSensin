@@ -4,18 +4,22 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, Search, User, Settings, LogOut, ChevronDown, Store, CheckCheck, ExternalLink, ChevronLeft, Menu, CheckCircle2, Circle } from "lucide-react";
-import { useLayout } from "@/store/layout";
-import { useNakit }    from "@/store/nakit";
-import { useGorevler } from "@/store/gorevler";
-import { useStok }     from "@/store/stok";
+import {
+  Bell, Search, User, Settings, LogOut, ChevronDown,
+  Store, CheckCheck, ExternalLink, ChevronLeft, Menu,
+  CheckCircle2, Circle,
+} from "lucide-react";
+import { useLayout }      from "@/store/layout";
+import { useNakit }       from "@/store/nakit";
+import { useGorevler }    from "@/store/gorevler";
+import { useStok }        from "@/store/stok";
 import { nakitSkoru, gorevSkoru, stokSkoru, prosedurSkoru, acilFonSkoru, pilotSkoru } from "@/lib/pilot-score";
 import { useProsedurler } from "@/store/prosedurler";
 import { useAcilFon }     from "@/store/acilFon";
-import { createClient } from "@/utils/supabase/client";
+import { createClient }   from "@/utils/supabase/client";
 import { useBildirimler } from "@/store/bildirimler";
-import { useSirket } from "@/store/sirket";
-import AramaModal from "@/components/arama/AramaModal";
+import { useSirket }      from "@/store/sirket";
+import AramaModal         from "@/components/arama/AramaModal";
 
 const MODUL_HREF: Record<string, string> = {
   "stok":        "/stok",
@@ -46,19 +50,19 @@ export default function Topbar() {
   const router   = useRouter();
   const pathname = usePathname();
   const [profileOpen, setProfileOpen] = useState(false);
-  const [notifOpen, setNotifOpen]     = useState(false);
-  const [aramaAcik, setAramaAcik]     = useState(false);
-  const [kullanici, setKullanici]     = useState<KullaniciBilgi | null>(null);
+  const [notifOpen,   setNotifOpen]   = useState(false);
+  const [aramaAcik,   setAramaAcik]   = useState(false);
+  const [kullanici,   setKullanici]   = useState<KullaniciBilgi | null>(null);
 
   const { bildirimler, okunduYap, okunduToggle, tumunuOkunduYap } = useBildirimler();
-  const { sirketAdi } = useSirket();
-  const notifRef = useRef<HTMLDivElement>(null);
-  const { islemler }                   = useNakit();
-  const { gorevler }                   = useGorevler();
-  const { urunler }                    = useStok();
-  const { prosedurler, checklist }     = useProsedurler();
+  const { sirketAdi }  = useSirket();
+  const notifRef       = useRef<HTMLDivElement>(null);
+  const { islemler }                              = useNakit();
+  const { gorevler }                              = useGorevler();
+  const { urunler }                               = useStok();
+  const { prosedurler, checklist }                = useProsedurler();
   const { islemler: fonIslemler, hedefler: fonHedefler } = useAcilFon();
-  const { mobileSidebarToggle }        = useLayout();
+  const { mobileSidebarToggle }                   = useLayout();
 
   const genelSkor = pilotSkoru([
     nakitSkoru(islemler),
@@ -68,9 +72,11 @@ export default function Topbar() {
     acilFonSkoru(fonIslemler, fonHedefler),
   ]);
 
-  const skorRenk = genelSkor >= 80 ? "#22c55e" : genelSkor >= 60 ? "#fbc024" : "#ef4444";
+  const skorRenk =
+    genelSkor >= 80 ? "#10B981" :
+    genelSkor >= 60 ? "#F59E0B" :
+    "#EF4444";
 
-  // Kullanıcı bilgilerini Supabase'den çek
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => {
@@ -84,9 +90,9 @@ export default function Topbar() {
       });
     });
   }, []);
+
   const okunmamis = bildirimler.filter((b) => !b.okundu);
 
-  // Bildirim paneli dışına tıklanınca kapat
   useEffect(() => {
     if (!notifOpen) return;
     const handler = (e: MouseEvent) => {
@@ -98,7 +104,6 @@ export default function Topbar() {
     return () => document.removeEventListener("mousedown", handler);
   }, [notifOpen]);
 
-  // ⌘K / Ctrl+K kısayolu
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -117,18 +122,25 @@ export default function Topbar() {
     router.refresh();
   };
 
+  const initials = kullanici
+    ? ((kullanici.ad[0] ?? kullanici.email[0] ?? "?").toUpperCase())
+    : "?";
+
+  const displayName = kullanici
+    ? (kullanici.ad || kullanici.email.split("@")[0])
+    : "...";
+
   return (
     <>
-      {/* ── Mobile header (md:hidden) ── */}
+      {/* ── Mobile header ── */}
       <header
-        className="md:hidden flex items-center justify-between h-14 px-4 shrink-0"
-        style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-subtle)" }}
+        className="md:hidden flex items-center justify-between h-14 px-4 shrink-0 bg-white"
+        style={{ borderBottom: "1px solid var(--border-color)" }}
       >
-        {/* Sol: geri butonu (dashboard dışı) veya spacer */}
         {pathname !== "/dashboard" ? (
           <button
             onClick={() => router.back()}
-            className="min-w-11 min-h-11 flex items-center justify-center -ml-1 rounded-xl text-[#94a3b8] active:bg-white/5 transition-colors"
+            className="min-w-11 min-h-11 flex items-center justify-center -ml-1 rounded-xl text-gray-400 active:bg-gray-50 transition-colors"
             aria-label="Geri"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -136,51 +148,54 @@ export default function Topbar() {
         ) : (
           <button
             onClick={mobileSidebarToggle}
-            className="min-w-11 min-h-11 flex items-center justify-center -ml-1 rounded-xl text-[#94a3b8] active:bg-white/5 transition-colors"
+            className="min-w-11 min-h-11 flex items-center justify-center -ml-1 rounded-xl text-gray-400 active:bg-gray-50 transition-colors"
             aria-label="Menüyü aç"
           >
             <Menu className="w-5 h-5" />
           </button>
         )}
 
-        {/* Orta: işletme adı */}
         <Link href="/dashboard" className="flex items-center gap-1.5">
-          <Store className="w-4 h-4 text-[#94a3b8]" />
-          <span className="text-white font-semibold text-sm">{sirketAdi || "PilotSensin"}</span>
+          <Store className="w-4 h-4 text-gray-400" />
+          <span className="font-semibold text-sm text-gray-800">
+            {sirketAdi || "PilotSensin"}
+          </span>
         </Link>
 
-        {/* Sağ: bildirim */}
         <Link
           href="/bildirimler"
-          className="min-w-11 min-h-11 flex items-center justify-center -mr-1 rounded-xl text-[#94a3b8] active:bg-white/5 transition-colors relative"
+          className="min-w-11 min-h-11 flex items-center justify-center -mr-1 rounded-xl text-gray-400 active:bg-gray-50 transition-colors relative"
         >
           <Bell className="w-5 h-5" />
           {okunmamis.length > 0 && (
-            <span className="absolute top-2 right-2 min-w-4.5 h-4.5 flex items-center justify-center rounded-full bg-[#ef4444] text-white text-[10px] font-bold px-1">
+            <span className="absolute top-2 right-2 min-w-4.5 h-4.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1">
               {okunmamis.length > 9 ? "9+" : okunmamis.length}
             </span>
           )}
         </Link>
       </header>
 
-      {/* ── Desktop header (hidden md:flex) ── */}
-      <header className="hidden md:flex items-center justify-between px-6 py-3 shrink-0" style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--border-subtle)", transition: "background 0.25s ease" }}>
-        {/* Sol: işletme adı */}
-        <div className="flex items-center gap-2">
-          <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <Store className="w-4 h-4 text-[#94a3b8]" />
+      {/* ── Desktop header ── */}
+      <header
+        className="hidden md:flex items-center justify-between px-6 py-3 shrink-0 bg-white"
+        style={{ borderBottom: "1px solid var(--border-color)" }}
+      >
+        {/* Sol: işletme adı + skor */}
+        <div className="flex items-center gap-3">
+          <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-75 transition-opacity">
+            <Store className="w-4 h-4 text-gray-400" />
             {sirketAdi ? (
-              <span className="text-white font-semibold text-sm">{sirketAdi}</span>
+              <span className="font-semibold text-sm text-gray-800">{sirketAdi}</span>
             ) : (
-              <span className="w-28 h-4 rounded bg-[rgba(255,255,255,0.06)] animate-pulse" />
+              <span className="w-28 h-4 rounded bg-gray-100 animate-pulse" />
             )}
           </Link>
           <span
-            className="hidden sm:inline ml-2 px-2 py-0.5 rounded-full text-xs font-bold border"
+            className="hidden sm:inline px-2 py-0.5 rounded-full text-xs font-semibold border"
             style={{
               color:           skorRenk,
-              borderColor:     `${skorRenk}60`,
-              backgroundColor: `${skorRenk}18`,
+              borderColor:     `${skorRenk}50`,
+              backgroundColor: `${skorRenk}12`,
             }}
           >
             Skor: %{genelSkor}
@@ -188,22 +203,19 @@ export default function Topbar() {
         </div>
 
         {/* Sağ: arama + bildirim + profil */}
-        <div className="flex items-center gap-3">
-          {/* Arama butonu — desktop */}
+        <div className="flex items-center gap-2">
+          {/* Arama — desktop */}
           <button
             onClick={() => setAramaAcik(true)}
-            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[rgba(251,192,36,0.1)] text-[#94a3b8] text-xs hover:border-[rgba(251,192,36,0.3)] hover:text-white transition-colors"
-            style={{ background: "var(--bg-card)" }}
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg text-gray-400 text-xs bg-gray-50 border border-gray-200 hover:border-gray-300 hover:text-gray-600 transition-colors"
           >
             <Search className="w-3.5 h-3.5" />
             <span>Ara...</span>
-            <kbd className="ml-2 px-1 py-0.5 rounded text-[10px] bg-[rgba(251,192,36,0.1)] text-[#fbc024]">⌘K</kbd>
+            <kbd className="ml-2 px-1 py-0.5 rounded text-[10px] bg-gray-100 text-gray-500 font-mono">⌘K</kbd>
           </button>
-          {/* Arama ikonu — mobil */}
           <button
             onClick={() => setAramaAcik(true)}
-            className="sm:hidden w-8 h-8 flex items-center justify-center rounded-lg border border-[rgba(251,192,36,0.1)] text-[#94a3b8] hover:text-white transition-colors"
-            style={{ background: "var(--bg-card)" }}
+            className="sm:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-gray-50 border border-gray-200 text-gray-500 hover:border-gray-300 transition-colors"
           >
             <Search className="w-4 h-4" />
           </button>
@@ -212,12 +224,11 @@ export default function Topbar() {
           <div className="relative" ref={notifRef}>
             <button
               onClick={() => { setNotifOpen(!notifOpen); setProfileOpen(false); }}
-              className="relative flex items-center justify-center w-8 h-8 rounded-lg border border-[rgba(251,192,36,0.1)] text-[#94a3b8] hover:border-[rgba(251,192,36,0.3)] hover:text-white transition-colors"
-              style={{ background: "var(--bg-card)" }}
+              className="relative w-9 h-9 flex items-center justify-center rounded-lg bg-gray-50 border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-colors"
             >
               <Bell className="w-4 h-4" />
               {okunmamis.length > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 min-w-4.5 h-4.5 flex items-center justify-center rounded-full bg-[#ef4444] text-white text-[10px] font-bold px-1 pulse-yellow">
+                <span className="absolute -top-0.5 -right-0.5 min-w-4.5 h-4.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1 pulse-green">
                   {okunmamis.length > 9 ? "9+" : okunmamis.length}
                 </span>
               )}
@@ -226,71 +237,80 @@ export default function Topbar() {
             <AnimatePresence>
               {notifOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                  initial={{ opacity: 0, y: -8, scale: 0.97 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.97 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-10 w-80 glass-card rounded-xl shadow-2xl z-50 overflow-hidden"
+                  className="absolute right-0 top-11 w-80 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden"
                 >
-                  {/* Header */}
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-[rgba(255,255,255,0.06)]">
-                    <span className="text-sm font-semibold text-white">Bildirimler</span>
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                    <span className="text-sm font-semibold text-gray-800">Bildirimler</span>
+                    <div className="flex items-center gap-3">
                       {okunmamis.length > 0 && (
                         <button
                           onClick={tumunuOkunduYap}
-                          className="text-xs text-[#94a3b8] hover:text-[#fbc024] transition-colors flex items-center gap-1"
+                          className="text-xs text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-1"
                         >
                           <CheckCheck className="w-3.5 h-3.5" />
                           Okundu say
                         </button>
                       )}
-                      <span className="text-xs text-[#fbc024] font-bold">
+                      <span className="text-xs font-semibold" style={{ color: "var(--leaf)" }}>
                         {okunmamis.length} yeni
                       </span>
                     </div>
                   </div>
 
-                  {/* Liste */}
-                  <div className="max-h-80 overflow-y-auto divide-y divide-[rgba(255,255,255,0.04)]">
+                  <div className="max-h-80 overflow-y-auto divide-y divide-gray-50">
                     {bildirimler.length === 0 ? (
-                      <div className="py-8 text-center text-xs text-[#94a3b8]">Bildirim yok</div>
+                      <div className="py-8 text-center text-xs text-gray-400">Bildirim yok</div>
                     ) : (
                       bildirimler.slice(0, 8).map((b) => {
-                        const dotColor = b.tip === "kritik" ? "#ef4444" : b.tip === "uyari" ? "#fbc024" : "#22c55e";
+                        const dotColor =
+                          b.tip === "kritik" ? "#EF4444" :
+                          b.tip === "uyari"  ? "#F59E0B" :
+                          "#10B981";
                         return (
-                          <div key={b.id} className="flex items-start gap-3 px-4 py-3 hover:bg-[rgba(251,192,36,0.04)] transition-colors group">
-                            {/* Durum noktası */}
-                            <span className="mt-1.5 w-2 h-2 rounded-full shrink-0 flex-none"
+                          <div
+                            key={b.id}
+                            className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors group"
+                          >
+                            <span
+                              className="mt-1.5 w-2 h-2 rounded-full shrink-0"
                               style={{
                                 backgroundColor: b.okundu ? "transparent" : dotColor,
-                                border: b.okundu ? `1.5px solid rgba(148,163,184,0.3)` : "none",
-                              }} />
-                            {/* İçerik */}
-                            <div className="flex-1 min-w-0 cursor-pointer" onClick={() => okunduYap(b.id)}>
-                              <p className="text-xs font-semibold truncate"
-                                style={{ color: b.okundu ? "#64748b" : dotColor }}>
+                                border: b.okundu ? "1.5px solid #CBD5E1" : "none",
+                              }}
+                            />
+                            <div
+                              className="flex-1 min-w-0 cursor-pointer"
+                              onClick={() => okunduYap(b.id)}
+                            >
+                              <p
+                                className="text-xs font-semibold truncate"
+                                style={{ color: b.okundu ? "#94A3B8" : dotColor }}
+                              >
                                 {b.baslik}
                               </p>
-                              <p className="text-[11px] text-[#64748b] truncate mt-0.5">{b.mesaj}</p>
-                              <p className="text-[10px] text-[#475569] mt-0.5">{zaman(b.tarih)}</p>
+                              <p className="text-[11px] text-gray-400 truncate mt-0.5">{b.mesaj}</p>
+                              <p className="text-[10px] text-gray-300 mt-0.5">{zaman(b.tarih)}</p>
                             </div>
-                            {/* Aksiyonlar */}
                             <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                              {/* Okundu toggle */}
-                              <button onClick={() => okunduToggle(b.id)}
+                              <button
+                                onClick={() => okunduToggle(b.id)}
                                 title={b.okundu ? "Okunmadı işaretle" : "Okundu işaretle"}
                                 className="w-6 h-6 flex items-center justify-center rounded-md transition-colors"
-                                style={{ color: b.okundu ? "#22c55e" : "#94a3b8" }}>
+                                style={{ color: b.okundu ? "#10B981" : "#94A3B8" }}
+                              >
                                 {b.okundu
                                   ? <CheckCircle2 className="w-3.5 h-3.5" />
-                                  : <Circle className="w-3.5 h-3.5" />
-                                }
+                                  : <Circle       className="w-3.5 h-3.5" />}
                               </button>
-                              {/* Modüle git */}
-                              <Link href={b.ilgiliLink ?? MODUL_HREF[b.modul] ?? "/dashboard"}
+                              <Link
+                                href={b.ilgiliLink ?? MODUL_HREF[b.modul] ?? "/dashboard"}
                                 onClick={(e) => { e.stopPropagation(); okunduYap(b.id); setNotifOpen(false); }}
-                                className="w-6 h-6 flex items-center justify-center rounded-md text-[#94a3b8] hover:text-[#fbc024] transition-colors">
+                                className="w-6 h-6 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 transition-colors"
+                              >
                                 <ExternalLink className="w-3.5 h-3.5" />
                               </Link>
                             </div>
@@ -300,12 +320,12 @@ export default function Topbar() {
                     )}
                   </div>
 
-                  {/* Footer */}
-                  <div className="px-4 py-2.5 border-t border-[rgba(255,255,255,0.06)]">
+                  <div className="px-4 py-2.5 border-t border-gray-100">
                     <Link
                       href="/bildirimler"
                       onClick={() => setNotifOpen(false)}
-                      className="text-xs text-[#fbc024] hover:underline font-medium"
+                      className="text-xs font-medium transition-colors hover:opacity-75"
+                      style={{ color: "var(--leaf)" }}
                     >
                       Tüm bildirimleri gör →
                     </Link>
@@ -319,40 +339,46 @@ export default function Topbar() {
           <div className="relative">
             <button
               onClick={() => { setProfileOpen(!profileOpen); setNotifOpen(false); }}
-              className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-[rgba(251,192,36,0.1)] hover:border-[rgba(251,192,36,0.3)] transition-colors"
-              style={{ background: "var(--bg-card)" }}
+              className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-gray-50 border border-gray-200 hover:border-gray-300 transition-colors"
             >
-              <div className="w-6 h-6 rounded-full bg-[#fbc024] flex items-center justify-center text-[#0e172a] text-xs font-bold">
-                {kullanici ? (kullanici.ad[0] ?? "?").toUpperCase() : "?"}
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                style={{ background: "var(--forest)" }}
+              >
+                {initials}
               </div>
-              <span className="text-sm text-white">
-                {kullanici ? (kullanici.ad || kullanici.email.split("@")[0]) : "..."}
-              </span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#94a3b8]" />
+              <span className="text-sm text-gray-700 font-medium">{displayName}</span>
+              <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
             </button>
 
             <AnimatePresence>
               {profileOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                  initial={{ opacity: 0, y: -8, scale: 0.97 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.97 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-10 w-44 glass-card rounded-xl shadow-2xl z-50 overflow-hidden"
+                  className="absolute right-0 top-11 w-44 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden"
                 >
                   {[
                     { icon: User,     label: "Profilim", href: "/profil"  },
                     { icon: Settings, label: "Ayarlar",  href: "/ayarlar" },
                   ].map(({ icon: Icon, label, href }) => (
-                    <Link key={href} href={href} onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-[#94a3b8] hover:bg-[rgba(251,192,36,0.08)] hover:text-white transition-colors">
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-colors"
+                    >
                       <Icon className="w-4 h-4" />
                       {label}
                     </Link>
                   ))}
-                  <div className="border-t border-[rgba(251,192,36,0.1)]">
-                    <button onClick={handleCikis}
-                      className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-[#ef4444] hover:bg-[rgba(239,68,68,0.08)] transition-colors">
+                  <div className="border-t border-gray-100">
+                    <button
+                      onClick={handleCikis}
+                      className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                    >
                       <LogOut className="w-4 h-4" />
                       Çıkış Yap
                     </button>
@@ -364,7 +390,6 @@ export default function Topbar() {
         </div>
       </header>
 
-      {/* Arama modali */}
       <AramaModal acik={aramaAcik} onKapat={() => setAramaAcik(false)} />
     </>
   );
