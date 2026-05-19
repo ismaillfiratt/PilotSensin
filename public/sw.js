@@ -1,9 +1,7 @@
-const CACHE_NAME = "pilotsensin-v1";
+const CACHE_NAME = "pilotsensin-v3";
 
-// Statik varlıklar — uygulama açılırken önbelleğe al
+// Sadece gerçekten statik varlıkları önbelleğe al — sayfaları değil
 const PRECACHE_URLS = [
-  "/",
-  "/dashboard",
   "/manifest.json",
   "/icon-192.png",
 ];
@@ -17,6 +15,7 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
+    // Tüm eski cache'leri temizle
     caches.keys().then((keys) =>
       Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
     )
@@ -24,24 +23,35 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Network-first strateji: önce ağdan dene, hata alırsa cache'e bak
+// Network-first strateji — sadece statik varlıklar için cache fallback
 self.addEventListener("fetch", (event) => {
-  // Sadece GET isteklerini, API ve Supabase hariç yakala
   const url = new URL(event.request.url);
+
+  // Yalnızca GET — API, Supabase ve navigation istekleri hariç
   if (event.request.method !== "GET") return;
   if (url.hostname.includes("supabase.co")) return;
   if (url.pathname.startsWith("/api/")) return;
 
+  // HTML navigation isteklerini (sayfa geçişleri) hiç yakalamıyoruz —
+  // doğrudan ağa git, cache fallback kullanma.
+  if (event.request.mode === "navigate") return;
+
   event.respondWith(
     fetch(event.request)
       .then((res) => {
-        // Başarılı cevabı cache'e yaz
+        // Yalnızca başarılı, aynı-origin statik varlıkları cache'e yaz
         if (res.ok && res.type === "basic") {
           const clone = res.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
         return res;
       })
-      .catch(() => caches.match(event.request))
+      .catch(() =>
+        caches.match(event.request).then((cached) => {
+          // Cache de yoksa ağ hatasını doğal şekilde ilet
+          if (cached) return cached;
+          return new Response("Ağ bağlantısı yok", { status: 503, statusText: "Offline" });
+        })
+      )
   );
 });
