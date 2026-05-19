@@ -77,7 +77,7 @@ export default function PolitikalarPage() {
   return (
     <div className="space-y-6">
       <div className="card rounded-2xl p-6 md:p-8">
-        <h1 className="text-2xl font-bold text-white mb-1">📋 Yasal Bilgiler</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-1">📋 Yasal Bilgiler</h1>
         <p className="text-sm text-gray-400 mt-2">
           PilotSensin hizmetine ilişkin tüm yasal belgelere buradan ulaşabilirsiniz.
         </p>
@@ -91,7 +91,7 @@ export default function PolitikalarPage() {
               style={{ backgroundColor: renk + "20", border: `1px solid ${renk}40` }}>
               <Ikon className="w-4 h-4" style={{ color: renk }} />
             </div>
-            <p className="text-sm font-semibold text-white group-hover:text-[#e2e8f0] transition-colors leading-snug mb-1">
+            <p className="text-sm font-semibold text-gray-800 group-hover:text-[#e2e8f0] transition-colors leading-snug mb-1">
               {baslik}
             </p>
             <p className="text-xs text-gray-500 leading-relaxed">{aciklama}</p>

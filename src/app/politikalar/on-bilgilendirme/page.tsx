@@ -9,7 +9,7 @@ export default function OnBilgilendirmePage() {
   return (
     <div className="space-y-6">
       <div className="card rounded-2xl p-6 md:p-8">
-        <h1 className="text-2xl font-bold text-white mb-1">Ön Bilgilendirme Formu</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-1">Ön Bilgilendirme Formu</h1>
         <p className="text-sm text-gray-500">Son güncelleme: {GUNCELLEME}</p>
         <p className="text-sm text-gray-400 mt-3">
           Mesafeli Sözleşmeler Yönetmeliği madde 5 uyarınca ödeme işleminden önce tüketiciye
@@ -20,7 +20,7 @@ export default function OnBilgilendirmePage() {
       <div className="card rounded-2xl p-6 md:p-8 space-y-8 text-gray-400 leading-relaxed">
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">1. Satıcı Bilgileri</h2>
+          <h2 className="text-lg font-bold text-gray-800">1. Satıcı Bilgileri</h2>
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm space-y-1">
             <div className="flex gap-3"><span className="text-gray-500 min-w-24">Ticaret Unvanı</span><span>İsmail Fırat (Şahıs Şirketi)</span></div>
             <div className="flex gap-3"><span className="text-gray-500 min-w-24">Adres</span><span>Güveren Mah. 3746. Sk. No:13 Kepez / Antalya</span></div>
@@ -31,7 +31,7 @@ export default function OnBilgilendirmePage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">2. Hizmetin Temel Nitelikleri</h2>
+          <h2 className="text-lg font-bold text-gray-800">2. Hizmetin Temel Nitelikleri</h2>
           <p className="text-sm">PilotSensin, küçük ve orta ölçekli işletmeler için bulut tabanlı SaaS işletme yönetim platformudur. Hizmet kapsamındaki modüller:</p>
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-sm">
             {[
@@ -56,7 +56,7 @@ export default function OnBilgilendirmePage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">3. Toplam Fiyat</h2>
+          <h2 className="text-lg font-bold text-gray-800">3. Toplam Fiyat</h2>
           <div className="space-y-2 text-sm">
             <div className="bg-[var(--mint)] border border-[var(--forest-100, #D9F2E4)] rounded-xl p-4 space-y-2">
               <div className="flex justify-between"><span>Aylık Plan</span><span className="text-[var(--leaf)] font-bold">499 TL / ay (KDV dahil)</span></div>
@@ -73,13 +73,13 @@ export default function OnBilgilendirmePage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">4. Ödeme Yöntemi</h2>
+          <h2 className="text-lg font-bold text-gray-800">4. Ödeme Yöntemi</h2>
           <p className="text-sm">[HENÜZ_KARAR_VERİLMEDİ — ödeme entegrasyonu tamamlandığında bu bölüm güncellenecektir.]</p>
           <p className="text-sm">Abonelikler otomatik olarak yenilenir. Yenilemeyi dönem bitmeden önce Ayarlar bölümünden durdurabilirsiniz.</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">5. Hizmetin Teslim Şekli ve Süresi</h2>
+          <h2 className="text-lg font-bold text-gray-800">5. Hizmetin Teslim Şekli ve Süresi</h2>
           <p className="text-sm">
             PilotSensin tamamen dijital bir hizmettir. Ödemenin onaylanmasının ardından hizmet
             anında aktive edilir; kullanıcı platforma https://pilotsensin.com adresi üzerinden
@@ -88,7 +88,7 @@ export default function OnBilgilendirmePage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">6. Cayma Hakkının Kullanılamayacağı Durumlar</h2>
+          <h2 className="text-lg font-bold text-gray-800">6. Cayma Hakkının Kullanılamayacağı Durumlar</h2>
           <div className="bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.2)] rounded-xl p-4 text-sm space-y-2">
             <p>
               Mesafeli Sözleşmeler Yönetmeliği madde 15/1-h uyarınca; tüketicinin onayıyla
@@ -105,7 +105,7 @@ export default function OnBilgilendirmePage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">7. Sözleşmenin Süresi ve Saklanması</h2>
+          <h2 className="text-lg font-bold text-gray-800">7. Sözleşmenin Süresi ve Saklanması</h2>
           <p className="text-sm">
             Abonelik, iptal edilene kadar otomatik yenilemeyle devam eder. Bu sözleşme
             yasal düzenlemeler çerçevesinde 10 yıl süreyle saklanacaktır. Talep edilmesi
@@ -114,7 +114,7 @@ export default function OnBilgilendirmePage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">8. Şikayet ve İtiraz Başvuru Yolları</h2>
+          <h2 className="text-lg font-bold text-gray-800">8. Şikayet ve İtiraz Başvuru Yolları</h2>
           <ul className="space-y-1.5 text-sm list-disc list-inside">
             <li>Öncelikle destek@pilotsensin.com adresine yazılı başvuru yapılabilir.</li>
             <li>Antalya İl Tüketici Hakem Heyeti (yasal sınır değeri altındaki uyuşmazlıklar)</li>

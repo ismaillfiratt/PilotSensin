@@ -28,7 +28,7 @@ export default function VergiPlanlamasi() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Receipt className="w-4 h-4 text-[#22c55e]" />
-          <h2 className="text-sm font-bold text-white">Vergi Planlaması</h2>
+          <h2 className="text-sm font-bold text-gray-800">Vergi Planlaması</h2>
           <span className="text-xs text-gray-500">— gerçek KDV bakiyesi</span>
         </div>
         <span className="text-[10px] text-gray-500">{kayitlar.length} hareket</span>

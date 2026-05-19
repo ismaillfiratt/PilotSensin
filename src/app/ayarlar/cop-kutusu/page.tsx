@@ -228,7 +228,7 @@ export default function CopKutusuPage() {
       {filtrelenmis.length > 0 && (
         <div className="card rounded-2xl overflow-hidden">
           {/* Tümünü seç satırı */}
-          <div className="flex items-center gap-3 px-5 py-3 border-b border-white/5">
+          <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-200">
             <button onClick={tumunuSec} className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-800 transition-colors">
               {hepsSecili
                 ? <CheckSquare className="w-4 h-4 text-[var(--leaf)]" />
@@ -251,7 +251,7 @@ export default function CopKutusuPage() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20, height: 0 }}
                     transition={{ duration: 0.18, delay: i * 0.02 }}
-                    className="flex items-start gap-3 px-5 py-4 hover:bg-white/2 transition-colors"
+                    className="flex items-start gap-3 px-5 py-4 hover:bg-gray-100 transition-colors"
                     style={{ backgroundColor: secili ? "var(--mint)" : undefined }}
                   >
                     {/* Checkbox */}
@@ -265,7 +265,7 @@ export default function CopKutusuPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-0.5">
                         <span className="text-sm font-semibold text-gray-800 truncate">{oge.isim}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/6 text-gray-400 shrink-0">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-400 shrink-0">
                           {oge.modulAdi}
                         </span>
                       </div>

@@ -101,14 +101,14 @@ export default function GorevModal({ open, onClose, gorev, varsayilanDurum, onKa
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Görev Başlığı *</label>
               <input required value={form.baslik} onChange={(e) => set("baslik", e.target.value)}
                 placeholder="Ne yapılacak?"
-                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
             </div>
 
             <div>
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama</label>
               <textarea value={form.aciklama} onChange={(e) => set("aciklama", e.target.value)}
                 placeholder="Detaylar, notlar..." rows={2}
-                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm resize-none" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm resize-none" />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -159,7 +159,7 @@ export default function GorevModal({ open, onClose, gorev, varsayilanDurum, onKa
                       <input value={yeniSorumlu} onChange={(e) => setYeniSorumlu(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), ekleYeniSorumlu())}
                         placeholder="Yeni isim..."
-                        className="flex-1 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-xs placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)]" />
+                        className="flex-1 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-xs placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)]" />
                       <button type="button" onClick={ekleYeniSorumlu}
                         className="px-3 py-1.5 rounded-lg bg-white text-gray-900 text-xs font-bold">
                         Ekle

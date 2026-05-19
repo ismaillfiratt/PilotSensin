@@ -51,7 +51,7 @@ export default function CaymaOnayi({ onChange }: Props) {
         <p className="text-xs text-gray-400 leading-relaxed">
           Mesafeli Sözleşmeler Yönetmeliği madde 15/1-h gereği dijital içerik hizmetinde
           cayma hakkım bulunmadığını ve hizmet kullanımı başladığı anda cayma hakkımdan{" "}
-          <span className="text-white font-semibold">FERAGAT</span> ettiğimi kabul ediyorum.
+          <span className="text-gray-800 font-semibold">FERAGAT</span> ettiğimi kabul ediyorum.
         </p>
       </div>
 

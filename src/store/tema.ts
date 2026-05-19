@@ -11,11 +11,11 @@ interface TemaStore {
 export const useTema = create<TemaStore>()(
   persist(
     (set) => ({
-      tema: "dark",
+      tema: "light",
       setTema: (tema) => set({ tema }),
     }),
     {
-      name: "pilotsensin-tema",
+      name: "pilotsensin-tema-v2",
       storage: createJSONStorage(() => localStorage),
     }
   )

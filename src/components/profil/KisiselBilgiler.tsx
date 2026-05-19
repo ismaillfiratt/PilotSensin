@@ -50,14 +50,14 @@ export default function KisiselBilgiler({ ad, soyad, telefon }: Props) {
             <label className="text-xs text-gray-400 font-medium block mb-1.5">Ad *</label>
             <input
               required value={form.ad} onChange={(e) => set("ad", e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
+              className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
             />
           </div>
           <div>
             <label className="text-xs text-gray-400 font-medium block mb-1.5">Soyad</label>
             <input
               value={form.soyad} onChange={(e) => set("soyad", e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
+              className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
             />
           </div>
         </div>
@@ -67,7 +67,7 @@ export default function KisiselBilgiler({ ad, soyad, telefon }: Props) {
           <input
             type="tel" value={form.telefon} onChange={(e) => set("telefon", e.target.value)}
             placeholder="+90 5xx xxx xx xx"
-            className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
+            className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
           />
         </div>
 

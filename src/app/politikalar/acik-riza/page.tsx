@@ -9,7 +9,7 @@ export default function AcikRizaPage() {
   return (
     <div className="space-y-6">
       <div className="card rounded-2xl p-6 md:p-8">
-        <h1 className="text-2xl font-bold text-white mb-1">
+        <h1 className="text-2xl font-bold text-gray-800 mb-1">
           Kişisel Verilerin Yurt Dışına Aktarımına İlişkin Açık Rıza Metni
         </h1>
         <p className="text-sm text-gray-500">Son güncelleme: {GUNCELLEME}</p>
@@ -23,7 +23,7 @@ export default function AcikRizaPage() {
       <div className="card rounded-2xl p-6 md:p-8 space-y-8 text-gray-400 leading-relaxed">
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">1. Aktarımın Kapsamı</h2>
+          <h2 className="text-lg font-bold text-gray-800">1. Aktarımın Kapsamı</h2>
           <p className="text-sm">
             PilotSensin platformunun teknik altyapısı, dünyaca tanınan bulut hizmet sağlayıcısı
             Supabase Inc. tarafından sağlanmaktadır. Bu kapsamda kişisel verileriniz, Supabase
@@ -32,7 +32,7 @@ export default function AcikRizaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">2. Aktarılan Veri Kategorileri</h2>
+          <h2 className="text-lg font-bold text-gray-800">2. Aktarılan Veri Kategorileri</h2>
           <ul className="space-y-1.5 text-sm list-disc list-inside">
             <li>Kimlik bilgileri (ad, soyad, e-posta adresi)</li>
             <li>İletişim bilgileri</li>
@@ -43,7 +43,7 @@ export default function AcikRizaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">3. Aktarımın Hukuki Sebebi</h2>
+          <h2 className="text-lg font-bold text-gray-800">3. Aktarımın Hukuki Sebebi</h2>
           <p className="text-sm">
             Söz konusu aktarım, KVKK madde 9 hükmü gereği açık rızanız temelinde
             gerçekleştirilmektedir. Hizmetin teknik yapısı gereği bu aktarım olmaksızın
@@ -52,7 +52,7 @@ export default function AcikRizaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">4. Aktarımın Amacı</h2>
+          <h2 className="text-lg font-bold text-gray-800">4. Aktarımın Amacı</h2>
           <ul className="space-y-1.5 text-sm list-disc list-inside">
             <li>PilotSensin hizmet altyapısının sağlanması ve sürdürülmesi</li>
             <li>Yüksek erişilebilirlik, veri yedekleme ve felaket kurtarma</li>
@@ -62,7 +62,7 @@ export default function AcikRizaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">5. Güvenceler</h2>
+          <h2 className="text-lg font-bold text-gray-800">5. Güvenceler</h2>
           <p className="text-sm">
             Supabase Inc. SOC 2 Type II ve ISO 27001 sertifikalarına sahiptir. Verileriniz
             Transport Layer Security (TLS 1.2+) ile şifrelenerek aktarılır ve Row Level
@@ -73,7 +73,7 @@ export default function AcikRizaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">6. Açık Rızanızı Geri Çekme</h2>
+          <h2 className="text-lg font-bold text-gray-800">6. Açık Rızanızı Geri Çekme</h2>
           <p className="text-sm">
             Açık rızanızı her zaman geri çekebilirsiniz. Geri çekme yolları:
           </p>
@@ -90,7 +90,7 @@ export default function AcikRizaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">7. KVKK Kapsamındaki Haklarınız</h2>
+          <h2 className="text-lg font-bold text-gray-800">7. KVKK Kapsamındaki Haklarınız</h2>
           <p className="text-sm">
             KVKK madde 11 kapsamındaki tüm haklarınızı kullanabilirsiniz: bilgi alma, düzeltme
             talep etme, silme talep etme, aktarılan üçüncü kişilere bildirim isteme, itiraz
@@ -100,7 +100,7 @@ export default function AcikRizaPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">8. Rıza Kaydı</h2>
+          <h2 className="text-lg font-bold text-gray-800">8. Rıza Kaydı</h2>
           <p className="text-sm">
             Kayıt formundaki onay kutucuğunu işaretleyerek ve &quot;Hesap Oluştur&quot; butonuna
             tıklayarak bu metnin tamamını okuduğunuzu, anladığınızı ve serbest iradenizle

@@ -86,7 +86,7 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
                 <h2 className="text-base font-bold text-gray-800">{duzenlemeModu ? "Ürünü Düzenle" : "Yeni Ürün Ekle"}</h2>
                 <p className="text-xs text-gray-400 mt-0.5">Satış fiyatı ve maliyet gir</p>
               </div>
-              <button type="button" onClick={onClose} className="min-w-11 min-h-11 flex items-center justify-center rounded-xl text-gray-400 active:bg-white/5 transition-colors">
+              <button type="button" onClick={onClose} className="min-w-11 min-h-11 flex items-center justify-center rounded-xl text-gray-400 active:bg-gray-100 transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -94,7 +94,7 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
             <div>
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Ürün / Hizmet Adı *</label>
               <input required value={form.ad} onChange={(e) => set("ad", e.target.value)} placeholder="örn. Süt 1L"
-                className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-base" />
+                className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-base" />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -121,13 +121,13 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Satış Fiyatı (₺) *</label>
                   <input type="number" min="0" step="0.01" required value={form.satisFiyati}
                     onChange={(e) => set("satisFiyati", e.target.value)} placeholder="0"
-                    className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-base font-bold" />
+                    className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-base font-bold" />
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Birim Maliyet (₺) *</label>
                   <input type="number" min="0" step="0.01" required value={form.birimMaliyetKurus}
                     onChange={(e) => set("birimMaliyetKurus", e.target.value)} placeholder="0"
-                    className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-base font-bold" />
+                    className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-base font-bold" />
                 </div>
               </div>
               {satisFiyati > 0 && birimMaliyetKurus > 0 && (
@@ -143,7 +143,7 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Aylık Satış Adedi *</label>
               <input type="number" min="0" required value={form.aylikSatis}
                 onChange={(e) => set("aylikSatis", e.target.value)} placeholder="0"
-                className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-base" />
+                className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-base" />
             </div>
           </div>
 
@@ -152,7 +152,7 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
             style={{ paddingBottom: "max(env(safe-area-inset-bottom), 16px)" }}>
             <div className="flex gap-3">
               <button type="button" onClick={onClose}
-                className="flex-1 min-h-12 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium active:bg-white/5 transition-colors">
+                className="flex-1 min-h-12 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium active:bg-gray-100 transition-colors">
                 İptal
               </button>
               <button type="submit"

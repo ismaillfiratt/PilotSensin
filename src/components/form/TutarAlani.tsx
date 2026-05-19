@@ -49,7 +49,7 @@ export default function TutarAlani({
           placeholder={placeholder}
           onChange={(e) => setYazilan(e.target.value)}
           onBlur={handleBlur}
-          className="w-full min-h-12 pl-4 pr-10 rounded-xl text-base text-white font-semibold bg-gray-50 border border-gray-200 placeholder-[#64748b] focus:outline-none focus:border-[var(--mint)] focus:ring-1 focus:ring-[var(--forest-100, #D9F2E4)] transition-colors disabled:opacity-50"
+          className="w-full min-h-12 pl-4 pr-10 rounded-xl text-base text-gray-800 font-semibold bg-gray-50 border border-gray-200 placeholder-gray-400 focus:outline-none focus:border-[var(--mint)] focus:ring-1 focus:ring-[var(--forest-100, #D9F2E4)] transition-colors disabled:opacity-50"
         />
         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-500 pointer-events-none">₺</span>
       </div>

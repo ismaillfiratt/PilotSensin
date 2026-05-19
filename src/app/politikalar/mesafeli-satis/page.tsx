@@ -9,7 +9,7 @@ export default function MesafeliSatisPage() {
   return (
     <div className="space-y-6">
       <div className="card rounded-2xl p-6 md:p-8">
-        <h1 className="text-2xl font-bold text-white mb-1">Mesafeli Satış Sözleşmesi</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-1">Mesafeli Satış Sözleşmesi</h1>
         <p className="text-sm text-gray-500">Son güncelleme: {GUNCELLEME}</p>
         <p className="text-sm text-gray-400 mt-3">
           6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği
@@ -20,10 +20,10 @@ export default function MesafeliSatisPage() {
       <div className="card rounded-2xl p-6 md:p-8 space-y-8 text-gray-400 leading-relaxed">
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">1. Taraflar</h2>
+          <h2 className="text-lg font-bold text-gray-800">1. Taraflar</h2>
           <div className="space-y-3 text-sm">
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-              <p className="text-white font-semibold mb-2">SATICI</p>
+              <p className="text-gray-800 font-semibold mb-2">SATICI</p>
               <div className="space-y-1">
                 <div className="flex gap-3"><span className="text-gray-500 min-w-24">Unvan</span><span>İsmail Fırat (Şahıs Şirketi)</span></div>
                 <div className="flex gap-3"><span className="text-gray-500 min-w-24">Adres</span><span>Güveren Mah. 3746. Sk. No:13 Kepez / Antalya</span></div>
@@ -32,14 +32,14 @@ export default function MesafeliSatisPage() {
               </div>
             </div>
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-              <p className="text-white font-semibold mb-1">ALICI (TÜKETİCİ)</p>
+              <p className="text-gray-800 font-semibold mb-1">ALICI (TÜKETİCİ)</p>
               <p>Ödeme işlemi sırasında sisteme kayıtlı ad, soyad ve e-posta adresiyle tanımlanan kullanıcı.</p>
             </div>
           </div>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">2. Sözleşmenin Konusu</h2>
+          <h2 className="text-lg font-bold text-gray-800">2. Sözleşmenin Konusu</h2>
           <p className="text-sm">
             Bu sözleşme; satıcının elektronik ortamda sunduğu PilotSensin SaaS (yazılım hizmeti
             olarak) aboneliğinin satışına ilişkin koşulları düzenlemektedir. Hizmet; stok yönetimi,
@@ -49,15 +49,15 @@ export default function MesafeliSatisPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">3. Hizmet Bedeli</h2>
+          <h2 className="text-lg font-bold text-gray-800">3. Hizmet Bedeli</h2>
           <div className="bg-[var(--mint)] border border-[var(--forest-100, #D9F2E4)] rounded-xl p-4 text-sm space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-white font-semibold">Aylık Plan</span>
+              <span className="text-gray-800 font-semibold">Aylık Plan</span>
               <span className="text-[var(--leaf)] font-bold text-base">499 TL / ay</span>
             </div>
             <div className="flex justify-between items-center">
               <div>
-                <span className="text-white font-semibold">Yıllık Plan</span>
+                <span className="text-gray-800 font-semibold">Yıllık Plan</span>
                 <span className="ml-2 text-xs bg-[rgba(34,197,94,0.15)] text-[#22c55e] px-2 py-0.5 rounded-full">%20 İndirim</span>
               </div>
               <span className="text-[var(--leaf)] font-bold text-base">4.790 TL / yıl</span>
@@ -67,7 +67,7 @@ export default function MesafeliSatisPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">4. Ödeme Şekli ve Süresi</h2>
+          <h2 className="text-lg font-bold text-gray-800">4. Ödeme Şekli ve Süresi</h2>
           <p className="text-sm">
             Ödeme yöntemi: [HENÜZ_KARAR_VERİLMEDİ — ödeme entegrasyonu tamamlandığında güncellenecektir].
             Ödeme, abonelik başlamadan önce alınır. Aylık aboneliklerde her dönem başında otomatik
@@ -76,7 +76,7 @@ export default function MesafeliSatisPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">5. Hizmetin Teslimi</h2>
+          <h2 className="text-lg font-bold text-gray-800">5. Hizmetin Teslimi</h2>
           <p className="text-sm">
             PilotSensin tamamen dijital bir hizmettir. Ödemenin onaylanmasının ardından hizmet
             anında aktive edilir; kullanıcı platforma derhal erişim sağlar. Herhangi bir fiziksel
@@ -89,9 +89,9 @@ export default function MesafeliSatisPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">6. Cayma Hakkı</h2>
+          <h2 className="text-lg font-bold text-gray-800">6. Cayma Hakkı</h2>
           <div className="bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.2)] rounded-xl p-4 text-sm space-y-2">
-            <p className="text-white font-semibold">Cayma hakkı bu hizmet için kullanılamaz.</p>
+            <p className="text-gray-800 font-semibold">Cayma hakkı bu hizmet için kullanılamaz.</p>
             <p>
               Mesafeli Sözleşmeler Yönetmeliği madde 15/1-h uyarınca; tüketicinin onayı ile
               ifasına başlanmış dijital içerik ve hizmetlerde cayma hakkı bulunmamaktadır.
@@ -101,7 +101,7 @@ export default function MesafeliSatisPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">7. Şikayet ve İtiraz Yolları</h2>
+          <h2 className="text-lg font-bold text-gray-800">7. Şikayet ve İtiraz Yolları</h2>
           <ul className="space-y-1.5 text-sm list-disc list-inside">
             <li>Öncelikle destek@pilotsensin.com adresine yazılı başvuru yapılabilir.</li>
             <li>Anlaşmazlık çözümlenemezse Antalya Tüketici Hakem Heyeti&apos;ne (2026 yılı sınır değeri altındaki uyuşmazlıklar için) başvurulabilir.</li>
@@ -111,7 +111,7 @@ export default function MesafeliSatisPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">8. Sözleşmenin Saklanması</h2>
+          <h2 className="text-lg font-bold text-gray-800">8. Sözleşmenin Saklanması</h2>
           <p className="text-sm">
             Bu sözleşme, Ticaret Bakanlığı mevzuatı uyarınca 10 yıl süre ile saklanacaktır.
             Kullanıcı talep ettiğinde sözleşmenin bir kopyası e-posta ile iletilir.

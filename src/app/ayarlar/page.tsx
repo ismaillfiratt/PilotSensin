@@ -21,7 +21,7 @@ export default function AyarlarPage() {
       {/* Çöp Kutusu */}
       <Link
         href="/ayarlar/cop-kutusu"
-        className="flex items-center gap-4 px-5 py-4 card rounded-2xl hover:bg-white/3 transition-colors group"
+        className="flex items-center gap-4 px-5 py-4 card rounded-2xl hover:bg-gray-100 transition-colors group"
       >
         <div className="w-9 h-9 rounded-xl bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] flex items-center justify-center shrink-0">
           <Trash2 className="w-4 h-4 text-[#ef4444]" />
@@ -36,7 +36,7 @@ export default function AyarlarPage() {
       {/* İletişim & Destek */}
       <Link
         href="/iletisim"
-        className="flex items-center gap-4 px-5 py-4 card rounded-2xl hover:bg-white/3 transition-colors group"
+        className="flex items-center gap-4 px-5 py-4 card rounded-2xl hover:bg-gray-100 transition-colors group"
       >
         <div className="w-9 h-9 rounded-xl bg-[rgba(59,130,246,0.1)] border border-[rgba(59,130,246,0.2)] flex items-center justify-center shrink-0">
           <MessageCircle className="w-4 h-4 text-[#3b82f6]" />

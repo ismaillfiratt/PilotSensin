@@ -200,7 +200,7 @@ export default function TehlikeZonu() {
                 value={onay}
                 onChange={(e) => setOnay(e.target.value)}
                 placeholder="SİL"
-                className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-[rgba(239,68,68,0.3)] text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[rgba(239,68,68,0.6)] transition-colors text-sm mb-4"
+                className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-[rgba(239,68,68,0.3)] text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[rgba(239,68,68,0.6)] transition-colors text-sm mb-4"
               />
 
               <div className="flex gap-3">

@@ -92,7 +92,7 @@ export default function OnboardingPage() {
                   value={sirketAdi}
                   onChange={(e) => setSirketAdi(e.target.value)}
                   placeholder="örn. Yılmaz Market"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
                 />
               </div>
             </div>

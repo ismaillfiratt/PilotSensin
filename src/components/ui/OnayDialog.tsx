@@ -55,7 +55,7 @@ export default function OnayDialog({
                 style={{ backgroundColor: ikonBg, border: `1px solid ${ikonBorder}` }}>
                 <AlertTriangle className="w-6 h-6" style={{ color: onayRenk }} />
               </div>
-              <h3 className="text-base font-bold text-white mb-1">{baslik}</h3>
+              <h3 className="text-base font-bold text-gray-800 mb-1">{baslik}</h3>
               <div className="text-sm text-gray-400">{aciklama}</div>
             </div>
 
@@ -67,7 +67,7 @@ export default function OnayDialog({
                   {iptalLabel}
                 </button>
                 <button onClick={() => { onOnayla(); onClose(); }}
-                  className="flex-1 min-h-12 rounded-xl text-white text-sm font-bold transition-colors"
+                  className="flex-1 min-h-12 rounded-xl text-gray-800 text-sm font-bold transition-colors"
                   style={{ backgroundColor: onayBg, color: tehlikeli ? "white" : "var(--forest)" }}>
                   {onayLabel}
                 </button>

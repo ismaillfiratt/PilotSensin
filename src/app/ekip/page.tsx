@@ -251,7 +251,7 @@ export default function EkipPage() {
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                     placeholder="calisan@isletme.com"
-                    className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
+                    className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
                 </div>
                 <select value={secilenRolId} onChange={(e) => setSecRol(e.target.value)}
                   className="px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none focus:border-[var(--leaf)]">
@@ -385,7 +385,7 @@ export default function EkipPage() {
                 <h3 className="text-sm font-semibold text-gray-800">Yeni Rol Oluştur</h3>
                 <input value={yeniRolAdi} onChange={(e) => setYeniRolAdi(e.target.value)}
                   placeholder="Rol adı (örn: Stok Sorumlusu)"
-                  className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm" />
+                  className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm" />
 
                 <div>
                   <p className="text-xs text-gray-400 font-medium mb-2">Modül Erişimi</p>

@@ -62,7 +62,7 @@ export default function IsletmeBilgileri({ businessAd, sektor, vergiNo, adres }:
           <input
             required value={form.businessAd} onChange={(e) => set("businessAd", e.target.value)}
             placeholder="örn. Yılmaz Market"
-            className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
+            className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
           />
         </div>
 
@@ -84,7 +84,7 @@ export default function IsletmeBilgileri({ businessAd, sektor, vergiNo, adres }:
             <input
               value={form.vergiNo} onChange={(e) => set("vergiNo", e.target.value)}
               placeholder="1234567890"
-              className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
+              className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
             />
           </div>
           <div>
@@ -92,7 +92,7 @@ export default function IsletmeBilgileri({ businessAd, sektor, vergiNo, adres }:
             <input
               value={form.adres} onChange={(e) => set("adres", e.target.value)}
               placeholder="İstanbul"
-              className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
+              className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm"
             />
           </div>
         </div>

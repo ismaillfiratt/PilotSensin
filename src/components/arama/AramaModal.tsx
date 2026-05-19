@@ -123,7 +123,7 @@ export default function AramaModal({ acik, onKapat }: Props) {
                   <X className="w-4 h-4" />
                 </button>
               ) : (
-                <button onClick={onKapat} className="md:hidden min-w-11 min-h-11 flex items-center justify-center rounded-xl text-gray-400 active:bg-white/5 transition-colors">
+                <button onClick={onKapat} className="md:hidden min-w-11 min-h-11 flex items-center justify-center rounded-xl text-gray-400 active:bg-gray-100 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               )}
@@ -175,7 +175,7 @@ export default function AramaModal({ acik, onKapat }: Props) {
                               style={{ backgroundColor: aktif ? "var(--mint)" : "transparent" }}
                             >
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm text-white font-medium truncate">{sonuc.baslik}</p>
+                                <p className="text-sm text-gray-800 font-medium truncate">{sonuc.baslik}</p>
                                 <p className="text-xs text-gray-400 truncate mt-0.5">{sonuc.altBilgi}</p>
                               </div>
                               {aktif && <ArrowRight className="w-4 h-4 text-[var(--leaf)] shrink-0" />}

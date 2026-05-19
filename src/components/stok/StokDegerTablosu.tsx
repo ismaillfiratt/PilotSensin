@@ -41,7 +41,7 @@ export default function StokDegerTablosu() {
   if (genelToplam === 0) {
     return (
       <div className="card rounded-2xl p-5 space-y-3">
-        <h2 className="text-base font-bold text-white">Stok Değeri Dağılımı</h2>
+        <h2 className="text-base font-bold text-gray-800">Stok Değeri Dağılımı</h2>
         <p className="text-sm text-gray-500 text-center py-6">
           Stok değerini görmek için ürünlere birim alış fiyatı girin
           <br />
@@ -56,7 +56,7 @@ export default function StokDegerTablosu() {
   return (
     <div className="card rounded-2xl p-5 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-bold text-white">Stok Değeri Dağılımı</h2>
+        <h2 className="text-base font-bold text-gray-800">Stok Değeri Dağılımı</h2>
         <div className="text-right">
           <p className="text-xs text-gray-400">Toplam Stok Serveti</p>
           <p className="text-lg font-black text-[var(--leaf)]">{tl(genelToplam)}</p>
@@ -75,11 +75,11 @@ export default function StokDegerTablosu() {
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: renk }} />
-                      <span className="text-white font-medium truncate">{k.ad}</span>
+                      <span className="text-gray-800 font-medium truncate">{k.ad}</span>
                     </div>
                     <div className="flex items-center gap-3 shrink-0 text-right">
                       <span className="text-xs text-gray-500">{k.adet} birim</span>
-                      <span className="text-sm font-semibold text-white w-20 text-right">{tl(k.deger)}</span>
+                      <span className="text-sm font-semibold text-gray-800 w-20 text-right">{tl(k.deger)}</span>
                       <span className="text-xs font-bold w-10 text-right" style={{ color: renk }}>
                         %{yuzde.toFixed(1)}
                       </span>

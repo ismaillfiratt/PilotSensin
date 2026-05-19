@@ -91,15 +91,15 @@ export default function SatisModal({ urun, onClose }: Props) {
           {/* Başlık */}
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                 <ShoppingCart className="w-5 h-5 text-[#22c55e]" />
                 Satış Yap
               </h2>
               <p className="text-sm text-gray-400 mt-0.5">
-                {urun.ad} — Stok: <span className="text-white font-medium">{urun.mevcutAdet} {urun.birim}</span>
+                {urun.ad} — Stok: <span className="text-gray-800 font-medium">{urun.mevcutAdet} {urun.birim}</span>
               </p>
             </div>
-            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-gray-50 transition-colors">
+            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-800 hover:bg-gray-50 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -112,7 +112,7 @@ export default function SatisModal({ urun, onClose }: Props) {
                 <input
                   type="number" min="1" max={urun.mevcutAdet} required
                   value={adet} onChange={(e) => setAdet(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white focus:outline-none focus:border-[rgba(34,197,94,0.5)] text-lg font-bold text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-[rgba(34,197,94,0.5)] text-lg font-bold text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
               {/* Birim satış fiyatı */}
@@ -128,7 +128,7 @@ export default function SatisModal({ urun, onClose }: Props) {
                   type="number" min="0.01" step="0.01" required
                   value={fiyat} onChange={(e) => setFiyat(e.target.value)}
                   placeholder="0.00"
-                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white focus:outline-none focus:border-[rgba(34,197,94,0.5)] text-lg font-bold [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-[rgba(34,197,94,0.5)] text-lg font-bold [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
             </div>
@@ -156,7 +156,7 @@ export default function SatisModal({ urun, onClose }: Props) {
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama</label>
               <input type="text" value={aciklama} onChange={(e) => setAciklama(e.target.value)}
                 placeholder="Opsiyonel not..."
-                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white placeholder-[#475569] focus:outline-none text-sm" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#475569] focus:outline-none text-sm" />
             </div>
 
             {/* Önizleme */}
@@ -166,15 +166,15 @@ export default function SatisModal({ urun, onClose }: Props) {
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-gray-500">
                   <div className="flex justify-between">
                     <span>Birim Fiyat (KDV Hz)</span>
-                    <span className="text-white">{tl(hesap.birimFiyatNetHariç)}</span>
+                    <span className="text-gray-800">{tl(hesap.birimFiyatNetHariç)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Birim Maliyet</span>
-                    <span className="text-white">{tl(birimMaliyetKurus)}</span>
+                    <span className="text-gray-800">{tl(birimMaliyetKurus)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Toplam Ciro</span>
-                    <span className="text-white">{tl(hesap.toplamCiroKurus)}</span>
+                    <span className="text-gray-800">{tl(hesap.toplamCiroKurus)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>KDV Tutarı</span>
@@ -224,7 +224,7 @@ export default function SatisModal({ urun, onClose }: Props) {
               <button
                 type="submit"
                 disabled={!stokYeterli || yukleniyor || Number(adet) <= 0 || Number(fiyat) <= 0}
-                className="flex-1 py-3 rounded-xl bg-[#22c55e] text-white text-sm font-bold hover:bg-[#16a34a] transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+                className="flex-1 py-3 rounded-xl bg-[#22c55e] text-gray-800 text-sm font-bold hover:bg-[#16a34a] transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
               >
                 <TrendingUp className="w-4 h-4" />
                 {yukleniyor ? "Kaydediliyor..." : "Satışı Onayla"}

@@ -407,7 +407,7 @@ export default function SabloPanel() {
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Madde Başlığı *</label>
                   <input value={ozelForm.baslik} onChange={e => setOzelForm(f => ({ ...f, baslik: e.target.value }))}
                     placeholder="Kontrol edilecek madde..."
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Sıklık</label>
@@ -497,13 +497,13 @@ export default function SabloPanel() {
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Grup Adı *</label>
                   <input value={yeniGrup.baslik} onChange={e => setYeniGrup(f => ({ ...f, baslik: e.target.value }))}
                     placeholder="örn. Tedarik Zinciri Kontrolleri"
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama</label>
                   <input value={yeniGrup.aciklama} onChange={e => setYeniGrup(f => ({ ...f, aciklama: e.target.value }))}
                     placeholder="Bu grubun amacı..."
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Risk Seviyesi</label>
@@ -566,7 +566,7 @@ export default function SabloPanel() {
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Madde Başlığı *</label>
                   <input value={duzenleForm.baslik} onChange={e => setDuzenleForm(f => ({ ...f, baslik: e.target.value }))}
                     placeholder="Kontrol edilecek madde..."
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors" />
                 </div>
 
                 {/* Sıklık */}

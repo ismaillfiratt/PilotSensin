@@ -129,7 +129,7 @@ export default function StokTablosu({ otomatikAcilModal }: Props) {
           {isPilot && (
             <button
               onClick={() => setUrunEkleAcik(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-bold transition-opacity hover:opacity-90"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-gray-800 text-sm font-bold transition-opacity hover:opacity-90"
               style={{ background: "var(--forest)" }}
             >
               <Plus className="w-4 h-4" />Stok Ekle

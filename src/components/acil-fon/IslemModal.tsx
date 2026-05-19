@@ -79,7 +79,7 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
             <h2 className="text-base font-bold text-gray-800">
               {mevcutIslem ? "Hareketi Düzenle" : "Fon Hareketi"}
             </h2>
-            <button type="button" onClick={onClose} className="min-w-11 min-h-11 flex items-center justify-center rounded-xl text-gray-400 active:bg-white/5 transition-colors">
+            <button type="button" onClick={onClose} className="min-w-11 min-h-11 flex items-center justify-center rounded-xl text-gray-400 active:bg-gray-100 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -126,7 +126,7 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-bold">₺</span>
                 <input type="text" inputMode="numeric" required value={tutar} onChange={handleTutar}
                   placeholder="0"
-                  className="w-full pl-8 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-xl font-bold" />
+                  className="w-full pl-8 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-xl font-bold" />
               </div>
             </div>
 
@@ -142,7 +142,7 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama</label>
               <input type="text" value={aciklama} onChange={(e) => setAcikl(e.target.value)}
                 placeholder="örn. Aylık birikim, Acil tamir..."
-                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
             </div>
 
           </div>
@@ -151,7 +151,7 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
             style={{ paddingBottom: "max(env(safe-area-inset-bottom), 16px)" }}>
             <div className="flex gap-3">
               <button type="button" onClick={onClose}
-                className="flex-1 min-h-12 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium active:bg-white/5 transition-colors">
+                className="flex-1 min-h-12 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium active:bg-gray-100 transition-colors">
                 İptal
               </button>
               <button type="submit"

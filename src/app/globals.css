@@ -76,27 +76,7 @@
   --scrollbar-thumb: #CBD5E1;
 }
 
-/* Dark theme — optional, minimal */
-[data-theme="dark"] {
-  --bg-primary:    #0F172A;
-  --bg-secondary:  #1E293B;
-  --bg-card:       #1E293B;
-  --bg-sidebar:    #071E14;
-
-  --text-primary:   #F8FAFC;
-  --text-secondary: #94A3B8;
-  --text-muted:     #475569;
-
-  --border-color:  #293548;
-  --border-subtle: rgba(255, 255, 255, 0.06);
-
-  --input-bg:      #293548;
-  --input-border:  #334155;
-  --input-focus:   #4DB87A;
-
-  --scrollbar-bg:    #1E293B;
-  --scrollbar-thumb: #334155;
-}
+/* Dark mode intentionally not supported in this design version */
 
 /* ══════════════════════════════════════
    BASE

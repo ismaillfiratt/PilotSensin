@@ -84,7 +84,7 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
               <h2 className="text-base font-bold text-gray-800">{duzenleMi ? "Hedefi Düzenle" : "Yeni Hedef Ekle"}</h2>
               <p className="text-xs text-gray-400 mt-0.5">Tasarruf hedefini tanımla</p>
             </div>
-            <button type="button" onClick={onClose} className="min-w-11 min-h-11 flex items-center justify-center rounded-xl text-gray-400 active:bg-white/5 transition-colors">
+            <button type="button" onClick={onClose} className="min-w-11 min-h-11 flex items-center justify-center rounded-xl text-gray-400 active:bg-gray-100 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -94,7 +94,7 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Hedef Adı *</label>
               <input type="text" required value={ad} onChange={(e) => setAd(e.target.value)}
                 placeholder="örn. Makine Alımı, İşletme Güvenliği"
-                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
             </div>
 
             {/* Toplam hedef */}
@@ -103,7 +103,7 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
               <input type="text" inputMode="numeric" required
                 value={toplam.display} onChange={toplam.onChange}
                 placeholder="50.000"
-                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-lg font-bold" />
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-lg font-bold" />
             </div>
 
             {/* Aylık ödeme */}
@@ -112,7 +112,7 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
               <input type="text" inputMode="numeric" required
                 value={aylik.display} onChange={aylik.onChange}
                 placeholder="2.000"
-                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm font-bold" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm font-bold" />
               {aylarSayisi > 0 && (
                 <p className="text-xs text-[var(--leaf)] mt-1">
                   ~{aylarSayisi} ay ({Math.floor(aylarSayisi / 12) > 0 ? `${Math.floor(aylarSayisi / 12)} yıl ` : ""}{aylarSayisi % 12 > 0 ? `${aylarSayisi % 12} ay` : ""})
@@ -138,7 +138,7 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama / Not</label>
               <input type="text" value={aciklama} onChange={(e) => setAciklama(e.target.value)}
                 placeholder="örn. Depo binası için birikim"
-                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
             </div>
           </div>
 
@@ -147,7 +147,7 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
             style={{ paddingBottom: "max(env(safe-area-inset-bottom), 16px)" }}>
             <div className="flex gap-3">
               <button type="button" onClick={onClose}
-                className="flex-1 min-h-12 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium active:bg-white/5 transition-colors">
+                className="flex-1 min-h-12 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium active:bg-gray-100 transition-colors">
                 İptal
               </button>
               <button type="submit"

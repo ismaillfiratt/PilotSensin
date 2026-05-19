@@ -190,14 +190,14 @@ export default function DavetPage() {
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                         <input required value={form.ad} onChange={(e) => set("ad", e.target.value)}
                           placeholder="Adınız"
-                          className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm" />
+                          className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm" />
                       </div>
                     </div>
                     <div>
                       <label className="text-xs text-gray-400 font-medium block mb-1">Soyad *</label>
                       <input required value={form.soyad} onChange={(e) => set("soyad", e.target.value)}
                         placeholder="Soyadınız"
-                        className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm" />
+                        className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm" />
                     </div>
                   </div>
                 )}
@@ -208,7 +208,7 @@ export default function DavetPage() {
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input type="email" required value={form.email}
                       onChange={(e) => set("email", e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm" />
+                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm" />
                   </div>
                 </div>
 
@@ -219,7 +219,7 @@ export default function DavetPage() {
                     <input type={goster ? "text" : "password"} required
                       value={form.password} onChange={(e) => set("password", e.target.value)}
                       placeholder="••••••••" minLength={6}
-                      className="w-full pl-10 pr-11 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm" />
+                      className="w-full pl-10 pr-11 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm" />
                     <button type="button" onClick={() => setGoster(!goster)}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-800 transition-colors">
                       {goster ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

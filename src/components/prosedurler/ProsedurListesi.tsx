@@ -55,7 +55,7 @@ export default function ProsedurListesi() {
             value={arama}
             onChange={e => setArama(e.target.value)}
             placeholder="Prosedür ara..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors"
           />
         </div>
         <button

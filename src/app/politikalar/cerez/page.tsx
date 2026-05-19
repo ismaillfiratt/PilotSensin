@@ -9,7 +9,7 @@ export default function CerezPage() {
   return (
     <div className="space-y-6">
       <div className="card rounded-2xl p-6 md:p-8">
-        <h1 className="text-2xl font-bold text-white mb-1">Çerez Politikası</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-1">Çerez Politikası</h1>
         <p className="text-sm text-gray-500">Son güncelleme: {GUNCELLEME}</p>
         <p className="text-sm text-gray-400 mt-3">
           Bu politika, PilotSensin&apos;in çerezleri nasıl kullandığını, çerez türlerini ve
@@ -20,7 +20,7 @@ export default function CerezPage() {
       <div className="card rounded-2xl p-6 md:p-8 space-y-8 text-gray-400 leading-relaxed">
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">1. Çerez Nedir?</h2>
+          <h2 className="text-lg font-bold text-gray-800">1. Çerez Nedir?</h2>
           <p className="text-sm">
             Çerezler (cookies), bir web sitesini ziyaret ettiğinizde tarayıcınız tarafından
             cihazınıza kaydedilen küçük metin dosyalarıdır. Çerezler; oturumunuzun açık kalmasını
@@ -31,13 +31,13 @@ export default function CerezPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">2. Çerez Kategorileri</h2>
+          <h2 className="text-lg font-bold text-gray-800">2. Çerez Kategorileri</h2>
 
           <div className="space-y-4">
             <div className="border border-[rgba(34,197,94,0.3)] rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-bold px-2 py-0.5 rounded bg-[rgba(34,197,94,0.15)] text-[#22c55e]">ZORUNLU</span>
-                <span className="text-sm font-semibold text-white">Engellenemez</span>
+                <span className="text-sm font-semibold text-gray-800">Engellenemez</span>
               </div>
               <p className="text-sm mb-3">Platformun temel işlevleri için zorunludur. Bu çerezler devre dışı bırakılamaz; bırakılması durumunda platform düzgün çalışmaz.</p>
               <div className="overflow-x-auto">
@@ -60,7 +60,7 @@ export default function CerezPage() {
             <div className="border border-[rgba(59,130,246,0.3)] rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-bold px-2 py-0.5 rounded bg-[rgba(59,130,246,0.15)] text-[#3b82f6]">FONKSİYONEL</span>
-                <span className="text-sm font-semibold text-white">Açık Rıza Gerektirir</span>
+                <span className="text-sm font-semibold text-gray-800">Açık Rıza Gerektirir</span>
               </div>
               <p className="text-sm mb-3">Tema tercihi, dil ayarı ve benzeri kişiselleştirme verilerini hatırlamak için kullanılır.</p>
               <div className="overflow-x-auto">
@@ -82,7 +82,7 @@ export default function CerezPage() {
             <div className="border border-[var(--forest-200, #B3E8C8)] rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-bold px-2 py-0.5 rounded bg-[var(--mint)] text-[var(--leaf)]">ANALİTİK</span>
-                <span className="text-sm font-semibold text-white">Açık Rıza Gerektirir</span>
+                <span className="text-sm font-semibold text-gray-800">Açık Rıza Gerektirir</span>
               </div>
               <p className="text-sm mb-3">Platform kullanım istatistiklerini ölçmek için kullanılır. Kişisel veri içermez veya anonim hale getirilir.</p>
               <div className="overflow-x-auto">
@@ -103,7 +103,7 @@ export default function CerezPage() {
             <div className="border border-[rgba(148,163,184,0.2)] rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-bold px-2 py-0.5 rounded bg-[rgba(148,163,184,0.12)] text-gray-400">PAZARLAMA</span>
-                <span className="text-sm font-semibold text-white">Şu An Kullanılmıyor</span>
+                <span className="text-sm font-semibold text-gray-800">Şu An Kullanılmıyor</span>
               </div>
               <p className="text-sm">Pazarlama amaçlı çerezler şu an kullanılmamaktadır. İleride eklenirse bu politika güncellenerek bildirim yapılacaktır.</p>
             </div>
@@ -111,7 +111,7 @@ export default function CerezPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">3. Üçüncü Taraf Çerezleri</h2>
+          <h2 className="text-lg font-bold text-gray-800">3. Üçüncü Taraf Çerezleri</h2>
           <p className="text-sm">
             Vercel Analytics, sayfa yükleme hızı ve ziyaretçi istatistiklerini ölçmek amacıyla
             çerez veya benzer teknolojiler kullanabilir. Bu ölçümler anonim olup kişisel veri
@@ -121,17 +121,17 @@ export default function CerezPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">4. Çerez Tercihlerinizi Yönetme</h2>
+          <h2 className="text-lg font-bold text-gray-800">4. Çerez Tercihlerinizi Yönetme</h2>
           <p className="text-sm">Çerez tercihlerinizi aşağıdaki yollarla yönetebilirsiniz:</p>
           <ul className="space-y-1.5 text-sm list-disc list-inside">
-            <li><strong className="text-white">Çerez Banner'ı:</strong> İlk ziyarette gösterilen banner üzerinden tercihlerinizi seçebilirsiniz.</li>
-            <li><strong className="text-white">Ayarlar Sayfası:</strong> Ayarlar &gt; Yasal Bilgiler bölümünden "Çerez Tercihlerini Güncelle" seçeneğiyle istediğiniz zaman değiştirebilirsiniz.</li>
-            <li><strong className="text-white">Tarayıcı Ayarları:</strong> Tarayıcınızın ayarlarından çerezleri silebilir veya engelleyebilirsiniz. Zorunlu çerezlerin engellenmesi platformun çalışmasını olumsuz etkiler.</li>
+            <li><strong className="text-gray-800">Çerez Banner'ı:</strong> İlk ziyarette gösterilen banner üzerinden tercihlerinizi seçebilirsiniz.</li>
+            <li><strong className="text-gray-800">Ayarlar Sayfası:</strong> Ayarlar &gt; Yasal Bilgiler bölümünden "Çerez Tercihlerini Güncelle" seçeneğiyle istediğiniz zaman değiştirebilirsiniz.</li>
+            <li><strong className="text-gray-800">Tarayıcı Ayarları:</strong> Tarayıcınızın ayarlarından çerezleri silebilir veya engelleyebilirsiniz. Zorunlu çerezlerin engellenmesi platformun çalışmasını olumsuz etkiler.</li>
           </ul>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">5. "Do Not Track" Sinyalleri</h2>
+          <h2 className="text-lg font-bold text-gray-800">5. "Do Not Track" Sinyalleri</h2>
           <p className="text-sm">
             Tarayıcınız "Do Not Track" sinyali gönderse dahi zorunlu çerezler teknik açıdan
             gerekli olduğundan çalışmaya devam eder. Analitik ve fonksiyonel çerezler ise

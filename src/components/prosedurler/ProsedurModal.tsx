@@ -107,7 +107,7 @@ export default function ProsedurModal({ open, onClose, prosedur, onKaydet }: Pro
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Prosedür Başlığı *</label>
               <input required value={baslik} onChange={e => setBaslik(e.target.value)}
                 placeholder="örn. Sabah Açılış Prosedürü"
-                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
             </div>
 
             {/* #5: KomboSecici blur backdrop ile */}
@@ -122,7 +122,7 @@ export default function ProsedurModal({ open, onClose, prosedur, onKaydet }: Pro
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama</label>
               <textarea value={aciklama} onChange={e => setAciklama(e.target.value)}
                 placeholder="Bu prosedürün amacı..." rows={2}
-                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm resize-none" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm resize-none" />
             </div>
 
             {/* Adımlar — sürükle-bırak */}
@@ -156,7 +156,7 @@ export default function ProsedurModal({ open, onClose, prosedur, onKaydet }: Pro
                     </span>
                     <input value={adim.aciklama} onChange={e => adimGuncelle(i, e.target.value)}
                       placeholder={`${adim.sira}. adımı açıkla...`}
-                      className="flex-1 px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
+                      className="flex-1 px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
                     {adimlar.length > 1 && (
                       <button type="button" onClick={() => adimSil(i)}
                         className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-[#ef4444] transition-colors shrink-0">
@@ -181,7 +181,7 @@ export default function ProsedurModal({ open, onClose, prosedur, onKaydet }: Pro
             style={{ paddingBottom: "max(env(safe-area-inset-bottom), 16px)" }}>
             <div className="flex gap-3">
               <button type="button" onClick={onClose}
-                className="flex-1 min-h-12 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium active:bg-white/5 transition-colors">
+                className="flex-1 min-h-12 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium active:bg-gray-100 transition-colors">
                 İptal
               </button>
               <button form="prosedur-form" type="submit"

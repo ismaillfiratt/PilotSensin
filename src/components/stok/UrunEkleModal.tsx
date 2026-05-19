@@ -91,10 +91,10 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
 
           <div className="flex items-start justify-between mb-6">
             <div>
-              <h2 className="text-lg font-bold text-white">{duzenlemeModu ? "Ürünü Düzenle" : "Yeni Ürün Ekle"}</h2>
+              <h2 className="text-lg font-bold text-gray-800">{duzenlemeModu ? "Ürünü Düzenle" : "Yeni Ürün Ekle"}</h2>
               {duzenlemeModu && <p className="text-xs text-gray-400 mt-0.5">{urun.sku}</p>}
             </div>
-            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-gray-50 transition-colors">
+            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-800 hover:bg-gray-50 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -105,18 +105,18 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
               <div className="col-span-2">
                 <label className="text-xs text-gray-400 font-medium block mb-1.5">Ürün Adı *</label>
                 <input required value={form.ad} onChange={(e) => set("ad", e.target.value)} placeholder="örn. Süt 1L"
-                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm" />
+                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm" />
               </div>
               <div>
                 <label className="text-xs text-gray-400 font-medium block mb-1.5">SKU / Barkod</label>
                 <input value={form.sku} onChange={(e) => set("sku", e.target.value)} placeholder="SUT-001"
-                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm" />
+                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm" />
               </div>
               <div>
                 <label className="text-xs text-gray-400 font-medium block mb-1.5">Birim Alış Fiyatı (₺)</label>
                 <input type="number" min="0" step="0.01" value={form.birimMaliyetKurus} onChange={(e) => set("birimMaliyetKurus", e.target.value)}
                   placeholder="0.00"
-                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm" />
+                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm" />
               </div>
             </div>
 
@@ -137,7 +137,7 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
                 <div className="space-y-2 p-3 rounded-xl bg-gray-50 border border-gray-200">
                   <div className="flex flex-wrap gap-1.5">
                     {birimler.map((b) => (
-                      <span key={b} className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs bg-gray-50 text-white">
+                      <span key={b} className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs bg-gray-50 text-gray-800">
                         {b}
                         <button type="button" onClick={() => birimSil(b)} className="text-gray-500 hover:text-[#ef4444]">
                           <X className="w-3 h-3" />
@@ -147,7 +147,7 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
                   </div>
                   <div className="flex gap-2">
                     <input value={yeniBirim} onChange={(e) => setYeniBirim(e.target.value)} placeholder="Yeni birim..."
-                      className="flex-1 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-white placeholder-[#94a3b8] text-xs focus:outline-none" />
+                      className="flex-1 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-xs focus:outline-none" />
                     <button type="button" onClick={() => { if (yeniBirim.trim()) { birimEkle(yeniBirim.trim()); setYeniBirim(""); } }}
                       className="px-2.5 py-1.5 rounded-lg bg-white text-gray-900 text-xs font-bold">
                       <Plus className="w-3.5 h-3.5" />
@@ -156,7 +156,7 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
                 </div>
               ) : (
                 <select value={form.birim} onChange={(e) => set("birim", e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white focus:outline-none focus:border-[var(--leaf)] text-sm">
+                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-[var(--leaf)] text-sm">
                   {birimler.map((b) => <option key={b} value={b} className="bg-white">{b}</option>)}
                 </select>
               )}
@@ -173,7 +173,7 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
                 <div className="space-y-2 p-3 rounded-xl bg-gray-50 border border-gray-200">
                   <div className="flex flex-wrap gap-1.5">
                     {kategoriler.map((k) => (
-                      <span key={k} className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs bg-gray-50 text-white">
+                      <span key={k} className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs bg-gray-50 text-gray-800">
                         {k}
                         <button type="button" onClick={() => kategoriSil(k)} className="text-gray-500 hover:text-[#ef4444]">
                           <X className="w-3 h-3" />
@@ -183,7 +183,7 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
                   </div>
                   <div className="flex gap-2">
                     <input value={yeniKat} onChange={(e) => setYeniKat(e.target.value)} placeholder="Yeni kategori..."
-                      className="flex-1 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-white placeholder-[#94a3b8] text-xs focus:outline-none" />
+                      className="flex-1 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-xs focus:outline-none" />
                     <button type="button" onClick={() => { if (yeniKat.trim()) { kategoriEkle(yeniKat.trim()); setYeniKat(""); } }}
                       className="px-2.5 py-1.5 rounded-lg bg-white text-gray-900 text-xs font-bold">
                       <Plus className="w-3.5 h-3.5" />
@@ -192,7 +192,7 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
                 </div>
               ) : (
                 <select value={form.kategori} onChange={(e) => set("kategori", e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white focus:outline-none focus:border-[var(--leaf)] text-sm">
+                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-[var(--leaf)] text-sm">
                   {kategoriler.map((k) => <option key={k} value={k} className="bg-white">{k}</option>)}
                 </select>
               )}
@@ -205,12 +205,12 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
                 <div>
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Mevcut Adet *</label>
                   <input type="number" min="0" required value={form.mevcutAdet} onChange={(e) => set("mevcutAdet", e.target.value)} placeholder="0"
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm" />
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm" />
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Ort. Günlük Satış</label>
                   <input type="number" min="0" value={form.gunlukSatis} onChange={(e) => set("gunlukSatis", e.target.value)} placeholder="0"
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm" />
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm" />
                 </div>
                 {/* Emniyet ve kritik sadece pilota gösterilir */}
                 <div className={isPilot ? "" : "opacity-50 pointer-events-none"}>
@@ -219,7 +219,7 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
                   </label>
                   <input type="number" min="0" required value={form.emniyetStogu}
                     onChange={(e) => isPilot && set("emniyetStogu", e.target.value)} placeholder="10"
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm" />
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm" />
                 </div>
                 <div className={isPilot ? "" : "opacity-50 pointer-events-none"}>
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">
@@ -227,7 +227,7 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
                   </label>
                   <input type="number" min="0" required value={form.kritikStok}
                     onChange={(e) => isPilot && set("kritikStok", e.target.value)} placeholder="5"
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-white placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm" />
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm" />
                 </div>
               </div>
               <p className="text-[11px] text-gray-400 mt-2">Emniyet stoğu → sarı uyarı &nbsp;|&nbsp; Kritik stok → kırmızı alarm</p>
@@ -237,7 +237,7 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
               <button type="button" onClick={onClose}
                 className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium hover:bg-gray-50 transition-colors">İptal</button>
               <button type="submit"
-                className="flex-1 py-3 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors">
+                className="flex-1 py-3 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
                 {duzenlemeModu ? "Değişiklikleri Kaydet" : "Ürün Ekle"}
               </button>
             </div>

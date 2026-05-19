@@ -9,7 +9,7 @@ export default function GizlilikPage() {
   return (
     <div className="space-y-6">
       <div className="card rounded-2xl p-6 md:p-8">
-        <h1 className="text-2xl font-bold text-white mb-1">Gizlilik Politikası</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-1">Gizlilik Politikası</h1>
         <p className="text-sm text-gray-500">Son güncelleme: {GUNCELLEME}</p>
         <p className="text-sm text-gray-400 mt-3">
           PilotSensin olarak gizliliğinizi ciddiye alıyoruz. Bu politika, hangi bilgileri
@@ -20,7 +20,7 @@ export default function GizlilikPage() {
       <div className="card rounded-2xl p-6 md:p-8 space-y-8 text-gray-400 leading-relaxed">
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">1. Hangi Bilgileri Topluyoruz?</h2>
+          <h2 className="text-lg font-bold text-gray-800">1. Hangi Bilgileri Topluyoruz?</h2>
           <h3 className="text-base font-semibold text-[#e2e8f0]">1.1 Hesap Bilgileri</h3>
           <p className="text-sm">Kayıt sırasında ad, soyad ve e-posta adresinizi alıyoruz. Profil sayfasında ek bilgiler (telefon, işletme adı, adres) girebilirsiniz; bu bilgiler isteğe bağlıdır.</p>
           <h3 className="text-base font-semibold text-[#e2e8f0]">1.2 Ödeme Bilgileri</h3>
@@ -34,7 +34,7 @@ export default function GizlilikPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">2. Bilgilerinizi Nasıl Kullanıyoruz?</h2>
+          <h2 className="text-lg font-bold text-gray-800">2. Bilgilerinizi Nasıl Kullanıyoruz?</h2>
           <ul className="space-y-1.5 text-sm list-disc list-inside">
             <li>Hesabınızı oluşturmak, doğrulamak ve yönetmek</li>
             <li>PilotSensin hizmetini sunmak ve teknik işleyişi sağlamak</li>
@@ -49,46 +49,46 @@ export default function GizlilikPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">3. Üçüncü Taraflarla Paylaşım</h2>
+          <h2 className="text-lg font-bold text-gray-800">3. Üçüncü Taraflarla Paylaşım</h2>
           <p className="text-sm">Verileriniz yalnızca hizmetin sunulması için zorunlu olan altyapı sağlayıcılarıyla paylaşılmaktadır:</p>
           <div className="space-y-2 text-sm">
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-              <p className="text-white font-semibold mb-1">Supabase Inc. — Veritabanı, Kimlik Doğrulama ve Depolama</p>
+              <p className="text-gray-800 font-semibold mb-1">Supabase Inc. — Veritabanı, Kimlik Doğrulama ve Depolama</p>
               <p>Hesap verileri ve işletme verileriniz Supabase Inc. altyapısında barındırılmaktadır. Supabase sunucuları Singapur konumludur. SOC 2 Type II ve ISO 27001 sertifikalıdır.</p>
             </div>
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-              <p className="text-white font-semibold mb-1">Vercel Inc. — Uygulama Barındırma (Global CDN)</p>
+              <p className="text-gray-800 font-semibold mb-1">Vercel Inc. — Uygulama Barındırma (Global CDN)</p>
               <p>Uygulama kodumuz Vercel global ağı üzerinden sunulmaktadır.</p>
             </div>
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-              <p className="text-white font-semibold mb-1">Resend Inc. — E-posta Servisi (ABD)</p>
+              <p className="text-gray-800 font-semibold mb-1">Resend Inc. — E-posta Servisi (ABD)</p>
               <p>Hesap doğrulama, destek yanıtları ve sistem bildirimleri için kullanılır.</p>
             </div>
           </div>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">4. Veri Güvenliği</h2>
+          <h2 className="text-lg font-bold text-gray-800">4. Veri Güvenliği</h2>
           <p className="text-sm">TLS şifreli iletişim, AES-256 veritabanı şifrelemesi, Row Level Security ile yalıtım, güvenli parola hashleme ve düzenli güvenlik güncellemeleri uygulanmaktadır.</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">5. Veri Saklama</h2>
+          <h2 className="text-lg font-bold text-gray-800">5. Veri Saklama</h2>
           <p className="text-sm">Hesabınızı sildiğinizde kişisel verileriniz 30 gün içinde kalıcı olarak silinir. Mali kayıtlar Vergi Usul Kanunu uyarınca 10 yıl saklanmak zorundadır.</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">6. Çocukların Gizliliği</h2>
+          <h2 className="text-lg font-bold text-gray-800">6. Çocukların Gizliliği</h2>
           <p className="text-sm">PilotSensin yalnızca 18 yaş ve üzerindeki kişilere yönelik bir platformdur. 18 yaşın altındaki kişilere ait verileri öğrendiğimizde derhal sileriz.</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">7. Politika Değişiklikleri</h2>
+          <h2 className="text-lg font-bold text-gray-800">7. Politika Değişiklikleri</h2>
           <p className="text-sm">Önemli değişiklikler olduğunda kayıtlı e-posta adresinize bildirim göndeririz ve sayfanın güncelleme tarihini değiştiririz.</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">8. Haklarınız</h2>
+          <h2 className="text-lg font-bold text-gray-800">8. Haklarınız</h2>
           <p className="text-sm">KVKK kapsamındaki tüm haklarınız için <Link href="/politikalar/kvkk" className="text-[var(--leaf)] hover:underline">KVKK Aydınlatma Metni</Link>ni inceleyiniz.</p>
         </section>
 

@@ -516,7 +516,7 @@ export default function SopSablonPanel() {
                     value={ozelForm.baslik}
                     onChange={e => setOzelForm(f => ({ ...f, baslik: e.target.value }))}
                     placeholder="örn. Günlük Kasa Sayımı"
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors"
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors"
                   />
                 </div>
                 <div>
@@ -525,7 +525,7 @@ export default function SopSablonPanel() {
                     value={ozelForm.aciklama}
                     onChange={e => setOzelForm(f => ({ ...f, aciklama: e.target.value }))}
                     placeholder="Bu prosedürün amacı..."
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors"
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors"
                   />
                 </div>
 
@@ -555,7 +555,7 @@ export default function SopSablonPanel() {
                           value={adim.aciklama}
                           onChange={e => adimGuncelle(i, e.target.value)}
                           placeholder={`${i + 1}. adımı açıkla...`}
-                          className="flex-1 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-xs transition-colors"
+                          className="flex-1 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-xs transition-colors"
                         />
                         {ozelForm.adimlar.length > 1 && (
                           <button type="button" onClick={() => adimSil(i)}
@@ -610,7 +610,7 @@ export default function SopSablonPanel() {
                     value={yeniGrup.baslik}
                     onChange={e => setYeniGrup(f => ({ ...f, baslik: e.target.value }))}
                     placeholder="örn. Üretim & Kalite Kontrol"
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors"
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors"
                   />
                 </div>
                 <div>
@@ -619,7 +619,7 @@ export default function SopSablonPanel() {
                     value={yeniGrup.aciklama}
                     onChange={e => setYeniGrup(f => ({ ...f, aciklama: e.target.value }))}
                     placeholder="Bu grubun amacı..."
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors"
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors"
                   />
                 </div>
                 <div>
@@ -691,7 +691,7 @@ export default function SopSablonPanel() {
                     value={duzenleForm.baslik}
                     onChange={e => setDuzenleForm(f => ({ ...f, baslik: e.target.value }))}
                     placeholder="Prosedür adı..."
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors"
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors"
                   />
                 </div>
 
@@ -702,7 +702,7 @@ export default function SopSablonPanel() {
                     value={duzenleForm.aciklama}
                     onChange={e => setDuzenleForm(f => ({ ...f, aciklama: e.target.value }))}
                     placeholder="Bu prosedürün amacı..."
-                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors"
+                    className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-sm transition-colors"
                   />
                 </div>
 
@@ -733,7 +733,7 @@ export default function SopSablonPanel() {
                           value={adim.aciklama}
                           onChange={e => duzenleAdimGuncelle(i, e.target.value)}
                           placeholder={`${i + 1}. adımı açıkla...`}
-                          className="flex-1 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] text-xs transition-colors"
+                          className="flex-1 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] text-xs transition-colors"
                         />
                         {duzenleForm.adimlar.length > 1 && (
                           <button type="button" onClick={() => duzenleAdimSil(i)}

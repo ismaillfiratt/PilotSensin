@@ -66,7 +66,7 @@ export default function SifreDegistir() {
             <input
               type={goster ? "text" : "password"} required value={form.yeni}
               onChange={(e) => set("yeni", e.target.value)} placeholder="••••••••"
-              className="w-full pl-10 pr-11 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--mint)] transition-colors text-sm"
+              className="w-full pl-10 pr-11 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--mint)] transition-colors text-sm"
             />
             <button type="button" onClick={() => setGoster(!goster)}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-800 transition-colors">
@@ -82,7 +82,7 @@ export default function SifreDegistir() {
             <input
               type={goster ? "text" : "password"} required value={form.tekrar}
               onChange={(e) => set("tekrar", e.target.value)} placeholder="••••••••"
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--mint)] transition-colors text-sm"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--mint)] transition-colors text-sm"
               style={{ borderColor: form.tekrar && form.yeni !== form.tekrar ? "rgba(239,68,68,0.5)" : undefined }}
             />
           </div>

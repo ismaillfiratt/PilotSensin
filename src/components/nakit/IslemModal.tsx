@@ -170,7 +170,7 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
                 value={form.tutarKurus}
                 onChange={(e) => set("tutar", e.target.value)}
                 placeholder="0.00"
-                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-xl font-bold [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-xl font-bold [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />
             </div>
 
@@ -295,7 +295,7 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama</label>
               <input type="text" value={form.aciklama} onChange={(e) => set("aciklama", e.target.value)}
                 placeholder="Kısa not..."
-                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
             </div>
 
         </form>

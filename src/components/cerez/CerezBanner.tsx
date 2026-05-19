@@ -60,7 +60,7 @@ export default function CerezBanner() {
                   <Cookie className="w-4 h-4 text-[var(--leaf)]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white mb-1">Çerezler hakkında</p>
+                  <p className="text-sm font-semibold text-gray-800 mb-1">Çerezler hakkında</p>
                   <p className="text-xs text-gray-400 leading-relaxed">
                     Platformun düzgün çalışması için zorunlu çerezler kullanılmaktadır.
                     Analitik ve fonksiyonel çerezler için onayınızı istiyoruz.{" "}
@@ -89,7 +89,7 @@ export default function CerezBanner() {
                 </button>
                 <button
                   onClick={handleTumunuKabul}
-                  className="flex-1 min-w-[100px] py-2 rounded-xl bg-[var(--forest)] text-white text-xs font-bold hover:opacity-90 transition-colors"
+                  className="flex-1 min-w-[100px] py-2 rounded-xl bg-[var(--forest)] text-gray-800 text-xs font-bold hover:opacity-90 transition-colors"
                 >
                   Tümünü Kabul Et
                 </button>
@@ -113,7 +113,7 @@ export default function CerezBanner() {
               className="w-full max-w-sm card rounded-2xl p-6 space-y-4"
             >
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-white">Çerez Tercihleri</h3>
+                <h3 className="text-base font-bold text-gray-800">Çerez Tercihleri</h3>
                 <button onClick={() => setTercihModalAcik(false)}
                   className="text-gray-500 hover:text-gray-600 transition-colors">
                   <X className="w-4 h-4" />
@@ -167,7 +167,7 @@ export default function CerezBanner() {
                       />
                     </button>
                     <div>
-                      <p className="text-sm font-medium text-white">{baslik}</p>
+                      <p className="text-sm font-medium text-gray-800">{baslik}</p>
                       <p className="text-xs text-gray-500 mt-0.5">{aciklama}</p>
                     </div>
                   </div>
@@ -180,7 +180,7 @@ export default function CerezBanner() {
                   Sadece Zorunlular
                 </button>
                 <button onClick={handleTercihKaydet}
-                  className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-white text-xs font-bold hover:opacity-90 transition-colors">
+                  className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-xs font-bold hover:opacity-90 transition-colors">
                   Kaydet
                 </button>
               </div>

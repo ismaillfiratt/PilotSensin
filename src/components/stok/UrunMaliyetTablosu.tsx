@@ -63,7 +63,7 @@ function GiderInput({
         value={value || ""}
         onChange={(e) => onChange(Number(e.target.value))}
         placeholder="0"
-        className="w-16 px-2 bg-transparent text-white placeholder-[#475569] focus:outline-none text-sm text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className="w-16 px-2 bg-transparent text-gray-800 placeholder-[#475569] focus:outline-none text-sm text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
       {/* ₺ / % toggle */}
       <button
@@ -252,7 +252,7 @@ export default function UrunMaliyetTablosu() {
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <DollarSign className="w-5 h-5 text-[var(--leaf)]" />
-        <h2 className="text-base font-bold text-white">Ürün Maliyet Analizi</h2>
+        <h2 className="text-base font-bold text-gray-800">Ürün Maliyet Analizi</h2>
         <span className="text-xs text-gray-500">— VUK uyumlu KDV ve maliyet kırılımı</span>
       </div>
 
@@ -271,7 +271,7 @@ export default function UrunMaliyetTablosu() {
               className="card rounded-2xl p-6 w-full max-w-sm space-y-4"
             >
               <div>
-                <h3 className="text-sm font-bold text-white">Gideri Diğer Ürünlere Ekle</h3>
+                <h3 className="text-sm font-bold text-gray-800">Gideri Diğer Ürünlere Ekle</h3>
                 <p className="text-xs text-gray-500 mt-1">
                   <span className="text-[var(--leaf)] font-medium">"{bekleyenGider.ad}"</span> hangi ürünlere de eklensin?
                 </p>
@@ -289,7 +289,7 @@ export default function UrunMaliyetTablosu() {
                         {secili && <Check className="w-2.5 h-2.5 text-gray-900" />}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm text-white truncate">{u.ad}</p>
+                        <p className="text-sm text-gray-800 truncate">{u.ad}</p>
                         <p className="text-[10px] text-gray-500">{u.sku || u.kategori}</p>
                       </div>
                     </button>
@@ -302,7 +302,7 @@ export default function UrunMaliyetTablosu() {
                   Sadece bu ürün
                 </button>
                 <button onClick={giderDialogKaydet} disabled={secilenUrunler.size === 0}
-                  className="flex-1 py-2 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-40">
+                  className="flex-1 py-2 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-40">
                   Ekle ({secilenUrunler.size})
                 </button>
               </div>
@@ -333,7 +333,7 @@ export default function UrunMaliyetTablosu() {
                 <button onClick={() => urunAc(urun.id)}
                   className="w-full grid grid-cols-[2fr_1fr_1fr_1fr_1fr_40px] gap-4 px-5 py-4 items-center text-left hover:bg-[var(--mint)] transition-colors">
                   <div>
-                    <p className="text-sm font-semibold text-white">{urun.ad}</p>
+                    <p className="text-sm font-semibold text-gray-800">{urun.ad}</p>
                     <p className="text-xs text-gray-500">{urun.sku || "—"}</p>
                     {/* Birim KDV özet bilgisi */}
                     {k && (indKdv! > 0 || satKdv! > 0) && (
@@ -380,7 +380,7 @@ export default function UrunMaliyetTablosu() {
                                 value={duzenle.alisFiyati || ""}
                                 onChange={(e) => setAlis({ alisFiyati: Number(e.target.value) })}
                                 placeholder="0.00"
-                                className="flex-1 h-8 px-3 rounded-xl bg-gray-50 border border-gray-200 text-white placeholder-[#475569] focus:outline-none focus:border-[var(--leaf)] text-sm [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                className="flex-1 h-8 px-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#475569] focus:outline-none focus:border-[var(--leaf)] text-sm [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                               />
                               <span className="text-gray-500 font-bold text-sm select-none">+</span>
                               <KdvSecici value={duzenle.alisFiyatiKdvOrani ?? 20} onChange={(v) => setAlis({ alisFiyatiKdvOrani: v })} kdvOranlari={kdvOranlari} />
@@ -405,7 +405,7 @@ export default function UrunMaliyetTablosu() {
                                 value={duzenle.satisFiyati || ""}
                                 onChange={(e) => setAlis({ satisFiyati: Number(e.target.value) })}
                                 placeholder="0.00"
-                                className="flex-1 h-8 px-3 rounded-xl bg-gray-50 border border-gray-200 text-white placeholder-[#475569] focus:outline-none focus:border-[var(--leaf)] text-sm [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                className="flex-1 h-8 px-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#475569] focus:outline-none focus:border-[var(--leaf)] text-sm [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                               />
                               <span className="text-gray-500 font-bold text-sm select-none">+</span>
                               <KdvSecici value={duzenle.satisFiyatiKdvOrani ?? 20} onChange={(v) => setAlis({ satisFiyatiKdvOrani: v })} kdvOranlari={kdvOranlari} />
@@ -445,7 +445,7 @@ export default function UrunMaliyetTablosu() {
                                   <div className="flex flex-wrap gap-1.5">
                                     {[...kdvOranlari].sort((a, b) => a - b).map((r) => (
                                       <div key={r} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-50 border border-gray-200">
-                                        <span className="text-xs text-white">{r === 0 ? "KDV Yok" : `%${r}`}</span>
+                                        <span className="text-xs text-gray-800">{r === 0 ? "KDV Yok" : `%${r}`}</span>
                                         {r !== 0 && (
                                           <button onClick={() => kdvOraniSil(r)}
                                             className="text-gray-500 hover:text-[#ef4444] transition-colors ml-0.5">
@@ -467,7 +467,7 @@ export default function UrunMaliyetTablosu() {
                                         }
                                       }}
                                       placeholder="Yeni oran %"
-                                      className="w-28 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-white placeholder-[#475569] text-xs focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                      className="w-28 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#475569] text-xs focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                                     />
                                     <button
                                       onClick={() => { if (yeniKdvOrani) { kdvOraniEkle(Number(yeniKdvOrani)); setYeniKdvOrani(""); } }}
@@ -514,7 +514,7 @@ export default function UrunMaliyetTablosu() {
                                           value={g.yüzdeOzelBaz || ""}
                                           onChange={(e) => giderOzelBazGuncelle(g.id, Number(e.target.value))}
                                           placeholder="₺"
-                                          className="h-8 w-16 px-2 rounded-lg bg-gray-50 border border-gray-200 text-white text-xs text-right focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                          className="h-8 w-16 px-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-xs text-right focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                                         />
                                       )}
                                     </>
@@ -556,10 +556,10 @@ export default function UrunMaliyetTablosu() {
                               value={yeniGiderAd} onChange={(e) => setYeniGiderAd(e.target.value)}
                               onKeyDown={(e) => { if (e.key === "Enter") giderEkle(); }}
                               placeholder="Gider adı…"
-                              className="flex-1 h-8 px-2.5 rounded-lg bg-gray-50 border border-gray-200 text-white placeholder-[#475569] text-xs focus:outline-none focus:border-[var(--leaf)]"
+                              className="flex-1 h-8 px-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#475569] text-xs focus:outline-none focus:border-[var(--leaf)]"
                             />
                             <select value={yeniGiderTip} onChange={(e) => setYeniGiderTip(e.target.value as "tutar" | "yuzde")}
-                              className="h-8 px-1.5 rounded-lg bg-gray-50 border border-gray-200 text-white text-xs focus:outline-none">
+                              className="h-8 px-1.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-xs focus:outline-none">
                               <option value="tutar" className="bg-white">₺ Sabit</option>
                               <option value="yuzde" className="bg-white">% Oran</option>
                             </select>
@@ -584,7 +584,7 @@ export default function UrunMaliyetTablosu() {
                               <div className="space-y-1">
                                 <div className="flex justify-between text-gray-500">
                                   <span>Ham Ürün Matrahi</span>
-                                  <span className="text-white">{tl(alisMatrahi(duzenle))}</span>
+                                  <span className="text-gray-800">{tl(alisMatrahi(duzenle))}</span>
                                 </div>
                                 {duzenle.giderler.filter((g) => g.miktar > 0).map((g) => (
                                   <div key={g.id} className="flex justify-between text-gray-500">
@@ -593,7 +593,7 @@ export default function UrunMaliyetTablosu() {
                                   </div>
                                 ))}
                               </div>
-                              <div className="flex justify-between text-sm font-bold text-white border-t border-gray-200 pt-2">
+                              <div className="flex justify-between text-sm font-bold text-gray-800 border-t border-gray-200 pt-2">
                                 <span>Toplam Matrah</span>
                                 <span>{tl(toplamMatrah(duzenle))}</span>
                               </div>
@@ -602,7 +602,7 @@ export default function UrunMaliyetTablosu() {
                                 <span className="font-semibold">{tl(toplamIndirilebilirKdv(duzenle))}</span>
                               </div>
                               <div className="flex justify-between text-sm font-bold border-t border-gray-200 pt-2">
-                                <span className="text-white">Genel Toplam (Kasadan Çıkan)</span>
+                                <span className="text-gray-800">Genel Toplam (Kasadan Çıkan)</span>
                                 <span className="text-[var(--leaf)]">{tl(brütMaliyet(duzenle))}</span>
                               </div>
                             </div>
@@ -621,7 +621,7 @@ export default function UrunMaliyetTablosu() {
                                   <div className="text-[10px] text-gray-500 mt-1 space-y-0.5">
                                     <div className="flex justify-between">
                                       <span>Hesaplanan KDV</span>
-                                      <span className="text-white">+{tl(hesaplananKdv(duzenle))}</span>
+                                      <span className="text-gray-800">+{tl(hesaplananKdv(duzenle))}</span>
                                     </div>
                                     <div className="flex justify-between">
                                       <span>İndirilecek KDV</span>
@@ -643,7 +643,7 @@ export default function UrunMaliyetTablosu() {
                             <Trash2 className="w-3.5 h-3.5" />Sıfırla
                           </button>
                           <button onClick={kaydet}
-                            className="flex-1 py-2 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors flex items-center justify-center gap-2">
+                            className="flex-1 py-2 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors flex items-center justify-center gap-2">
                             <Save className="w-4 h-4" />Kaydet
                           </button>
                         </div>
@@ -664,7 +664,7 @@ export default function UrunMaliyetTablosu() {
           <div className="card rounded-2xl p-4 space-y-3">
             <div className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-[var(--leaf)]" />
-              <h3 className="text-sm font-semibold text-white">Performans Özeti</h3>
+              <h3 className="text-sm font-semibold text-gray-800">Performans Özeti</h3>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -689,7 +689,7 @@ export default function UrunMaliyetTablosu() {
             <div className="card rounded-2xl p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <Receipt className="w-4 h-4 text-[#22c55e]" />
-                <h3 className="text-sm font-semibold text-white">Mahsup Edilecek KDV</h3>
+                <h3 className="text-sm font-semibold text-gray-800">Mahsup Edilecek KDV</h3>
               </div>
 
               {/* Toplam büyük rakam */}

@@ -9,7 +9,7 @@ export default function KVKKPage() {
   return (
     <div className="space-y-6">
       <div className="card rounded-2xl p-6 md:p-8">
-        <h1 className="text-2xl font-bold text-white mb-1">KVKK Aydınlatma Metni</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-1">KVKK Aydınlatma Metni</h1>
         <p className="text-sm text-gray-500">Son güncelleme: {GUNCELLEME}</p>
         <p className="text-sm text-gray-400 mt-3">
           6698 sayılı Kişisel Verilerin Korunması Kanunu&apos;nun 10. maddesi uyarınca, kişisel verilerinizin
@@ -20,22 +20,22 @@ export default function KVKKPage() {
       <div className="card rounded-2xl p-6 md:p-8 space-y-8 text-gray-400 leading-relaxed">
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">1. Veri Sorumlusunun Kimliği</h2>
+          <h2 className="text-lg font-bold text-gray-800">1. Veri Sorumlusunun Kimliği</h2>
           <p>
             Kişisel verileriniz; aşağıda kimlik ve iletişim bilgileri yer alan veri sorumlusu
             tarafından 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında işlenmektedir.
           </p>
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-1.5 text-sm">
-            <div className="flex gap-3"><span className="text-gray-500 min-w-32">Unvan</span><span className="text-white">İsmail Fırat (Şahıs Şirketi)</span></div>
-            <div className="flex gap-3"><span className="text-gray-500 min-w-32">Adres</span><span className="text-white">Güveren Mah. 3746. Sk. No:13 Kepez / Antalya</span></div>
+            <div className="flex gap-3"><span className="text-gray-500 min-w-32">Unvan</span><span className="text-gray-800">İsmail Fırat (Şahıs Şirketi)</span></div>
+            <div className="flex gap-3"><span className="text-gray-500 min-w-32">Adres</span><span className="text-gray-800">Güveren Mah. 3746. Sk. No:13 Kepez / Antalya</span></div>
             <div className="flex gap-3"><span className="text-gray-500 min-w-32">E-posta</span><span className="text-[var(--leaf)]">destek@pilotsensin.com</span></div>
-            <div className="flex gap-3"><span className="text-gray-500 min-w-32">Web</span><span className="text-white">https://pilotsensin.com</span></div>
-            <div className="flex gap-3"><span className="text-gray-500 min-w-32">Vergi No</span><span className="text-white">[SONRADAN_EKLENECEK]</span></div>
+            <div className="flex gap-3"><span className="text-gray-500 min-w-32">Web</span><span className="text-gray-800">https://pilotsensin.com</span></div>
+            <div className="flex gap-3"><span className="text-gray-500 min-w-32">Vergi No</span><span className="text-gray-800">[SONRADAN_EKLENECEK]</span></div>
           </div>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">2. İşlenen Kişisel Veri Kategorileri</h2>
+          <h2 className="text-lg font-bold text-gray-800">2. İşlenen Kişisel Veri Kategorileri</h2>
           <p>Platformumuz aracılığıyla aşağıdaki kategorilerdeki kişisel veriler işlenmektedir:</p>
           <ul className="space-y-2 list-none">
             {[
@@ -57,7 +57,7 @@ export default function KVKKPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">3. Kişisel Verilerin İşlenme Amaçları</h2>
+          <h2 className="text-lg font-bold text-gray-800">3. Kişisel Verilerin İşlenme Amaçları</h2>
           <p>Kişisel verileriniz aşağıdaki amaçlarla işlenmektedir:</p>
           <ol className="space-y-2 list-decimal list-inside text-sm">
             <li>Üyelik hesabının oluşturulması, doğrulanması ve yönetilmesi</li>
@@ -74,7 +74,7 @@ export default function KVKKPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">4. Kişisel Verilerin Toplanma Yöntemleri</h2>
+          <h2 className="text-lg font-bold text-gray-800">4. Kişisel Verilerin Toplanma Yöntemleri</h2>
           <p>Kişisel verileriniz aşağıdaki yollarla toplanmaktadır:</p>
           <ul className="space-y-1.5 text-sm list-disc list-inside">
             <li>Kayıt formu ve profil güncelleme ekranları aracılığıyla doğrudan</li>
@@ -86,30 +86,30 @@ export default function KVKKPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">5. Hukuki Sebepler</h2>
+          <h2 className="text-lg font-bold text-gray-800">5. Hukuki Sebepler</h2>
           <p>Kişisel verileriniz, 6698 sayılı Kanun madde 5/2 ile madde 9 kapsamında aşağıdaki hukuki sebeplere dayalı olarak işlenmektedir:</p>
           <div className="space-y-2 text-sm">
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-              <span className="text-white font-semibold">Sözleşmenin Kurulması veya İfası (md. 5/2-c):</span>
+              <span className="text-gray-800 font-semibold">Sözleşmenin Kurulması veya İfası (md. 5/2-c):</span>
               <span className="ml-2">Hesap oluşturma, abonelik yönetimi, hizmet sunumu</span>
             </div>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-              <span className="text-white font-semibold">Hukuki Yükümlülük (md. 5/2-ç):</span>
+              <span className="text-gray-800 font-semibold">Hukuki Yükümlülük (md. 5/2-ç):</span>
               <span className="ml-2">Vergi kanunları kapsamında saklama, adli/idari makam talepleri</span>
             </div>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-              <span className="text-white font-semibold">Meşru Menfaat (md. 5/2-f):</span>
+              <span className="text-gray-800 font-semibold">Meşru Menfaat (md. 5/2-f):</span>
               <span className="ml-2">Platform güvenliği, dolandırıcılık önleme, hizmet iyileştirme</span>
             </div>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-              <span className="text-white font-semibold">Açık Rıza (md. 5/1 ve md. 9):</span>
+              <span className="text-gray-800 font-semibold">Açık Rıza (md. 5/1 ve md. 9):</span>
               <span className="ml-2">Analitik çerezler, pazarlama bildirimleri, yurt dışına veri aktarımı</span>
             </div>
           </div>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">6. Kişisel Verilerin Aktarımı</h2>
+          <h2 className="text-lg font-bold text-gray-800">6. Kişisel Verilerin Aktarımı</h2>
 
           <h3 className="text-base font-semibold text-[#e2e8f0]">6.1 Yurt İçi Aktarım</h3>
           <p className="text-sm">
@@ -134,7 +134,7 @@ export default function KVKKPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">7. Veri Saklama Süreleri</h2>
+          <h2 className="text-lg font-bold text-gray-800">7. Veri Saklama Süreleri</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
@@ -155,7 +155,7 @@ export default function KVKKPage() {
                 ].map(([kategori, sure, dayanak]) => (
                   <tr key={kategori}>
                     <td className="py-2.5 pr-4 text-gray-400">{kategori}</td>
-                    <td className="py-2.5 pr-4 text-white">{sure}</td>
+                    <td className="py-2.5 pr-4 text-gray-800">{sure}</td>
                     <td className="py-2.5 text-gray-500 text-xs">{dayanak}</td>
                   </tr>
                 ))}
@@ -165,7 +165,7 @@ export default function KVKKPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">8. Veri Güvenliği Önlemleri</h2>
+          <h2 className="text-lg font-bold text-gray-800">8. Veri Güvenliği Önlemleri</h2>
           <p className="text-sm">Kişisel verilerinizin güvenliği için aşağıdaki teknik ve idari tedbirler alınmaktadır:</p>
           <ul className="space-y-1.5 text-sm list-disc list-inside">
             <li>Tüm veri aktarımları Transport Layer Security (TLS 1.2+) ile şifrelenir</li>
@@ -180,33 +180,33 @@ export default function KVKKPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">9. Veri Sahibinin Hakları (KVKK Madde 11)</h2>
+          <h2 className="text-lg font-bold text-gray-800">9. Veri Sahibinin Hakları (KVKK Madde 11)</h2>
           <p className="text-sm">6698 sayılı Kanun&apos;un 11. maddesi kapsamında aşağıdaki haklara sahipsiniz:</p>
           <ol className="space-y-2 text-sm list-decimal list-inside">
-            <li><strong className="text-white">Bilgi Alma:</strong> Kişisel verilerinizin işlenip işlenmediğini öğrenme</li>
-            <li><strong className="text-white">Açıklama Talep Etme:</strong> İşlenmişse buna ilişkin bilgi talep etme</li>
-            <li><strong className="text-white">Amaç Öğrenme:</strong> İşlenme amacını ve amaca uygun kullanılıp kullanılmadığını öğrenme</li>
-            <li><strong className="text-white">Aktarım Bilgisi:</strong> Yurt içinde veya yurt dışında aktarıldığı üçüncü kişileri bilme</li>
-            <li><strong className="text-white">Düzeltme:</strong> Eksik veya yanlış işlenmiş verilerin düzeltilmesini isteme</li>
-            <li><strong className="text-white">Silme/Yok Etme:</strong> Kanun&apos;un 7. maddesi kapsamında silinmesini veya yok edilmesini isteme</li>
-            <li><strong className="text-white">Düzeltme/Silme Bildirimi:</strong> Yapılan işlemlerin aktarıldığı üçüncü kişilere bildirilmesini isteme</li>
-            <li><strong className="text-white">İtiraz:</strong> Otomatik sistemler vasıtasıyla analiz edilmesi durumunda aleyhte sonuca itiraz etme</li>
-            <li><strong className="text-white">Tazminat:</strong> Kanuna aykırı işleme nedeniyle zarara uğranılması halinde tazminat talep etme</li>
+            <li><strong className="text-gray-800">Bilgi Alma:</strong> Kişisel verilerinizin işlenip işlenmediğini öğrenme</li>
+            <li><strong className="text-gray-800">Açıklama Talep Etme:</strong> İşlenmişse buna ilişkin bilgi talep etme</li>
+            <li><strong className="text-gray-800">Amaç Öğrenme:</strong> İşlenme amacını ve amaca uygun kullanılıp kullanılmadığını öğrenme</li>
+            <li><strong className="text-gray-800">Aktarım Bilgisi:</strong> Yurt içinde veya yurt dışında aktarıldığı üçüncü kişileri bilme</li>
+            <li><strong className="text-gray-800">Düzeltme:</strong> Eksik veya yanlış işlenmiş verilerin düzeltilmesini isteme</li>
+            <li><strong className="text-gray-800">Silme/Yok Etme:</strong> Kanun&apos;un 7. maddesi kapsamında silinmesini veya yok edilmesini isteme</li>
+            <li><strong className="text-gray-800">Düzeltme/Silme Bildirimi:</strong> Yapılan işlemlerin aktarıldığı üçüncü kişilere bildirilmesini isteme</li>
+            <li><strong className="text-gray-800">İtiraz:</strong> Otomatik sistemler vasıtasıyla analiz edilmesi durumunda aleyhte sonuca itiraz etme</li>
+            <li><strong className="text-gray-800">Tazminat:</strong> Kanuna aykırı işleme nedeniyle zarara uğranılması halinde tazminat talep etme</li>
           </ol>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white">10. Başvuru Yöntemi</h2>
+          <h2 className="text-lg font-bold text-gray-800">10. Başvuru Yöntemi</h2>
           <p className="text-sm">
             Haklarınızı kullanmak için aşağıdaki kanallar aracılığıyla veri sorumlusuna başvurabilirsiniz:
           </p>
           <div className="space-y-2 text-sm">
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-              <span className="text-white font-semibold">E-posta:</span>
+              <span className="text-gray-800 font-semibold">E-posta:</span>
               <span className="ml-2">destek@pilotsensin.com — konu satırına &quot;KVKK Başvurusu&quot; yazınız</span>
             </div>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-              <span className="text-white font-semibold">Posta:</span>
+              <span className="text-gray-800 font-semibold">Posta:</span>
               <span className="ml-2">Güveren Mah. 3746. Sk. No:13 Kepez / Antalya</span>
             </div>
           </div>

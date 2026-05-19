@@ -138,7 +138,7 @@ export default function OnayDialog() {
                   type="button"
                   onClick={handleOnayla}
                   disabled={silDisabled}
-                  className="flex-1 min-h-12 rounded-xl bg-red-500 hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-red-400/50"
+                  className="flex-1 min-h-12 rounded-xl bg-red-500 hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed text-gray-800 text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-red-400/50"
                 >
                   {secenek.onayMetni ?? "Evet, Sil"}
                 </button>

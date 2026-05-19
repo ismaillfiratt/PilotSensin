@@ -35,7 +35,7 @@ export default function KdvBakiyeTablosu() {
       {/* Başlık */}
       <div className="flex items-center gap-2">
         <Receipt className="w-5 h-5 text-[#22c55e]" />
-        <h2 className="text-base font-bold text-white">KDV Genel Bakiye</h2>
+        <h2 className="text-base font-bold text-gray-800">KDV Genel Bakiye</h2>
         <span className="text-xs text-gray-500">— stok hareketlerinden birikimli</span>
       </div>
 
@@ -133,7 +133,7 @@ export default function KdvBakiyeTablosu() {
                       {/* Mobile kart */}
                       <div className="sm:hidden px-4 py-3 space-y-1.5 text-xs hover:bg-gray-50">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="text-white font-medium truncate">{k.urunAd}</p>
+                          <p className="text-gray-800 font-medium truncate">{k.urunAd}</p>
                           <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold shrink-0 ${k.tip === "giris" ? "bg-[rgba(34,197,94,0.1)] text-[#22c55e]" : "bg-[rgba(239,68,68,0.1)] text-[#ef4444]"}`}>
                             {k.tip === "giris" ? "Alış" : "Satış"}
                           </span>
@@ -148,7 +148,7 @@ export default function KdvBakiyeTablosu() {
                       {/* Desktop satır */}
                       <div className="hidden sm:grid sm:grid-cols-[1fr_80px_60px_80px_80px] gap-3 px-4 py-2.5 items-center text-xs hover:bg-gray-50">
                         <div className="min-w-0">
-                          <p className="text-white truncate">{k.urunAd}</p>
+                          <p className="text-gray-800 truncate">{k.urunAd}</p>
                           <p className="text-[10px] text-gray-500">{zaman(k.tarih)}</p>
                         </div>
                         <div>

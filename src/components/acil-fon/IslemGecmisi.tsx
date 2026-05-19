@@ -83,7 +83,7 @@ export default function IslemGecmisi() {
               <input
                 value={arama} onChange={(e) => setAramaSayfa(e.target.value)}
                 placeholder="Açıklama ara..."
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-[#94a3b8] text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors"
               />
             </div>
             {/* Tip filtresi */}

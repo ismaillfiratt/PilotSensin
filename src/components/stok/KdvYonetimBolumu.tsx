@@ -53,7 +53,7 @@ export default function KdvYonetimBolumu() {
             <Receipt className="w-4.5 h-4.5 text-[#22c55e]" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-white">KDV Yönetimi</h2>
+            <h2 className="text-base font-bold text-gray-800">KDV Yönetimi</h2>
             <p className="text-xs text-gray-500">
               Girdi/çıktı KDV takibi · mahsuplaşma projeksiyonu · hareket geçmişi
             </p>
@@ -218,7 +218,7 @@ export default function KdvYonetimBolumu() {
                       .map((k) => (
                         <div key={k.id} className="grid grid-cols-[1fr_80px_60px_80px_90px] gap-3 px-4 py-3 items-center hover:bg-gray-50">
                           <div className="min-w-0">
-                            <p className="text-xs text-white truncate">{k.urunAd}</p>
+                            <p className="text-xs text-gray-800 truncate">{k.urunAd}</p>
                             <p className="text-[10px] text-gray-500">{zaman(k.tarih)}</p>
                           </div>
                           <div>
