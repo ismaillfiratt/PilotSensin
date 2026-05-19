@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { kategoriDagilimi, formatTL, type IslemTipi } from "@/lib/nakit-data";
 import type { Kurus } from "@/lib/para";
@@ -22,10 +22,14 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 export default function KategoriGrafik() {
   const { islemler } = useNakit();
-  const [tip, setTip] = useState<IslemTipi>("gider");
-  const data = kategoriDagilimi(tip, islemler);
+  const [tip,     setTip]     = useState<IslemTipi>("gider");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  const data    = kategoriDagilimi(tip, islemler);
   const renkler = tip === "gelir" ? RENKLER_GELIR : RENKLER_GIDER;
-  const toplam = data.reduce((s, d) => s + d.value, 0);
+  const toplam  = data.reduce((s, d) => s + d.value, 0);
 
   return (
     <div className="card rounded-2xl p-5 w-full lg:w-72 shrink-0">
@@ -51,25 +55,22 @@ export default function KategoriGrafik() {
 
       {/* Pasta grafik */}
       <div className="h-[160px] md:h-[180px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              innerRadius={45}
-              outerRadius={70}
-              paddingAngle={2}
-              dataKey="value"
-              labelLine={false}
-            >
-              {data.map((_, i) => (
-                <Cell key={i} fill={renkler[i % renkler.length]} />
-              ))}
-            </Pie>
-            <Tooltip content={<CustomTooltip />} />
-          </PieChart>
-        </ResponsiveContainer>
+        {mounted ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie data={data} cx="50%" cy="50%"
+                innerRadius={45} outerRadius={70} paddingAngle={2}
+                dataKey="value" labelLine={false}>
+                {data.map((_, i) => (
+                  <Cell key={i} fill={renkler[i % renkler.length]} />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} />
+            </PieChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="h-full rounded-full bg-gray-50 animate-pulse mx-auto aspect-square" />
+        )}
       </div>
 
       {/* Kategori listesi */}
