@@ -89,7 +89,7 @@ export default function CerezBanner() {
                 </button>
                 <button
                   onClick={handleTumunuKabul}
-                  className="flex-1 min-w-[100px] py-2 rounded-xl bg-[var(--forest)] text-gray-800 text-xs font-bold hover:opacity-90 transition-colors"
+                  className="flex-1 min-w-[100px] py-2 rounded-xl bg-[var(--forest)] text-white text-xs font-bold hover:opacity-90 transition-colors"
                 >
                   Tümünü Kabul Et
                 </button>
@@ -180,7 +180,7 @@ export default function CerezBanner() {
                   Sadece Zorunlular
                 </button>
                 <button onClick={handleTercihKaydet}
-                  className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-xs font-bold hover:opacity-90 transition-colors">
+                  className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-white text-xs font-bold hover:opacity-90 transition-colors">
                   Kaydet
                 </button>
               </div>

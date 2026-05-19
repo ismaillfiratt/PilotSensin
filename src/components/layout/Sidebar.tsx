@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, TrendingUp, BarChart3, Package,
-  CheckSquare, ClipboardList, Shield, Scale,
+  CheckSquare, ClipboardList, Shield,
   ChevronLeft, ChevronRight, Plane, Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -119,33 +119,22 @@ export default function Sidebar({ mobile = false }: Props) {
         })}
       </nav>
 
-      {/* Yasal linkler */}
+      {/* Yasal linkler — sadece açık halde */}
       {(!collapsed || mobile) && (
-        <div className="px-3 pb-3" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-          <div className="flex items-center gap-1.5 pt-3 pb-1">
-            <Scale className="w-3 h-3 text-white/30" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-white/30">Yasal</span>
-          </div>
-          <div className="space-y-0.5">
-            <Link
-              href="/politikalar"
-              className="block text-[11px] text-white/55 hover:text-white/80 transition-colors py-0.5 font-semibold"
-            >
-              Tüm Yasal Belgeler →
+        <div className="px-4 py-3 shrink-0" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+          <p className="text-[9px] font-medium text-white/40 uppercase tracking-wider mb-1.5">Yasal</p>
+          <div className="space-y-1">
+            <Link href="/politikalar" className="block text-[11px] text-white/60 hover:text-white transition-colors">
+              Tüm yasal belgeler →
             </Link>
             {[
-              { href: "/politikalar/kvkk",               label: "KVKK"               },
-              { href: "/politikalar/gizlilik",            label: "Gizlilik"           },
-              { href: "/politikalar/kullanim-kosullari",  label: "Kullanım Koşulları" },
-              { href: "/politikalar/cerez",               label: "Çerez"              },
-              { href: "/politikalar/iade-iptal",          label: "İade & İptal"       },
-              { href: "/politikalar/sla",                 label: "SLA"                },
+              { href: "/politikalar/kvkk",              label: "KVKK" },
+              { href: "/politikalar/gizlilik",           label: "Gizlilik" },
+              { href: "/politikalar/kullanim-kosullari", label: "Kullanım Koşulları" },
+              { href: "/politikalar/cerez",              label: "Çerez Politikası" },
             ].map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="block text-[11px] text-white/30 hover:text-white/55 transition-colors py-0.5 truncate"
-              >
+              <Link key={href} href={href}
+                className="block text-[10px] text-white/40 hover:text-white/70 transition-colors truncate">
                 {label}
               </Link>
             ))}

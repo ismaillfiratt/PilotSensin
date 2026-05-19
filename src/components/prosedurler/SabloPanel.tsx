@@ -467,7 +467,7 @@ export default function SabloPanel() {
                     İptal
                   </button>
                   <button onClick={() => ozelModal && handleOzelEkle(ozelModal)}
-                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors">
                     Şablona Ekle
                   </button>
                 </div>
@@ -532,7 +532,7 @@ export default function SabloPanel() {
                       ozelGrupEkle({ ...yeniGrup, baslik: yeniGrup.baslik.trim() });
                       setYeniGrupModal(false);
                     }}
-                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors">
                     Grubu Oluştur
                   </button>
                 </div>
@@ -630,7 +630,7 @@ export default function SabloPanel() {
                     İptal
                   </button>
                   <button onClick={handleSaveDuzenle} disabled={!duzenleForm.baslik.trim()}
-                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                     Kaydet
                   </button>
                 </div>

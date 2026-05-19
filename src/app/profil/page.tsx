@@ -43,7 +43,7 @@ export default function ProfilPage() {
 
   if (!user) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto px-2 space-y-6">
         <div className="h-8 w-40 rounded-xl bg-gray-50 animate-pulse" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="h-64 rounded-2xl bg-gray-50 animate-pulse" />
@@ -57,13 +57,19 @@ export default function ProfilPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">Profilim</h1>
-        <p className="text-sm text-gray-400 mt-1">
-          {isPilot ? "Kişisel ve işletme bilgilerini yönet" : `${sirketAdi} ekibinin üyesisin`}
+    <div className="max-w-4xl mx-auto px-2">
+      {/* Hero */}
+      <section className="space-y-2 py-6">
+        <p className="label-caps">PROFİL</p>
+        <h1 className="hero-number" style={{ fontSize: "2.5rem" }}>
+          {user.ad || user.email.split("@")[0]}
+        </h1>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          {isPilot ? "Pilot · İşletme sahibi" : `${sirketAdi} ekibinin üyesi`}
         </p>
-      </div>
+      </section>
+
+      <hr className="section-rule" />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">

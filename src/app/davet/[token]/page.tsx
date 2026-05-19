@@ -228,7 +228,7 @@ export default function DavetPage() {
                 </div>
 
                 <button type="submit" disabled={islem}
-                  className="w-full py-3 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-60">
+                  className="w-full py-3 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-60">
                   {islem ? "İşleniyor..." : mod === "kayit" ? "Hesap Oluştur ve Ekibe Katıl" : "Giriş Yap ve Ekibe Katıl"}
                 </button>
               </form>

@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import Sidebar           from "./Sidebar";
 import Topbar            from "./Topbar";
-import AlertMarquee      from "./AlertMarquee";
 import MobileNav         from "./MobileNav";
 import RealtimeProvider   from "@/components/providers/RealtimeProvider";
 import DataProvider       from "@/components/providers/DataProvider";
@@ -71,7 +70,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         >
           {children}
         </main>
-        <AlertMarquee />
       </div>
 
       {/* Mobil Alt Navigasyon */}

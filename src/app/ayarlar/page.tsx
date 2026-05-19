@@ -10,13 +10,17 @@ import SSSAyarlari from "@/components/ayarlar/SSSAyarlari";
 
 export default function AyarlarPage() {
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">Ayarlar</h1>
-        <p className="text-sm text-gray-400 mt-1">
+    <div className="max-w-3xl mx-auto px-2">
+      {/* Hero */}
+      <section className="space-y-2 py-6">
+        <p className="label-caps">AYARLAR</p>
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>Tercihler</h1>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
           Bildirim, güvenlik ve uygulama tercihlerini yönet
         </p>
-      </div>
+      </section>
+
+      <hr className="section-rule" />
 
       {/* Çöp Kutusu */}
       <Link

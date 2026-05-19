@@ -237,7 +237,7 @@ export default function UrunEkleModal({ open, onClose, urun, onKaydet }: Props) 
               <button type="button" onClick={onClose}
                 className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-400 text-sm font-medium hover:bg-gray-50 transition-colors">İptal</button>
               <button type="submit"
-                className="flex-1 py-3 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
+                className="flex-1 py-3 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors">
                 {duzenlemeModu ? "Değişiklikleri Kaydet" : "Ürün Ekle"}
               </button>
             </div>

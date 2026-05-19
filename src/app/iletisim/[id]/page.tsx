@@ -210,7 +210,7 @@ export default function IletisimDetayPage() {
                 ))}
               </div>
               <button onClick={handleGonder} disabled={gonderiyor || (!cevap.trim() && dosyalar.length === 0)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-50">
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-50">
                 {gonderiyor
                   ? <div className="w-4 h-4 border-2 border-[var(--forest)]/30 border-t-[var(--forest)] rounded-full animate-spin" />
                   : <Send className="w-4 h-4" />}
@@ -265,7 +265,7 @@ export default function IletisimDetayPage() {
                   Atla
                 </button>
                 <button onClick={handleAnket} disabled={anketPuan === 0}
-                  className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-50">
                   Gönder
                 </button>
               </div>

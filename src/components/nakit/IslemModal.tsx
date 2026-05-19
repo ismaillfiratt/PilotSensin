@@ -74,7 +74,9 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Bugün seçildiyse gerçek saat ile kaydet, geçmiş tarih seçildiyse öğlen
+    const sayi = parseFloat(form.tutarKurus.replace(",", "."));
+    if (isNaN(sayi) || sayi <= 0) return;
+
     const bugun = localDateStr();
     let tarihISO: string;
     if (form.tarih === bugun) {
@@ -85,7 +87,7 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
     }
     onKaydet({
       tip:          form.tip,
-      tutarKurus:        kurus(parseFloat(form.tutarKurus.replace(",", "."))),
+      tutarKurus:   kurus(sayi),
       kategori:     form.kategori,
       aciklama:     form.aciklama,
       tarih:        tarihISO,
@@ -166,11 +168,16 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
             <div>
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Tutar (₺) *</label>
               <input
-                type="number" min="0.01" step="0.01" required
+                type="text"
+                inputMode="decimal"
+                required
                 value={form.tutarKurus}
-                onChange={(e) => set("tutar", e.target.value)}
-                placeholder="0.00"
-                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-xl font-bold [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (/^[0-9]*[.,]?[0-9]*$/.test(v)) set("tutarKurus", v);
+                }}
+                placeholder="0,00"
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-xl font-bold"
               />
             </div>
 
@@ -307,7 +314,7 @@ export default function IslemModal({ open, onClose, islem, onKaydet, varsayilanT
               İptal
             </button>
             <button type="submit" form="islem-modal-form"
-              className="flex-1 min-h-12 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
+              className="flex-1 min-h-12 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors">
               {duzenlemeModu ? "Kaydet" : "Ekle"}
             </button>
           </div>

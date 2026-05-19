@@ -250,7 +250,7 @@ export default function HareketiModal({ urun, onClose }: Props) {
                     İptal
                   </button>
                   <button type="submit" disabled={yukleniyor}
-                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-50">
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-50">
                     {yukleniyor ? "Kaydediliyor..." : "Kaydet"}
                   </button>
                 </div>

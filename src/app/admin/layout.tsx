@@ -48,11 +48,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   /* ─── Yükleniyor ─── */
   if (kontrol === "yukleniyor") {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#070d1a" }}>
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 rounded-full border-2 animate-spin"
-            style={{ borderColor: "var(--forest-200, #B3E8C8)", borderTopColor: "var(--leaf)" }} />
-          <p className="text-sm" style={{ color: "#64748b" }}>Yetki kontrol ediliyor…</p>
+            style={{ borderColor: "#E2E8F0", borderTopColor: "var(--leaf)" }} />
+          <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Yetki kontrol ediliyor…</p>
         </div>
       </div>
     );
@@ -61,28 +61,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   /* ─── Erişim Reddedildi ─── */
   if (kontrol === "red") {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#070d1a" }}>
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center space-y-4 max-w-sm px-6">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto"
-            style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)" }}>
+            style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}>
             <span className="text-3xl">🚫</span>
           </div>
-          <h1 className="text-xl font-bold text-white">Erişim Reddedildi</h1>
-          <p className="text-sm" style={{ color: "#94a3b8" }}>
+          <h1 className="text-xl font-bold" style={{ color: "#0F172A" }}>Erişim Reddedildi</h1>
+          <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
             {hata || "Bu sayfaya erişim yetkiniz yok."}
           </p>
           <div className="flex gap-3 justify-center pt-2">
             <button
               onClick={() => router.replace("/giris")}
-              className="px-4 py-2 rounded-xl text-sm font-semibold"
-              style={{ background: "var(--leaf)", color: "var(--forest)" }}
+              className="px-4 py-2 rounded-xl text-sm font-semibold text-white"
+              style={{ background: "var(--forest)" }}
             >
               Farklı Hesapla Giriş Yap
             </button>
             <button
               onClick={() => router.replace("/dashboard")}
               className="px-4 py-2 rounded-xl text-sm font-medium border"
-              style={{ borderColor: "rgba(255,255,255,0.1)", color: "#94a3b8" }}
+              style={{ borderColor: "rgba(0,0,0,0.12)", color: "var(--text-secondary)" }}
             >
               Dashboard'a Dön
             </button>
@@ -94,7 +94,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   /* ─── İzin verildi ─── */
   return (
-    <div className="min-h-screen" style={{ background: "#070d1a", color: "#ffffff" }}>
+    <div className="min-h-screen bg-white">
       {children}
     </div>
   );

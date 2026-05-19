@@ -14,6 +14,7 @@ import {
 import { formatTL, type Islem } from "@/lib/nakit-data";
 import type { Kurus } from "@/lib/para";
 import { useNakit } from "@/store/nakit";
+import { giderEkle } from "@/lib/islemler";
 import IslemModal from "./IslemModal";
 import { toast } from "@/store/toast";
 
@@ -133,8 +134,25 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
   const sayfadakiIslemler = filtrelenmis.slice((sayfa - 1) * SAYFA_BOYUTU, sayfa * SAYFA_BOYUTU);
 
   const handleKaydet = async (yeni: Omit<Islem, "id">) => {
-    if (duzenle) { await guncelle(duzenle.id, yeni); setDuzenle(null); }
-    else          { await ekle(yeni); }
+    if (duzenle) {
+      await guncelle(duzenle.id, yeni);
+      setDuzenle(null);
+      return;
+    }
+    // Gider → islemler katmanı (KDV + bildirim otomasyonu)
+    if (yeni.tip === "gider") {
+      const sonuc = await giderEkle({
+        kategori:     yeni.kategori,
+        tutarKurus:   yeni.tutarKurus,
+        odemeYontemi: yeni.odemeYontemi,
+        aciklama:     yeni.aciklama,
+        tarih:        yeni.tarih,
+      });
+      if (!sonuc.basarili) toast.hata(sonuc.hata ?? "Gider kaydedilemedi");
+    } else {
+      // Gelir → direkt nakit kaydı (stok bağlantısı yoksa)
+      await ekle(yeni);
+    }
   };
 
   const handleSil = async (islem: Islem) => {
@@ -223,7 +241,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
 
               <button
                 onClick={() => { setDuzenle(null); setModalAcik(true); }}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 active:scale-95 transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 active:scale-95 transition-all"
               >
                 <Plus className="w-4 h-4" />
                 İşlem Ekle

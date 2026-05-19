@@ -6,19 +6,12 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bell, Search, User, Settings, LogOut, ChevronDown,
-  Store, CheckCheck, ExternalLink, ChevronLeft, Menu,
+  CheckCheck, ExternalLink, ChevronLeft, Menu,
   CheckCircle2, Circle,
 } from "lucide-react";
 import { useLayout }      from "@/store/layout";
-import { useNakit }       from "@/store/nakit";
-import { useGorevler }    from "@/store/gorevler";
-import { useStok }        from "@/store/stok";
-import { nakitSkoru, gorevSkoru, stokSkoru, prosedurSkoru, acilFonSkoru, pilotSkoru } from "@/lib/pilot-score";
-import { useProsedurler } from "@/store/prosedurler";
-import { useAcilFon }     from "@/store/acilFon";
 import { createClient }   from "@/utils/supabase/client";
 import { useBildirimler } from "@/store/bildirimler";
-import { useSirket }      from "@/store/sirket";
 import AramaModal         from "@/components/arama/AramaModal";
 
 const MODUL_HREF: Record<string, string> = {
@@ -55,27 +48,8 @@ export default function Topbar() {
   const [kullanici,   setKullanici]   = useState<KullaniciBilgi | null>(null);
 
   const { bildirimler, okunduYap, okunduToggle, tumunuOkunduYap } = useBildirimler();
-  const { sirketAdi }  = useSirket();
-  const notifRef       = useRef<HTMLDivElement>(null);
-  const { islemler }                              = useNakit();
-  const { gorevler }                              = useGorevler();
-  const { urunler }                               = useStok();
-  const { prosedurler, checklist }                = useProsedurler();
-  const { islemler: fonIslemler, hedefler: fonHedefler } = useAcilFon();
-  const { mobileSidebarToggle }                   = useLayout();
-
-  const genelSkor = pilotSkoru([
-    nakitSkoru(islemler),
-    gorevSkoru(gorevler),
-    stokSkoru(urunler),
-    prosedurSkoru(prosedurler, checklist),
-    acilFonSkoru(fonIslemler, fonHedefler),
-  ]);
-
-  const skorRenk =
-    genelSkor >= 80 ? "#10B981" :
-    genelSkor >= 60 ? "#F59E0B" :
-    "#EF4444";
+  const notifRef                = useRef<HTMLDivElement>(null);
+  const { mobileSidebarToggle } = useLayout();
 
   useEffect(() => {
     const supabase = createClient();
@@ -155,11 +129,8 @@ export default function Topbar() {
           </button>
         )}
 
-        <Link href="/dashboard" className="flex items-center gap-1.5">
-          <Store className="w-4 h-4 text-gray-400" />
-          <span className="font-semibold text-sm text-gray-800">
-            {sirketAdi || "PilotSensin"}
-          </span>
+        <Link href="/dashboard" className="font-semibold text-sm text-gray-800">
+          Pilot Sensin
         </Link>
 
         <Link
@@ -180,26 +151,17 @@ export default function Topbar() {
         className="hidden md:flex items-center justify-between px-6 py-3 shrink-0 bg-white"
         style={{ borderBottom: "1px solid var(--border-color)" }}
       >
-        {/* Sol: işletme adı + skor */}
-        <div className="flex items-center gap-3">
-          <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-75 transition-opacity">
-            <Store className="w-4 h-4 text-gray-400" />
-            {sirketAdi ? (
-              <span className="font-semibold text-sm text-gray-800">{sirketAdi}</span>
-            ) : (
-              <span className="w-28 h-4 rounded bg-gray-100 animate-pulse" />
-            )}
-          </Link>
-          <span
-            className="hidden sm:inline px-2 py-0.5 rounded-full text-xs font-semibold border"
-            style={{
-              color:           skorRenk,
-              borderColor:     `${skorRenk}50`,
-              backgroundColor: `${skorRenk}12`,
-            }}
-          >
-            Skor: %{genelSkor}
-          </span>
+        {/* Sol: breadcrumb */}
+        <div className="flex items-center gap-1 text-xs text-gray-400">
+          <Link href="/dashboard" className="hover:text-gray-600 transition-colors">Ana sayfa</Link>
+          {pathname !== "/dashboard" && pathname !== "/" && (
+            <>
+              <span>/</span>
+              <span className="text-gray-600 font-medium capitalize">
+                {pathname.split("/").filter(Boolean).pop()?.replace(/-/g, " ")}
+              </span>
+            </>
+          )}
         </div>
 
         {/* Sağ: arama + bildirim + profil */}

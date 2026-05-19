@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useProsedurler } from "@/store/prosedurler";
 import ProsedurOzet    from "@/components/prosedurler/ProsedurOzet";
 import SopSablonPanel  from "@/components/prosedurler/SopSablonPanel";
@@ -10,49 +11,56 @@ import ChecklistPanel  from "@/components/prosedurler/ChecklistPanel";
 export default function ProsedurlerPage() {
   const { prosedurler, checklist } = useProsedurler();
 
+  const aktifPros = useMemo(() => prosedurler.filter((p) => !p.silindi).length, [prosedurler]);
+  const tamamlananCL = useMemo(
+    () => checklist.filter((c) => !c.silindi && c.tamamlandi).length,
+    [checklist]
+  );
+  const toplamCL = useMemo(() => checklist.filter((c) => !c.silindi).length, [checklist]);
+
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-xl md:text-2xl font-bold text-gray-800">Standart Operasyon Prosedürleri</h1>
-        <p className="text-xs md:text-sm text-gray-400 mt-1">
-          SOP belgeleri · kontrol listeleri · hazır şablonlar
+    <div className="max-w-6xl mx-auto px-2">
+      {/* Hero */}
+      <section className="space-y-2 py-6">
+        <p className="label-caps">PROSEDÜRLER · SOP</p>
+        <div className="flex items-baseline gap-3">
+          <span className="hero-number">{aktifPros}</span>
+          <span className="text-lg text-gray-400">prosedür</span>
+        </div>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          Kontrol listesi: {tamamlananCL}/{toplamCL} tamamlandı
         </p>
-      </div>
+      </section>
 
-      {/* Özet kartlar */}
+      <hr className="section-rule" />
       <ProsedurOzet prosedurler={prosedurler} checklist={checklist} />
+      <hr className="section-rule" />
 
-      {/* SOP Belge Şablonları */}
-      <div className="space-y-3">
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
-          SOP Belge Şablonları
-        </h2>
+      <section className="space-y-3 py-2">
+        <h2 className="text-sm font-semibold">SOP belge şablonları</h2>
         <SopSablonPanel />
-      </div>
+      </section>
 
-      {/* SOP Belgeleri — tam genişlik */}
-      <div className="space-y-3">
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
-          SOP Belgeleri
-        </h2>
+      <hr className="section-rule" />
+
+      <section className="space-y-3 py-2">
+        <h2 className="text-sm font-semibold">SOP belgeleri</h2>
         <ProsedurListesi />
-      </div>
+      </section>
 
-      {/* Kontrol Listesi Şablonları */}
-      <div className="space-y-3">
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
-          Kontrol Listesi Şablonları
-        </h2>
+      <hr className="section-rule" />
+
+      <section className="space-y-3 py-2">
+        <h2 className="text-sm font-semibold">Kontrol listesi şablonları</h2>
         <SabloPanel />
-      </div>
+      </section>
 
-      {/* Kontrol Listesi — tam genişlik */}
-      <div className="space-y-3">
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
-          Kontrol Listesi
-        </h2>
+      <hr className="section-rule" />
+
+      <section className="space-y-3 py-2">
+        <h2 className="text-sm font-semibold">Kontrol listesi</h2>
         <ChecklistPanel />
-      </div>
+      </section>
     </div>
   );
 }

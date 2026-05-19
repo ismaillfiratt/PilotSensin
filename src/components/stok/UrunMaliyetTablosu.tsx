@@ -302,7 +302,7 @@ export default function UrunMaliyetTablosu() {
                   Sadece bu ürün
                 </button>
                 <button onClick={giderDialogKaydet} disabled={secilenUrunler.size === 0}
-                  className="flex-1 py-2 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-40">
+                  className="flex-1 py-2 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-40">
                   Ekle ({secilenUrunler.size})
                 </button>
               </div>
@@ -643,7 +643,7 @@ export default function UrunMaliyetTablosu() {
                             <Trash2 className="w-3.5 h-3.5" />Sıfırla
                           </button>
                           <button onClick={kaydet}
-                            className="flex-1 py-2 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors flex items-center justify-center gap-2">
+                            className="flex-1 py-2 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors flex items-center justify-center gap-2">
                             <Save className="w-4 h-4" />Kaydet
                           </button>
                         </div>

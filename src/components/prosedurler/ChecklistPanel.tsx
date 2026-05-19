@@ -381,7 +381,7 @@ export default function ChecklistPanel() {
                     İptal
                   </button>
                   <button onClick={handleEkle}
-                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors">
                     Ekle
                   </button>
                 </div>

@@ -172,24 +172,26 @@ export default function BildirimlerPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-5">
+    <div className="max-w-6xl mx-auto px-2">
 
-      {/* ── Başlık ── */}
+      {/* Hero */}
+      <section className="space-y-2 py-6">
+        <p className="label-caps">ERKEN UYARI MERKEZİ</p>
+        <div className="flex items-baseline gap-3">
+          <span className="hero-number">{okunmamis > 0 ? okunmamis : bildirimler.length}</span>
+          <span className="text-lg text-gray-400">{okunmamis > 0 ? "okunmamış" : "bildirim"}</span>
+        </div>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          {bildirimler.length} uygulama · {sistemBildirimler.length} sistem bildirimi
+        </p>
+      </section>
+
+      <hr className="section-rule" />
+
+      {/* ── Filtre + Aksiyon Paneli ── */}
       <div className="card rounded-2xl p-5 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[var(--mint)] border border-[var(--forest-100, #D9F2E4)] flex items-center justify-center">
-              <Bell className="w-5 h-5 text-[var(--leaf)]" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-800">Bildirimler</h1>
-              <p className="text-xs text-gray-400">
-                {okunmamis > 0
-                  ? `${okunmamis} okunmamış · ${bildirimler.length} uygulama · ${sistemBildirimler.length} sistem`
-                  : `${bildirimler.length} uygulama · ${sistemBildirimler.length} sistem bildirimi`}
-              </p>
-            </div>
-          </div>
+          <div />
           {/* Sessiz mod */}
           <div className="relative">
             {sessizModu ? (
@@ -387,9 +389,9 @@ export default function BildirimlerPage() {
               <select value={modulFiltre} onChange={(e) => setModulFiltre(e.target.value as "tumu" | BildirimModul)}
                 className="px-2.5 py-1.5 rounded-xl bg-gray-50 border border-gray-200 text-xs focus:outline-none focus:border-[var(--leaf)]"
                 style={{ color: modulFiltre !== "tumu" ? "var(--leaf)" : "#64748b" }}>
-                <option value="tumu"        className="bg-[var(--forest)] text-gray-800">Tüm Modüller</option>
+                <option value="tumu"        className="bg-[var(--forest)] text-white">Tüm Modüller</option>
                 {(["stok","nakit-akisi","kar-zarar","gorevler","prosedurler","acil-fon","sistem"] as BildirimModul[]).map((m) => (
-                  <option key={m} value={m} className="bg-[var(--forest)] text-gray-800">{MODUL_ETIKET[m]}</option>
+                  <option key={m} value={m} className="bg-[var(--forest)] text-white">{MODUL_ETIKET[m]}</option>
                 ))}
               </select>
               <div className="overflow-x-auto flex p-0.5 rounded-xl bg-gray-50 border border-gray-200">

@@ -166,19 +166,23 @@ export default function IletisimPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 pb-24">
+    <div className="max-w-2xl mx-auto px-2 pb-24">
 
       {/* Hero */}
+      <section className="space-y-2 py-6">
+        <p className="label-caps">İLETİŞİM & DESTEK</p>
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
+          Sana nasıl yardımcı olabiliriz?
+        </h1>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          Ekibimiz en kısa sürede döner · Ort. yanıt: {ortYanit !== null ? `${ortYanit} saat` : "4 saat"}
+        </p>
+      </section>
+
+      <hr className="section-rule" />
+
+      <div className="space-y-6">
       <div className="card rounded-2xl p-6">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-xl bg-[var(--mint)] border border-[var(--forest-200, #B3E8C8)] flex items-center justify-center">
-            <MessageCircle className="w-5 h-5 text-[var(--leaf)]" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-800">Sana Nasıl Yardımcı Olabiliriz?</h1>
-            <p className="text-xs text-gray-400">Ekibimiz en kısa sürede döner</p>
-          </div>
-        </div>
 
         {/* E-posta kartı */}
         <div className="flex items-center justify-between gap-3 p-4 rounded-xl bg-gray-50 border border-gray-200 mt-4">
@@ -304,7 +308,7 @@ export default function IletisimPage() {
         </div>
 
         <button onClick={handleGonder} disabled={gonderiyor}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
           {gonderiyor
             ? <><div className="w-4 h-4 border-2 border-[var(--forest)]/30 border-t-[var(--forest)] rounded-full animate-spin" />Gönderiliyor...</>
             : <><Send className="w-4 h-4" />Talep Gönder</>}
@@ -384,6 +388,7 @@ export default function IletisimPage() {
           <p className="text-xs text-gray-500 mt-1">Sorularınla bize ulaş!</p>
         </div>
       )}
+      </div>
     </div>
   );
 }

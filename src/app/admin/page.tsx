@@ -64,11 +64,10 @@ type BildirimHedef = "tumu"   | "pilot"  | "copilot";
 
 function StatKart({ baslik, deger, alt }: { baslik: string; deger: string | number; alt?: string }) {
   return (
-    <div className="rounded-xl p-5 flex flex-col gap-2"
-      style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--mint)" }}>
-      <p className="text-xs uppercase tracking-widest" style={{ color: "#64748b" }}>{baslik}</p>
-      <p className="text-3xl font-bold" style={{ color: "var(--leaf)" }}>{deger}</p>
-      {alt && <p className="text-xs truncate" style={{ color: "#475569" }}>{alt}</p>}
+    <div className="stat-card flex flex-col gap-1.5">
+      <p className="label-caps">{baslik}</p>
+      <p className="font-number font-semibold text-2xl" style={{ color: "var(--forest)" }}>{deger}</p>
+      {alt && <p className="text-xs truncate" style={{ color: "var(--text-secondary)" }}>{alt}</p>}
     </div>
   );
 }
@@ -78,9 +77,9 @@ function TabButon({ aktif, onClick, children }: { aktif: boolean; onClick: () =>
     <button onClick={onClick}
       className="px-4 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap"
       style={{
-        background: aktif ? "var(--mint)" : "transparent",
-        color:  aktif ? "var(--leaf)" : "#64748b",
-        border: aktif ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid transparent",
+        background: aktif ? "var(--forest)" : "transparent",
+        color:      aktif ? "#FFFFFF"        : "#64748b",
+        border:     aktif ? "1px solid var(--forest)" : "1px solid transparent",
       }}>
       {children}
     </button>
@@ -92,7 +91,7 @@ function Tablo({ basliklar, children, bos }: { basliklar: string[]; children: Re
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <tr style={{ borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
             {basliklar.map((h) => (
               <th key={h} className="text-left py-3 px-4 text-xs uppercase tracking-wider font-medium" style={{ color: "#475569" }}>{h}</th>
             ))}
@@ -107,11 +106,11 @@ function Tablo({ basliklar, children, bos }: { basliklar: string[]; children: Re
 }
 
 function Satir({ children }: { children: React.ReactNode }) {
-  return <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>{children}</tr>;
+  return <tr style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>{children}</tr>;
 }
 
 function Hucre({ children, renk }: { children: React.ReactNode; renk?: string }) {
-  return <td className="py-3 px-4" style={{ color: renk ?? "#94a3b8" }}>{children}</td>;
+  return <td className="py-3 px-4 text-sm" style={{ color: renk ?? "var(--text-secondary)" }}>{children}</td>;
 }
 
 function Chip({ label, renk, bg }: { label: string; renk: string; bg: string }) {
@@ -221,7 +220,7 @@ function SirketleriGoster({
 
   const dropdownSt = (pos: { top: number; left: number }): React.CSSProperties => ({
     position: "fixed", top: pos.top, left: pos.left, zIndex: 9999, minWidth: 220,
-    background: "#070d1a", border: "1px solid var(--forest-200, #B3E8C8)",
+    background: "#FFFFFF", border: "1px solid var(--forest-200, #B3E8C8)",
     borderRadius: 12, padding: "8px", boxShadow: "0 16px 40px rgba(0,0,0,0.5)",
   });
 
@@ -235,7 +234,7 @@ function SirketleriGoster({
   });
 
   return (
-    <div className="rounded-xl p-6 space-y-4" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--mint)" }}>
+    <div className="rounded-xl p-6 space-y-4" style={{ background: "#FAFAFA", border: "1px solid var(--mint)" }}>
 
       {/* ── TEK SATIR filtre ── */}
       <div className="flex gap-2 items-center flex-wrap">
@@ -298,7 +297,7 @@ function SirketleriGoster({
             </button>
           ))}
           {sirketFiltre.tarihSecim === "ozel" && (
-            <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: 6, paddingTop: 8, display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ borderTop: "1px solid rgba(0,0,0,0.08)", marginTop: 6, paddingTop: 8, display: "flex", flexDirection: "column", gap: 6 }}>
               <input type="date" value={sirketFiltre.tarihBas} max={sirketFiltre.tarihBit || undefined}
                 onChange={(e) => setSirketFiltre(f => ({ ...f, tarihBas: e.target.value }))}
                 className="scheme-dark" style={{ ...inputSt, padding: "6px 10px", fontSize: 12, borderRadius: 8 }} />
@@ -306,7 +305,7 @@ function SirketleriGoster({
                 onChange={(e) => setSirketFiltre(f => ({ ...f, tarihBit: e.target.value }))}
                 className="scheme-dark" style={{ ...inputSt, padding: "6px 10px", fontSize: 12, borderRadius: 8 }} />
               <button onClick={() => setTarihDropdown(false)} className="text-xs py-1.5 rounded-lg font-semibold"
-                style={{ background: "var(--leaf)", color: "#070d1a" }}>Uygula</button>
+                style={{ background: "var(--leaf)", color: "#FFFFFF" }}>Uygula</button>
             </div>
           )}
         </div>
@@ -336,7 +335,7 @@ function SirketleriGoster({
           ))}
           <button onClick={() => { setSirketFiltre(f => ({ ...f, minUye: "", maxUye: "" })); setUyeDropdown(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-xs mt-1"
-            style={{ color: "#ef4444", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+            style={{ color: "#ef4444", borderTop: "1px solid rgba(0,0,0,0.08)" }}>
             Temizle
           </button>
         </div>
@@ -351,7 +350,7 @@ function SirketleriGoster({
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+              <tr style={{ borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
                 {["Şirket Adı", "Sahip E-Posta", "Üye", "Plan", "Kayıt Tarihi"].map((h) => (
                   <th key={h} className="text-left py-3 px-4 text-xs uppercase tracking-wider font-medium"
                     style={{ color: "#475569" }}>{h}</th>
@@ -362,7 +361,7 @@ function SirketleriGoster({
               {filtreSirketler.length === 0 ? (
                 <tr><td colSpan={5} className="py-8 text-center text-sm" style={{ color: "#475569" }}>Kayıt bulunamadı</td></tr>
               ) : filtreSirketler.map((s) => (
-                <tr key={s.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
+                <tr key={s.id} style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
                   {/* Şirket adı — tıklanabilir */}
                   <td className="py-3 px-4" style={{ position: "relative" }}>
                     <button onClick={() => sirketTikla(s)}
@@ -378,7 +377,7 @@ function SirketleriGoster({
                       <div ref={popupRef} style={{
                         position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 60,
                         minWidth: 300, maxWidth: 380,
-                        background: "#070d1a", border: "1px solid var(--forest-200, #B3E8C8)",
+                        background: "#FFFFFF", border: "1px solid var(--forest-200, #B3E8C8)",
                         borderRadius: 14, padding: 0, boxShadow: "0 20px 50px rgba(0,0,0,0.7)",
                         overflow: "hidden",
                       }}>
@@ -403,7 +402,7 @@ function SirketleriGoster({
                             <div key={i} style={{
                               display: "flex", alignItems: "center", justifyContent: "space-between",
                               padding: "8px 10px", borderRadius: 8, marginBottom: 4,
-                              background: "rgba(255,255,255,0.03)",
+                              background: "#F3F4F6",
                             }}>
                               <div>
                                 <p style={{ color: "var(--leaf)", fontSize: 12, fontFamily: "monospace" }}>{u.email}</p>
@@ -708,35 +707,33 @@ export default function AdminPage() {
   /* ─── Render ──────────────────────────────────────────────────────────── */
 
   const inputCls = "w-full px-4 py-2.5 rounded-lg text-sm outline-none";
-  const inputSt  = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", color: "#ffffff" };
+  const inputSt  = { background: "#F9FAFB", border: "1px solid rgba(0,0,0,0.10)", color: "#0F172A" };
 
   return (
-    <div className="min-h-screen p-6 lg:p-10" style={{ background: "#070d1a" }}>
+    <div className="max-w-6xl mx-auto px-2 pb-16">
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl shrink-0"
-            style={{ background: "var(--mint)", border: "1px solid var(--forest-200, #B3E8C8)" }}>🛡️</div>
-          <div>
-            <h1 className="text-2xl font-bold" style={{ color: "var(--leaf)" }}>Komuta Merkezi</h1>
-            <p className="text-xs" style={{ color: "#475569" }}>PilotSensin Admin</p>
-          </div>
+      {/* Hero */}
+      <section className="py-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div>
+          <p className="label-caps mb-2">ADMIN · KOMUTA MERKEZİ</p>
+          <h1 className="text-2xl font-bold">Komuta Merkezi</h1>
+          <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
+            PilotSensin sistem yönetimi · {adminEmail}
+          </p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
-          <span className="text-xs px-3 py-1.5 rounded-full font-mono"
-            style={{ background: "var(--mint)", color: "var(--leaf)", border: "1px solid var(--forest-100, #D9F2E4)" }}>
-            {adminEmail}
-          </span>
-          <Link href="/dashboard" className="text-sm px-4 py-1.5 rounded-lg transition-all"
-            style={{ background: "rgba(255,255,255,0.05)", color: "#94a3b8", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <Link href="/dashboard"
+            className="text-sm px-4 py-1.5 rounded-lg transition-colors hover:bg-gray-100"
+            style={{ background: "#F3F4F6", color: "var(--text-secondary)", border: "1px solid rgba(0,0,0,0.08)" }}>
             ← Uygulamaya Dön
           </Link>
         </div>
-      </div>
+      </section>
+
+      <hr className="section-rule" />
 
       {/* İstatistikler */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
         <StatKart baslik="Toplam Şirket"    deger={toplamSirket} />
         <StatKart baslik="Aktif Kullanıcı"  deger={toplamKullanici} alt="Aktif üyeler" />
         <StatKart baslik="Toplam Admin"     deger={adminler.length} alt="system_admin" />
@@ -744,7 +741,7 @@ export default function AdminPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6 flex-wrap border-b pb-4" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+      <div className="flex gap-2 mb-6 flex-wrap border-b pb-4" style={{ borderColor: "rgba(0,0,0,0.08)" }}>
         <TabButon aktif={aktifTab === "sirketler"}     onClick={() => setAktifTab("sirketler")}>Şirketler ({sirketler.length})</TabButon>
         <TabButon aktif={aktifTab === "adminler"}      onClick={() => setAktifTab("adminler")}>Adminler ({filtreAdminler.length})</TabButon>
         {superAdmin && (
@@ -770,7 +767,7 @@ export default function AdminPage() {
 
       {/* ── Adminler (system_admin=true kullanıcılar) ── */}
       {aktifTab === "adminler" && (
-        <div className="rounded-xl p-6" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--mint)" }}>
+        <div className="rounded-xl p-6" style={{ background: "#FAFAFA", border: "1px solid var(--mint)" }}>
           <p className="text-xs mb-4" style={{ color: "#475569" }}>
             Sisteme admin yetkisi verilmiş hesaplar. Yönetmek için "Admin Yönetimi" sekmesini kullan.
           </p>
@@ -799,7 +796,7 @@ export default function AdminPage() {
         <div className="grid lg:grid-cols-2 gap-6">
 
           {/* Yeni Admin Ekle */}
-          <div className="rounded-xl p-6" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--mint)" }}>
+          <div className="rounded-xl p-6" style={{ background: "#FAFAFA", border: "1px solid var(--mint)" }}>
             <h2 className="text-base font-semibold mb-1" style={{ color: "var(--leaf)" }}>Yeni Admin Ekle</h2>
             <p className="text-xs mb-5" style={{ color: "#475569" }}>
               Sisteme kayıtlı bir kullanıcıya admin yetkisi ver. Kullanıcının önce uygulamaya kayıt olmuş olması gerekir.
@@ -814,7 +811,7 @@ export default function AdminPage() {
               </div>
               <button type="submit" disabled={adminIslem === "yukleniyor" || !yeniAdminMail.trim()}
                 className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-40"
-                style={{ background: "var(--leaf)", color: "#070d1a" }}>
+                style={{ background: "var(--leaf)", color: "#FFFFFF" }}>
                 {adminIslem === "yukleniyor" ? "İşleniyor…" : "Admin Yetkisi Ver"}
               </button>
             </form>
@@ -827,14 +824,14 @@ export default function AdminPage() {
           </div>
 
           {/* Mevcut Adminler */}
-          <div className="rounded-xl p-6" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--mint)" }}>
+          <div className="rounded-xl p-6" style={{ background: "#FAFAFA", border: "1px solid var(--mint)" }}>
             <h2 className="text-base font-semibold mb-5" style={{ color: "var(--leaf)" }}>Mevcut Adminler ({adminler.length})</h2>
             <div className="flex flex-col gap-3">
               {adminler.length === 0 ? (
                 <p className="text-sm" style={{ color: "#475569" }}>Admin bulunamadı.</p>
               ) : adminler.map((a) => (
                 <div key={a.id} className="flex items-center justify-between gap-3 p-3 rounded-lg"
-                  style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--mint)" }}>
+                  style={{ background: "#F3F4F6", border: "1px solid var(--mint)" }}>
                   <div className="min-w-0">
                     <p className="text-sm font-mono truncate" style={{ color: "var(--leaf)" }}>{a.email}</p>
                     {a.full_name && <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>{a.full_name}</p>}
@@ -859,7 +856,7 @@ export default function AdminPage() {
       {/* ── Bildirim Gönder ── */}
       {aktifTab === "bildirim" && (
         <div className="grid lg:grid-cols-2 gap-6">
-          <div className="rounded-xl p-6" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--mint)" }}>
+          <div className="rounded-xl p-6" style={{ background: "#FAFAFA", border: "1px solid var(--mint)" }}>
             <h2 className="text-base font-semibold mb-5" style={{ color: "var(--leaf)" }}>Yeni Sistem Bildirimi</h2>
             <form onSubmit={bildirimGonder} className="flex flex-col gap-4">
               <div>
@@ -882,7 +879,7 @@ export default function AdminPage() {
                       style={{
                         background: bildTip === t ? `${tipRenk(t)}22` : "rgba(255,255,255,0.04)",
                         color:  bildTip === t ? tipRenk(t) : "#64748b",
-                        border: bildTip === t ? `1px solid ${tipRenk(t)}44` : "1px solid rgba(255,255,255,0.06)",
+                        border: bildTip === t ? `1px solid ${tipRenk(t)}44` : "1px solid rgba(0,0,0,0.08)",
                       }}>
                       {tipEtiket(t)}
                     </button>
@@ -898,7 +895,7 @@ export default function AdminPage() {
                       style={{
                         background: bildHedef === h ? "var(--mint)" : "rgba(255,255,255,0.04)",
                         color:  bildHedef === h ? "var(--leaf)" : "#64748b",
-                        border: bildHedef === h ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid rgba(255,255,255,0.06)",
+                        border: bildHedef === h ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid rgba(0,0,0,0.08)",
                       }}>
                       {hedefEtiket(h)}
                     </button>
@@ -907,22 +904,22 @@ export default function AdminPage() {
               </div>
               <button type="submit" disabled={bildirimYuk || !bildBaslik.trim() || !bildMesaj.trim()}
                 className="mt-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-40"
-                style={{ background: "var(--leaf)", color: "#070d1a" }}>
+                style={{ background: "var(--leaf)", color: "#FFFFFF" }}>
                 {bildirimYuk ? "Gönderiliyor…" : "Bildirimi Gönder"}
               </button>
             </form>
           </div>
 
-          <div className="rounded-xl p-6" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--mint)" }}>
+          <div className="rounded-xl p-6" style={{ background: "#FAFAFA", border: "1px solid var(--mint)" }}>
             <h2 className="text-base font-semibold mb-5" style={{ color: "var(--leaf)" }}>Son Gönderilen Bildirimler</h2>
             <div className="flex flex-col gap-3 max-h-[480px] overflow-y-auto">
               {sonBildirimler.length === 0 ? (
                 <p className="text-sm py-8 text-center" style={{ color: "#475569" }}>Henüz bildirim gönderilmedi</p>
               ) : sonBildirimler.map((b) => (
                 <div key={b.id} className="rounded-lg p-4"
-                  style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${tipRenk(b.tip)}22` }}>
+                  style={{ background: "#F3F4F6", border: `1px solid ${tipRenk(b.tip)}22` }}>
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <span className="text-sm font-medium text-white">{b.baslik}</span>
+                    <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{b.baslik}</span>
                     <span className="text-xs px-2 py-0.5 rounded-full shrink-0"
                       style={{ background: `${tipRenk(b.tip)}22`, color: tipRenk(b.tip) }}>{tipEtiket(b.tip)}</span>
                   </div>
@@ -940,7 +937,7 @@ export default function AdminPage() {
 
       {/* ── Denetim Kaydı ── */}
       {aktifTab === "denetim" && (
-        <div className="rounded-xl p-6" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--mint)" }}>
+        <div className="rounded-xl p-6" style={{ background: "#FAFAFA", border: "1px solid var(--mint)" }}>
           {logYuk ? (
             <p className="text-sm py-8 text-center" style={{ color: "#475569" }}>Yükleniyor…</p>
           ) : (

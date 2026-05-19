@@ -1,8 +1,10 @@
 "use client";
 
+import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { useGorevler } from "@/store/gorevler";
+import { trGunBaslangici } from "@/lib/tarih";
 import GorevOzet from "@/components/gorevler/GorevOzet";
 
 const KanbanBoard        = dynamic(() => import("@/components/gorevler/KanbanBoard"),        { ssr: false, loading: () => <div className="h-64 card rounded-2xl animate-pulse" /> });
@@ -13,26 +15,48 @@ export default function GorevlerContent() {
   const params       = useSearchParams();
   const modalParam   = params.get("modal");
 
+  const aktif = useMemo(() => gorevler.filter((g) => !g.silindi), [gorevler]);
+  const acik  = useMemo(() => aktif.filter((g) => g.durum !== "tamamlandi").length, [aktif]);
+  const gecik = useMemo(() => {
+    const gunBasi = trGunBaslangici();
+    return aktif.filter((g) => g.durum !== "tamamlandi" && new Date(g.sonTarih) < gunBasi).length;
+  }, [aktif]);
+  const tamamlandi = useMemo(() => aktif.filter((g) => g.durum === "tamamlandi").length, [aktif]);
+
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-800">Görevler</h1>
-          <p className="text-xs md:text-sm text-gray-400 mt-1">Ekip görevlerini takip et, önceliklendirme yap</p>
+    <div className="max-w-6xl mx-auto px-2">
+      {/* Hero */}
+      <section className="space-y-2 py-6">
+        <p className="label-caps">GÖREVLER</p>
+        <div className="flex items-baseline gap-3">
+          <span className="hero-number">{acik}</span>
+          <span className="text-lg text-gray-400">açık görev</span>
         </div>
-      </div>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          {tamamlandi} tamamlandı
+          {gecik > 0 && (
+            <> · <span className="font-medium" style={{ color: "var(--color-danger)" }}>
+              {gecik} gecikmiş
+            </span></>
+          )}
+        </p>
+      </section>
 
+      <hr className="section-rule" />
       <GorevOzet gorevler={gorevler} />
+      <hr className="section-rule" />
 
-      <div>
-        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-4">Kanban Tablosu</h2>
+      <section className="space-y-4 py-2">
+        <h2 className="text-sm font-semibold">Kanban tablosu</h2>
         <KanbanBoard otomatikAcilModal={modalParam === "ekle"} />
-      </div>
+      </section>
 
-      <div>
-        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-4">Tarihsel Analiz</h2>
+      <hr className="section-rule" />
+
+      <section className="space-y-4 py-2">
+        <h2 className="text-sm font-semibold">Tarihsel analiz</h2>
         <GorevTarihselPanel />
-      </div>
+      </section>
     </div>
   );
 }

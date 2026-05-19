@@ -221,7 +221,7 @@ export default function PlanlananKalemler() {
                   İptal
                 </button>
                 <button onClick={handleEkle} disabled={!tutar || !kategori}
-                  className="flex-1 py-2 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-40">
+                  className="flex-1 py-2 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-40">
                   Ekle
                 </button>
               </div>

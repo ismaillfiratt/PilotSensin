@@ -188,20 +188,25 @@ export default function EkipPage() {
   const aktifUye = uyeler.filter((u) => u.status === "active").length;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      {/* Başlık */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[var(--mint)] border border-[var(--forest-200, #B3E8C8)] flex items-center justify-center">
-            <Users className="w-5 h-5 text-[var(--leaf)]" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-800">Ekip Yönetimi</h1>
-            <p className="text-sm text-gray-400">{aktifUye} / {maxUye} aktif üye</p>
-          </div>
-        </div>
+    <div className="max-w-6xl mx-auto px-2">
 
-        {/* Sekmeler */}
+      {/* Hero */}
+      <section className="space-y-2 py-6">
+        <p className="label-caps">EKİP YÖNETİMİ</p>
+        <div className="flex items-baseline gap-3">
+          <span className="hero-number">{aktifUye}</span>
+          <span className="text-lg text-gray-400">/ {maxUye} üye</span>
+        </div>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          Aktif ekip üyeleri
+          {davetler.length > 0 && <> · {davetler.length} bekleyen davet</>}
+        </p>
+      </section>
+
+      <hr className="section-rule" />
+
+      {/* Sekmeler */}
+      <div className="flex items-center justify-between flex-wrap gap-3 pb-4">
         <div className="flex rounded-xl overflow-hidden border border-gray-200">
           {(["uyeler", "roller"] as const).map((s) => (
             <button key={s} onClick={() => setSekme(s)}
@@ -239,7 +244,7 @@ export default function EkipPage() {
                 <button
                   type="button"
                   onClick={() => { setSekme("roller"); setRolFormu(true); }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--forest)] text-gray-900 text-xs font-bold hover:opacity-90 transition-colors shrink-0"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--forest)] text-white text-xs font-bold hover:opacity-90 transition-colors shrink-0"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Rol Ekle
@@ -260,7 +265,7 @@ export default function EkipPage() {
                   ))}
                 </select>
                 <button type="submit" disabled={yukleniyor}
-                  className="px-5 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-60">
+                  className="px-5 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-60">
                   {yukleniyor ? "..." : "Davet Et"}
                 </button>
               </form>
@@ -367,7 +372,7 @@ export default function EkipPage() {
         <div className="space-y-4">
           <div className="flex justify-end">
             <button onClick={() => setRolFormu(!rolFormu)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors">
               <Plus className="w-4 h-4" />
               Yeni Rol
             </button>
@@ -423,7 +428,7 @@ export default function EkipPage() {
                 )}
                 <div className="flex gap-3">
                   <button onClick={rolKaydet}
-                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
+                    className="flex-1 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors">
                     Kaydet
                   </button>
                   <button onClick={() => { setRolFormu(false); setRolHata(""); }}
@@ -529,7 +534,7 @@ function RolKart({ rol, onSil, onGuncelle }: { rol: Rol; onSil: (id: string) => 
               </label>
               <button
                 onClick={() => { onGuncelle(rol.id, perms); setAcik(false); }}
-                className="w-full py-2 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors"
+                className="w-full py-2 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors"
               >
                 Kaydet
               </button>

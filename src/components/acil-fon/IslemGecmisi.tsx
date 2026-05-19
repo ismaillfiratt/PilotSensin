@@ -107,7 +107,7 @@ export default function IslemGecmisi() {
             {/* Ekle butonu */}
             <button
               onClick={() => { setDuzenle(null); setModalAcik(true); }}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors shrink-0"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors shrink-0"
             >
               <Plus className="w-4 h-4" /> Hareket Ekle
             </button>

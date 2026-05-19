@@ -187,15 +187,34 @@ export default function KarZararPage() {
 
   if (rol !== "pilot") return null;
 
-  return (
-    <div className="max-w-7xl mx-auto space-y-6">
+  const ay = new Date().toLocaleDateString("tr-TR", { month: "long", year: "numeric" }).toUpperCase();
 
-      {/* ─── Başlık + Tarih Filtresi ─── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-800">Kâr - Zarar Analizi</h1>
-          <p className="text-xs md:text-sm text-gray-400 mt-1">Gerçek satış verilerine dayalı P&amp;L raporu</p>
+  return (
+    <div className="max-w-6xl mx-auto px-2">
+
+      {/* Hero */}
+      <section className="space-y-2 py-6">
+        <p className="label-caps">KÂR-ZARAR · {ay}</p>
+        <div className="flex items-baseline gap-3">
+          <span
+            className="hero-number"
+            style={{ color: netKar >= 0 ? "var(--forest)" : "var(--color-danger)" }}
+          >
+            {tl(netKar)}
+          </span>
         </div>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          Net kâr
+          {brutMarj > 0 && <> · Brüt marj %{brutMarj.toFixed(1)}</>}
+          {netMarj !== 0 && <> · Net marj %{netMarj.toFixed(1)}</>}
+        </p>
+      </section>
+
+      <hr className="section-rule" />
+
+      {/* Tarih Filtresi */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+        <div />
         <div className="flex flex-col items-end gap-2">
           <button
             onClick={() => setTarihAcik((p) => !p)}

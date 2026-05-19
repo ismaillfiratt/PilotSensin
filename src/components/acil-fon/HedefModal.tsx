@@ -151,7 +151,7 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
                 İptal
               </button>
               <button type="submit"
-                className="flex-1 min-h-12 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
+                className="flex-1 min-h-12 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors">
                 {duzenleMi ? "Güncelle" : "Kaydet"}
               </button>
             </div>

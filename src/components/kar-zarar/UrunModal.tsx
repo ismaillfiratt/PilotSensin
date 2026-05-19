@@ -119,14 +119,16 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Satış Fiyatı (₺) *</label>
-                  <input type="number" min="0" step="0.01" required value={form.satisFiyati}
-                    onChange={(e) => set("satisFiyati", e.target.value)} placeholder="0"
+                  <input type="text" inputMode="decimal" required value={form.satisFiyati}
+                    onChange={(e) => { const v = e.target.value; if (/^[0-9]*[.,]?[0-9]*$/.test(v)) set("satisFiyati", v); }}
+                    placeholder="0,00"
                     className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-base font-bold" />
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Birim Maliyet (₺) *</label>
-                  <input type="number" min="0" step="0.01" required value={form.birimMaliyetKurus}
-                    onChange={(e) => set("birimMaliyetKurus", e.target.value)} placeholder="0"
+                  <input type="text" inputMode="decimal" required value={form.birimMaliyetKurus}
+                    onChange={(e) => { const v = e.target.value; if (/^[0-9]*[.,]?[0-9]*$/.test(v)) set("birimMaliyetKurus", v); }}
+                    placeholder="0,00"
                     className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-base font-bold" />
                 </div>
               </div>
@@ -156,7 +158,7 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
                 İptal
               </button>
               <button type="submit"
-                className="flex-1 min-h-12 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
+                className="flex-1 min-h-12 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors">
                 {duzenlemeModu ? "Kaydet" : "Ekle"}
               </button>
             </div>

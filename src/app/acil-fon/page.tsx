@@ -48,18 +48,38 @@ export default function AcilFonPage() {
     else              { hedefEkle(h); }
   };
 
-  return (
-    <div className="max-w-7xl mx-auto space-y-6">
+  const yuzde = toplamHedefKurus > 0 ? Math.round((mevcut / toplamHedefKurus) * 100) : 0;
 
-      {/* Başlık */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-800">Acil Durum Fonu</h1>
-          <p className="text-xs md:text-sm text-gray-400 mt-1">İşletmeni beklenmedik durumlara karşı koru</p>
+  return (
+    <div className="max-w-6xl mx-auto px-2">
+
+      {/* Hero */}
+      <section className="space-y-2 py-6">
+        <p className="label-caps">ACİL FON · {gaugeAd.toUpperCase()}</p>
+        <div className="flex items-baseline gap-3">
+          <span
+            className="hero-number"
+            style={{ color: yuzde >= 100 ? "var(--forest)" : yuzde >= 50 ? "var(--text-primary)" : "var(--color-danger)" }}
+          >
+            %{yuzde}
+          </span>
         </div>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          Hedef doluluk
+          {aylikOdemeKurus > 0 && (
+            <> · Aylık {(aylikOdemeKurus / 100).toLocaleString("tr-TR")} ₺ ödeme planı</>
+          )}
+        </p>
+      </section>
+
+      <hr className="section-rule" />
+
+      {/* Başlık aksiyonlar */}
+      <div className="flex items-center justify-between gap-4 flex-wrap pb-2">
+        <div />
         <button
           onClick={() => { setDuzenleHedef(null); setHedefModalAcik(true); }}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors"
         >
           <Plus className="w-4 h-4" /> Yeni Hedef
         </button>
@@ -128,7 +148,7 @@ export default function AcilFonPage() {
           <p className="text-gray-400 text-sm mb-3">Henüz bir tasarruf hedefi eklenmedi.</p>
           <button
             onClick={() => setHedefModalAcik(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors"
           >
             <Plus className="w-4 h-4" /> İlk Hedefi Ekle
           </button>

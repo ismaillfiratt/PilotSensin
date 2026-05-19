@@ -113,7 +113,7 @@ export default function IsletmeBilgileri({ businessAd, sektor, vergiNo, adres }:
           <button
             type="submit"
             disabled={yukleniyor}
-            className="ml-auto flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-60"
+            className="ml-auto flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-60"
           >
             <Save className="w-4 h-4" />
             {yukleniyor ? "Kaydediliyor..." : "Kaydet"}

@@ -212,7 +212,7 @@ export default function GorevModal({ open, onClose, gorev, varsayilanDurum, onKa
               İptal
             </button>
             <button type="submit" form="gorev-modal-form"
-              className="flex-1 min-h-12 rounded-xl bg-[var(--forest)] text-gray-800 text-sm font-bold hover:opacity-90 transition-colors">
+              className="flex-1 min-h-12 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors">
               {duzenlemeModu ? "Kaydet" : "Oluştur"}
             </button>
           </div>

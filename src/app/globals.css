@@ -51,7 +51,7 @@
   --mint:       #EEF9F3;
 
   /* Surfaces (light) */
-  --bg-primary:    #F8FAFC;
+  --bg-primary:    #FFFFFF;
   --bg-secondary:  #FFFFFF;
   --bg-card:       #FFFFFF;
   --bg-sidebar:    #0F3D2E;
@@ -63,8 +63,8 @@
   --text-on-forest: #FFFFFF;
 
   /* Borders */
-  --border-color:  #E2E8F0;
-  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-color:  #D1D5DB;
+  --border-subtle: rgba(0, 0, 0, 0.10);
 
   /* Inputs */
   --input-bg:      #FFFFFF;
@@ -138,6 +138,65 @@ button, [role="button"], a {
 .font-number {
   font-family: var(--font-jetbrains), "JetBrains Mono", monospace;
   font-variant-numeric: tabular-nums;
+}
+
+/* Hero sayısı */
+.hero-number {
+  font-family: var(--font-jetbrains), "JetBrains Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 3.5rem;
+  font-weight: 600;
+  line-height: 1;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+}
+
+/* Heading defaults */
+h1, h2, h3, h4 {
+  color: #0F172A;
+}
+
+/* Small caps üst etiket */
+.label-caps {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* Editorial section divider */
+.section-rule {
+  border: none;
+  border-top: 1px solid rgba(0,0,0,0.10);
+  margin: 2rem 0;
+}
+
+/* Stat kart (cool gray bg) */
+.stat-card {
+  background: #F3F4F6;
+  border: 1px solid rgba(0,0,0,0.04);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+/* Modal / dialog kartı */
+.modal-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
+
+/* Primary button */
+.btn-primary {
+  background: #0F3D2E;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Card surface */
