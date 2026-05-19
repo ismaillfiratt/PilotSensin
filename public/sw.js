@@ -1,4 +1,4 @@
-const CACHE_NAME = "pilotsensin-v3";
+const CACHE_NAME = "pilotsensin-v4";
 
 // Sadece gerçekten statik varlıkları önbelleğe al — sayfaları değil
 const PRECACHE_URLS = [
