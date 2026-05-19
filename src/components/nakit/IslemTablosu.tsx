@@ -8,8 +8,8 @@ import { useGeriAl } from "@/store/geriAl";
 import {
   Plus, Pencil, Trash2,
   TrendingUp, TrendingDown, Search, X,
-  ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight,
-  Wallet, CalendarDays,
+  ChevronLeft, ChevronRight, Wallet,
+  CalendarDays,
 } from "lucide-react";
 import { formatTL, type Islem } from "@/lib/nakit-data";
 import type { Kurus } from "@/lib/para";
@@ -40,9 +40,6 @@ function tarihEtiket(iso: string) {
 
 const odemeRenk: Record<string, string> = {
   nakit: "#22c55e", kart: "var(--leaf)", havale: "#94a3b8", cek: "#a78bfa",
-};
-const odemeEmoji: Record<string, string> = {
-  nakit: "💵", kart: "💳", havale: "🏦", cek: "📄",
 };
 
 type DonemTip = "bugun" | "hafta" | "ay" | "tumu" | "ozel";
@@ -174,32 +171,6 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
     <>
       <div className="space-y-4">
 
-        {/* ─── Özet Bar ─── */}
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { label: "Gelir",   tutarKurus: ozet.gelirKurus, renk: "#22c55e", bg: "rgba(34,197,94,0.08)",   border: "rgba(34,197,94,0.15)",  Icon: ArrowUpRight },
-            { label: "Gider",   tutarKurus: ozet.giderKurus, renk: "#ef4444", bg: "rgba(239,68,68,0.08)",   border: "rgba(239,68,68,0.15)",  Icon: ArrowDownRight },
-            { label: "Net",     tutarKurus: ozet.netKurus,   renk: ozet.netKurus >= 0 ? "#22c55e" : "#ef4444",
-              bg: ozet.netKurus >= 0 ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)",
-              border: ozet.netKurus >= 0 ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)",
-              Icon: Wallet },
-          ].map(({ label, tutarKurus, renk, bg, border, Icon }) => (
-            <div key={label} className="rounded-2xl p-4 flex items-center gap-3"
-              style={{ background: bg, border: `1px solid ${border}` }}>
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                style={{ backgroundColor: `${renk}20`, border: `1px solid ${renk}30` }}>
-                <Icon className="w-4.5 h-4.5" style={{ color: renk }} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">{label}</p>
-                <p className="text-sm font-bold truncate" style={{ color: renk }}>
-                  {tutarKurus >= 0 ? "" : "-"}{formatTL(Math.abs(tutarKurus))}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* ─── Filtreler + Ekle ─── */}
         <div className="flex flex-col gap-3">
           {/* Üst satır: dönem chipleri + ekle */}
@@ -210,9 +181,9 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
                 <button key={v} onClick={() => setDonem(v)}
                   className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                   style={{
-                    backgroundColor: donem === v ? "var(--mint)" : "transparent",
-                    color:           donem === v ? "var(--leaf)" : "#64748b",
-                    border:          donem === v ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid transparent",
+                    backgroundColor: donem === v ? "#0F3D2E" : "transparent",
+                    color:           donem === v ? "#FFFFFF"  : "#64748b",
+                    border:          donem === v ? "1px solid #0F3D2E" : "1px solid transparent",
                   }}>
                   {label}
                 </button>
@@ -362,7 +333,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
                             <>
                               <span>·</span>
                               <span style={{ color: odemeRenk[islem.odemeYontemi] ?? "#64748b" }}>
-                                {odemeEmoji[islem.odemeYontemi] ?? ""} {islem.odemeYontemi}
+                                {islem.odemeYontemi}
                               </span>
                             </>
                           )}
@@ -380,7 +351,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
                       <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
                         <button
                           onClick={() => { setDuzenle(islem); setModalAcik(true); }}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-[var(--leaf)] hover:bg-[var(--mint)] transition-all"
+                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-800 hover:bg-[#F3F4F6] transition-all"
                         >
                           <Pencil className="w-3.5 h-3.5" />
                         </button>
@@ -411,7 +382,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
               {toplamSayfa > 1 && (
                 <div className="flex items-center gap-1">
                   <button onClick={() => setSayfa(p => Math.max(1, p - 1))} disabled={sayfa === 1}
-                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:border-[var(--forest-200, #B3E8C8)] hover:text-[var(--leaf)] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
                     <ChevronLeft className="w-3.5 h-3.5" />
                   </button>
 
@@ -439,7 +410,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
                     )}
 
                   <button onClick={() => setSayfa(p => Math.min(toplamSayfa, p + 1))} disabled={sayfa === toplamSayfa}
-                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:border-[var(--forest-200, #B3E8C8)] hover:text-[var(--leaf)] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

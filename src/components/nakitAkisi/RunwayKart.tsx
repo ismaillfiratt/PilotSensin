@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { AlertTriangle, Zap, Shield, TrendingDown } from "lucide-react";
 import { useNakit }             from "@/store/nakit";
 import { useNakitAkis }          from "@/store/nakitAkis";
 import { useAcilFon }            from "@/store/acilFon";
@@ -14,38 +13,8 @@ import {
   runwayDurum,
   projeksiyon30Gun,
   kritikGunVarMi,
-  ilkKritikGun,
 } from "@/lib/nakitAkis-engine";
-
-const tl = (n: number) =>
-  (n / 100).toLocaleString("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 });
-
-const DURUM_CONFIG = {
-  kritik: {
-    renk:   "#ef4444",
-    bg:     "rgba(239,68,68,0.08)",
-    border: "rgba(239,68,68,0.25)",
-    icon:   AlertTriangle,
-    emoji:  "🔴",
-    label:  "Tehlike — İşletme Batış Riskinde!",
-  },
-  dikkat: {
-    renk:   "var(--leaf)",
-    bg:     "var(--mint)",
-    border: "var(--forest-200, #B3E8C8)",
-    icon:   Zap,
-    emoji:  "🟡",
-    label:  "Dikkat — Tedarik ve Satışları İnceleyin",
-  },
-  iyi: {
-    renk:   "#22c55e",
-    bg:     "rgba(34,197,94,0.08)",
-    border: "rgba(34,197,94,0.25)",
-    icon:   Shield,
-    emoji:  "🟢",
-    label:  "Güvenli Rota",
-  },
-} as const;
+import { formatTL } from "@/lib/para";
 
 export default function RunwayKart() {
   const { islemler }                 = useNakit();
@@ -54,118 +23,123 @@ export default function RunwayKart() {
   const { giderler }                 = useIsletmeGiderleri();
 
   const hesap = useMemo(() => {
-    const kasa            = kasaBakiyesi(islemler);
-    const acilFon         = acilFonMevcut();
-    const aylikSabit      = giderler.reduce((t, g) => t + g.tutarKurus, 0);
-    const gunlukGider     = gunlukBurnRate(islemler, aylikSabit);
-    const kritikBorc      = kritikBorc7Gun(kalemler);
-    const gun          = genisMimariRunway(kasa, acilFon, kritikBorc, gunlukGider);
-    const durum        = runwayDurum(gun);
-    const proj         = projeksiyon30Gun(kasa, kalemler, tekrarlayanlar, aylikSabit);
-    const kritikProj   = kritikGunVarMi(proj);
-    const ilkKritik    = ilkKritikGun(proj);
+    const kasa        = kasaBakiyesi(islemler);
+    const acilFon     = acilFonMevcut();
+    const aylikSabit  = giderler.reduce((t, g) => t + g.tutarKurus, 0);
+    const gunlukGider = gunlukBurnRate(islemler, aylikSabit);
+    const kritikBorc  = kritikBorc7Gun(kalemler);
+    const gun         = genisMimariRunway(kasa, acilFon, kritikBorc, gunlukGider);
+    const durum       = runwayDurum(gun);
+    const proj        = projeksiyon30Gun(kasa, kalemler, tekrarlayanlar, aylikSabit);
+    const kritikProj  = kritikGunVarMi(proj);
     const toplamKaynak = kasa + acilFon;
+    const enDusuk     = proj.length ? Math.min(...proj.map((g) => g.bakiye)) : 0;
 
-    return { kasa, acilFon, gunlukGider, kritikBorc, gun, durum, proj, kritikProj, ilkKritik, toplamKaynak, aylikSabit };
+    return { kasa, acilFon, gunlukGider, kritikBorc, gun, durum, kritikProj, toplamKaynak, aylikSabit, enDusuk };
   }, [islemler, kalemler, tekrarlayanlar, acilFonMevcut, giderler]);
 
-  const cfg = DURUM_CONFIG[hesap.durum];
-  const Icon = cfg.icon;
-  const tukenme = hesap.gun === 0 && hesap.durum === "kritik";
+  const risk = hesap.durum === "kritik";
+
+  const kritikTarih = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + (hesap.gun === Infinity ? 999 : hesap.gun));
+    return hesap.gun === Infinity ? "—" : d.toLocaleDateString("tr-TR", { day: "numeric", month: "short" });
+  }, [hesap.gun]);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-      {/* ── Can Suyu kartı ── */}
-      <div
-        className="sm:col-span-1 p-4 rounded-2xl border space-y-2"
-        style={{ backgroundColor: cfg.bg, borderColor: cfg.border }}
-      >
-        <div className="flex items-center gap-2">
-          <Icon className="w-4 h-4 shrink-0" style={{ color: cfg.renk }} />
-          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: cfg.renk }}>
-            Can Suyu (Runway)
-          </p>
-        </div>
-
-        {tukenme ? (
-          <p className="text-lg font-black text-[#ef4444] leading-tight">
-            🚨 Kritik İrtifa Kaybı:<br />Nakit Tükendi!
-          </p>
-        ) : (
-          <p className="text-4xl font-black" style={{ color: cfg.renk }}>
-            {hesap.gun === Infinity ? "∞" : hesap.gun}
-            <span className="text-base font-medium ml-1">gün</span>
-          </p>
-        )}
-
-        <p className="text-[10px] font-medium" style={{ color: cfg.renk }}>
-          {cfg.emoji} {cfg.label}
-        </p>
-
-        {/* Günlük harcama hızı */}
-        <div className="pt-1 border-t border-gray-200 space-y-0.5">
-          <p className="text-[10px] text-gray-500">
-            Günlük harcama hızınız:{" "}
-            <span className="text-gray-400 font-semibold">{tl(hesap.gunlukGider)}</span>
-          </p>
-          {hesap.aylikSabit > 0 && (
-            <p className="text-[10px] text-gray-500">
-              Sabit giderler: {tl(hesap.aylikSabit)}/ay dahil
-            </p>
+      {/* ── Can Suyu ── */}
+      <div className="rounded-xl border border-black/8 bg-white p-5 space-y-3">
+        <div className="flex items-center justify-between">
+          <p className="label-caps">CAN SUYU</p>
+          {risk && (
+            <span className="text-[10px] px-2 py-1 rounded-full bg-[#C97676]/10 text-[#C97676] font-medium">
+              Tehlike — Batış riski
+            </span>
           )}
         </div>
 
-        {/* 7 günlük kritik borç */}
-        {hesap.kritikBorc > 0 && (
-          <p className="text-[10px] text-[#ef4444]">
-            7 günlük yaklaşan borç: {tl(hesap.kritikBorc)}
-          </p>
-        )}
+        <div className="flex items-baseline gap-2">
+          <span className="font-number font-semibold text-3xl text-[#0F172A]">
+            {hesap.gun === Infinity ? "∞" : hesap.gun}
+          </span>
+          <span className="text-sm" style={{ color: "var(--text-secondary)" }}>gün</span>
+        </div>
+
+        <div className="pt-3 border-t border-black/5 grid grid-cols-3 gap-3 text-xs">
+          <div>
+            <p className="mb-1" style={{ color: "var(--text-secondary)" }}>Kasa</p>
+            <p className="font-number font-medium">{formatTL(hesap.kasa)}</p>
+          </div>
+          <div>
+            <p className="mb-1" style={{ color: "var(--text-secondary)" }}>Aylık gider</p>
+            <p className="font-number font-medium">{formatTL(hesap.aylikSabit)}</p>
+          </div>
+          <div>
+            <p className="mb-1" style={{ color: "var(--text-secondary)" }}>Kritik gün</p>
+            <p className="font-number font-medium">{kritikTarih}</p>
+          </div>
+        </div>
       </div>
 
       {/* ── Toplam kaynak ── */}
-      <div className="card p-4 rounded-2xl space-y-2">
-        <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide">
-          Toplam Kaynak
-        </p>
-        <p className={`text-3xl font-black ${hesap.toplamKaynak >= 0 ? "text-gray-800" : "text-[#ef4444]"}`}>
-          {tl(hesap.toplamKaynak)}
-        </p>
-        <div className="text-[10px] text-gray-500 space-y-0.5">
-          <p>Kasa: <span className="text-gray-400">{tl(hesap.kasa)}</span></p>
+      <div className="rounded-xl border border-black/8 bg-white p-5 space-y-3">
+        <p className="label-caps">TOPLAM KAYNAK</p>
+        <div className="flex items-baseline gap-2">
+          <span className={`font-number font-semibold text-3xl ${hesap.toplamKaynak >= 0 ? "text-[#0F172A]" : "text-[#C97676]"}`}>
+            {formatTL(hesap.toplamKaynak)}
+          </span>
+        </div>
+        <div className="pt-3 border-t border-black/5 space-y-1.5 text-xs">
+          <div className="flex justify-between">
+            <span style={{ color: "var(--text-secondary)" }}>Kasa</span>
+            <span className="font-number font-medium">{formatTL(hesap.kasa)}</span>
+          </div>
           {hesap.acilFon > 0 && (
-            <p>Acil fon: <span className="text-[#22c55e]">+{tl(hesap.acilFon)}</span></p>
+            <div className="flex justify-between">
+              <span style={{ color: "var(--text-secondary)" }}>Acil fon</span>
+              <span className="font-number font-medium" style={{ color: "var(--color-success)" }}>
+                +{formatTL(hesap.acilFon)}
+              </span>
+            </div>
           )}
         </div>
       </div>
 
-      {/* ── 30 günlük projeksiyon ── */}
-      <div className={`card p-4 rounded-2xl space-y-2 ${hesap.kritikProj ? "border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.05)]" : ""}`}>
-        <div className="flex items-center gap-2">
-          <TrendingDown className={`w-4 h-4 ${hesap.kritikProj ? "text-[#ef4444]" : "text-gray-500"}`} />
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-            30 Günlük Projeksiyon
-          </p>
+      {/* ── Projeksiyon özeti ── */}
+      <div className={`rounded-xl border bg-white p-5 space-y-3 ${
+        hesap.kritikProj
+          ? "border-[#C97676]/20 bg-[#C97676]/5"
+          : "border-black/8"
+      }`}>
+        <div className="flex items-center justify-between">
+          <p className="label-caps">30 GÜN PROJEKSİYON</p>
+          {hesap.kritikProj && (
+            <span className="text-[10px] px-2 py-1 rounded-full bg-[#C97676]/10 text-[#C97676] font-medium">
+              Risk
+            </span>
+          )}
         </div>
 
-        {hesap.kritikProj && hesap.ilkKritik ? (
-          <>
-            <p className="text-sm font-bold text-[#ef4444]">⚠ Kritik Nakit Sıkışıklığı Riski</p>
-            <p className="text-[10px] text-gray-400">
-              {hesap.ilkKritik.etiket} tarihinde bakiye sıfırın altına düşüyor.
-              En düşük: {tl(Math.min(...hesap.proj.map((g) => g.bakiye)))}
-            </p>
-          </>
-        ) : (
-          <>
-            <p className="text-sm font-bold text-[#22c55e]">30 gün boyunca pozitif</p>
-            <p className="text-[10px] text-gray-500">
-              En düşük projeksiyon:{" "}
-              {tl(Math.min(...hesap.proj.map((g) => g.bakiye)))}
-            </p>
-          </>
-        )}
+        <div className="space-y-1.5 text-xs">
+          <div className="flex justify-between">
+            <span style={{ color: "var(--text-secondary)" }}>En düşük bakiye</span>
+            <span className={`font-number font-medium ${hesap.enDusuk < 0 ? "text-[#C97676]" : "text-[#0F172A]"}`}>
+              {formatTL(hesap.enDusuk)}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span style={{ color: "var(--text-secondary)" }}>Günlük hız</span>
+            <span className="font-number font-medium">{formatTL(hesap.gunlukGider)}/gün</span>
+          </div>
+          {hesap.kritikBorc > 0 && (
+            <div className="flex justify-between">
+              <span style={{ color: "var(--text-secondary)" }}>7 günlük borç</span>
+              <span className="font-number font-medium text-[#C97676]">{formatTL(hesap.kritikBorc)}</span>
+            </div>
+          )}
+        </div>
       </div>
 
     </div>

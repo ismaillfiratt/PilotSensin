@@ -1,56 +1,27 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Plus, Trash2, Check, Calendar, RepeatIcon,
-  Zap, X, Receipt, Settings2,
-} from "lucide-react";
+import { Trash2, Check, Calendar, RepeatIcon, Zap, X, Receipt } from "lucide-react";
 import { useNakitAkis } from "@/store/nakitAkis";
 import { useKdvHavuzu, netKdvBakiye } from "@/store/kdvHavuzu";
-import { useNakitAyarlar } from "@/store/nakitAyarlar";
-import { kurus, formatTL } from "@/lib/para";
-import type { Kurus } from "@/lib/para";
-
-const tl = (n: number) => formatTL(n);
-
-function bugunStr() { return new Date().toISOString().split("T")[0]; }
+import { formatTL } from "@/lib/para";
+import PlanlananKalemModal from "@/components/nakit/PlanlananKalemModal";
 
 function vadeBadge(tarih: string) {
   const gun = Math.ceil((new Date(tarih).getTime() - Date.now()) / 86400000);
-  if (gun < 0)  return { label: `${Math.abs(gun)} gün geçti`, color: "#ef4444" };
-  if (gun === 0) return { label: "Bugün",              color: "var(--leaf)" };
-  if (gun <= 3)  return { label: `${gun} gün kaldı`,   color: "#f97316" };
-  if (gun <= 7)  return { label: `${gun} gün kaldı`,   color: "var(--leaf)" };
-  return                { label: `${gun} gün kaldı`,   color: "#22c55e" };
+  if (gun < 0)   return { label: `${Math.abs(gun)} gün geçti`, color: "#C97676" };
+  if (gun === 0) return { label: "Bugün",            color: "var(--leaf)"   };
+  if (gun <= 3)  return { label: `${gun} gün kaldı`, color: "#F59E0B"       };
+  if (gun <= 7)  return { label: `${gun} gün kaldı`, color: "var(--leaf)"   };
+  return               { label: `${gun} gün kaldı`, color: "var(--text-secondary)" };
 }
 
 export default function PlanlananKalemler() {
-  const { kalemler, tekrarlayanlar, ekle, sil, tamamla, tekrarlayanEkle, tekrarlayanSil } = useNakitAkis();
+  const { kalemler, tekrarlayanlar, sil, tamamla, tekrarlayanSil, ekle } = useNakitAkis();
   const { kayitlar: havuzKayitlari } = useKdvHavuzu();
-  const {
-    gelirKategoriler, giderKategoriler, kategoriEkle, kategoriSil,
-  } = useNakitAyarlar();
 
-  const [formAcik,    setFormAcik]    = useState(false);
-  const [tekrarAcik,  setTekrarAcik]  = useState(false);
-  const [katDuzenle,  setKatDuzenle]  = useState(false);
-  const [yeniKat,     setYeniKat]     = useState("");
-  const [gosterTamamlandi, setGosterTamamlandi] = useState(false);
-
-  // Manuel form state
-  const [tip,      setTip]      = useState<"gelir" | "gider">("gider");
-  const [kategori, setKategori] = useState("");
-  const [tutar,    setTutar]    = useState("");
-  const [vade,     setVade]     = useState(bugunStr());
-  const [aciklama, setAciklama] = useState("");
-
-  // Tekrarlayan form state
-  const [tkAd,        setTkAd]        = useState("");
-  const [tkTip,       setTkTip]       = useState<"gelir" | "gider">("gider");
-  const [tkKategori,  setTkKategori]  = useState("");
-  const [tkTutar,     setTkTutar]     = useState("");
-  const [tkGun,       setTkGun]       = useState("1");
+  const [modalAcik,          setModalAcik]          = useState(false);
+  const [gosterTamamlandi,   setGosterTamamlandi]   = useState(false);
 
   const netKdv = useMemo(() => netKdvBakiye(havuzKayitlari), [havuzKayitlari]);
 
@@ -61,19 +32,6 @@ export default function PlanlananKalemler() {
     [kalemler, gosterTamamlandi]
   );
 
-  const handleEkle = () => {
-    if (!tutar || !kategori) return;
-    ekle({ tip, kategori, tutarKurus: kurus(Number(tutar)), vadeTarihi: vade, tamamlandi: false, aciklama, kaynak: "manuel" });
-    setTutar(""); setAciklama(""); setFormAcik(false);
-  };
-
-  const handleTekrarlayanEkle = () => {
-    if (!tkAd || !tkTutar) return;
-    tekrarlayanEkle({ ad: tkAd, tip: tkTip, kategori: tkKategori, tutarKurus: kurus(Number(tkTutar)), odemeGunu: Number(tkGun), aktif: true });
-    setTkAd(""); setTkTutar(""); setTekrarAcik(false);
-  };
-
-  // KDV otomasyonu: net KDV borcunu ayın 28'ine ekle
   const kdvOtomatikEkle = () => {
     if (netKdv <= 0) return;
     const simdi    = new Date();
@@ -85,229 +43,88 @@ export default function PlanlananKalemler() {
     ekle({
       tip:        "gider",
       kategori:   "Vergi & SGK",
-      tutarKurus:      netKdv,
+      tutarKurus: netKdv,
       vadeTarihi,
       tamamlandi: false,
-      aciklama:   `Net KDV Borcu (Otomatik) — ${new Date(vadeTarihi).toLocaleDateString("tr-TR")}`,
+      aciklama:   `Net KDV Borcu — ${new Date(vadeTarihi).toLocaleDateString("tr-TR")}`,
       kaynak:     "kdv_otomatik",
     });
-  };
-
-  const kategoriler = tip === "gelir" ? gelirKategoriler : giderKategoriler;
-  const tkKategoriler = tkTip === "gelir" ? gelirKategoriler : giderKategoriler;
-
-  const handleKatEkle = () => {
-    if (!yeniKat.trim()) return;
-    kategoriEkle(tip, yeniKat.trim());
-    setKategori(yeniKat.trim());
-    setYeniKat("");
   };
 
   return (
     <div className="space-y-4">
 
-      {/* Başlık + aksiyon butonları */}
+      {/* Başlık + aksiyon */}
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <div>
-          <h2 className="text-base font-bold text-gray-800">Planlanan Nakit Akışı</h2>
-          <p className="text-xs text-gray-500">Gelecekteki ödemeler, gelirler ve tekrarlayan kalemler</p>
-        </div>
+        <h2 className="text-sm font-semibold">Planlanan kalemler</h2>
         <div className="flex items-center gap-2">
-          <button onClick={() => setGosterTamamlandi((v) => !v)}
-            className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${gosterTamamlandi ? "border-[var(--forest-300, #7DD0A0)] text-[var(--leaf)]" : "border-gray-200 text-gray-500"}`}>
+          <button
+            onClick={() => setGosterTamamlandi((v) => !v)}
+            className="text-xs px-2.5 py-1.5 rounded-lg border transition-colors"
+            style={{
+              borderColor: gosterTamamlandi ? "var(--forest)" : "rgba(0,0,0,0.10)",
+              color:       gosterTamamlandi ? "var(--forest)" : "var(--text-secondary)",
+            }}
+          >
             Tamamlananlar
           </button>
-          <button onClick={() => { setTekrarAcik((v) => !v); setFormAcik(false); }}
-            className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${tekrarAcik ? "border-[rgba(34,197,94,0.4)] text-[#22c55e]" : "border-gray-200 text-gray-500"}`}>
-            <RepeatIcon className="w-3.5 h-3.5" />Tekrarlayan
-          </button>
-          <button onClick={() => { setFormAcik((v) => !v); setTekrarAcik(false); }}
-            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-white text-gray-900 font-semibold hover:opacity-90 transition-colors">
-            <Plus className="w-3.5 h-3.5" />Yeni Kalem
+          <button
+            onClick={() => setModalAcik(true)}
+            className="text-xs font-medium px-3 py-1.5 rounded-lg text-white transition-colors hover:opacity-90"
+            style={{ background: "var(--forest)" }}
+          >
+            + Kalem Ekle
           </button>
         </div>
       </div>
 
-      {/* Manuel ekleme formu */}
-      <AnimatePresence>
-        {formAcik && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-            <div className="card rounded-2xl p-4 space-y-3">
-              <p className="text-sm font-semibold text-gray-800">Yeni Planlanan Kalem</p>
-
-              {/* Tip seçimi */}
-              <div className="grid grid-cols-2 gap-2">
-                {(["gelir", "gider"] as const).map((t) => (
-                  <button key={t} onClick={() => { setTip(t); setKategori(""); }}
-                    className="py-2 rounded-xl text-sm font-semibold transition-all border"
-                    style={{
-                      borderColor: tip === t ? (t === "gelir" ? "#22c55e" : "#ef4444") : "rgba(255,255,255,0.08)",
-                      backgroundColor: tip === t ? (t === "gelir" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)") : "transparent",
-                      color: tip === t ? (t === "gelir" ? "#22c55e" : "#ef4444") : "#64748b",
-                    }}>
-                    {t === "gelir" ? "Gelir" : "Gider"}
-                  </button>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-[10px] text-gray-400 uppercase tracking-wide">Kategori</label>
-                    <button type="button" onClick={() => setKatDuzenle((v) => !v)}
-                      className={`flex items-center gap-0.5 text-[9px] px-1 py-0.5 rounded border transition-colors ${katDuzenle ? "border-[var(--forest-300, #7DD0A0)] text-[var(--leaf)]" : "border-gray-200 text-gray-500"}`}>
-                      <Settings2 className="w-2.5 h-2.5" />Düzenle
-                    </button>
-                  </div>
-                  {/* Kategori düzenleme mini paneli */}
-                  <AnimatePresence>
-                    {katDuzenle && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }} className="overflow-hidden mb-1.5">
-                        <div className="p-2 rounded-lg bg-gray-50 border border-gray-200 space-y-1.5">
-                          <div className="flex flex-wrap gap-1">
-                            {kategoriler.map((k) => (
-                              <div key={k} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-gray-50 border border-gray-200">
-                                <span className="text-[10px] text-gray-800">{k}</span>
-                                <button type="button" onClick={() => kategoriSil(tip, k)} className="text-gray-500 hover:text-[#ef4444]">
-                                  <X className="w-2 h-2" />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="flex gap-1">
-                            <input type="text" value={yeniKat} onChange={(e) => setYeniKat(e.target.value)}
-                              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleKatEkle(); } }}
-                              placeholder="Yeni kategori"
-                              className="flex-1 px-2 py-1 rounded bg-gray-50 border border-gray-200 text-gray-800 text-[10px] focus:outline-none" />
-                            <button type="button" onClick={handleKatEkle}
-                              className="px-2 py-1 rounded bg-[rgba(34,197,94,0.15)] text-[#22c55e]">
-                              <Plus className="w-3 h-3" />
-                            </button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                  <select value={kategori} onChange={(e) => setKategori(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none">
-                    <option value="">Seçin...</option>
-                    {kategoriler.map((k) => <option key={k} value={k} className="bg-white">{k}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] text-gray-400 uppercase tracking-wide block mb-1">Tutar (₺)</label>
-                  <input type="number" min="0" value={tutar} onChange={(e) => setTutar(e.target.value)}
-                    placeholder="0.00"
-                    className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none focus:border-[var(--leaf)] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none" />
-                </div>
-                <div>
-                  <label className="text-[10px] text-gray-400 uppercase tracking-wide block mb-1">Vade Tarihi</label>
-                  <input type="date" value={vade} onChange={(e) => setVade(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none focus:border-[var(--leaf)] [color-scheme:dark]" />
-                </div>
-                <div>
-                  <label className="text-[10px] text-gray-400 uppercase tracking-wide block mb-1">Açıklama</label>
-                  <input type="text" value={aciklama} onChange={(e) => setAciklama(e.target.value)}
-                    placeholder="Opsiyonel"
-                    className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none focus:border-[var(--leaf)]" />
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <button onClick={() => setFormAcik(false)}
-                  className="flex-1 py-2 rounded-xl border border-gray-200 text-gray-400 text-sm hover:bg-gray-50 transition-colors">
-                  İptal
-                </button>
-                <button onClick={handleEkle} disabled={!tutar || !kategori}
-                  className="flex-1 py-2 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors disabled:opacity-40">
-                  Ekle
-                </button>
-              </div>
+      {/* KDV Otomasyonu */}
+      {netKdv > 0 && (
+        <div className="p-4 rounded-xl border border-black/8 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Receipt className="w-4 h-4 shrink-0" style={{ color: "var(--leaf)" }} />
+            <div>
+              <p className="text-sm font-medium">KDV borcu otomasyonu</p>
+              <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                Bu ay ödenecek net KDV: <span className="font-number font-medium">{formatTL(netKdv)}</span>
+              </p>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Tekrarlayan kalem formu */}
-      <AnimatePresence>
-        {tekrarAcik && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-            <div className="card rounded-2xl p-4 space-y-3">
-              <p className="text-sm font-semibold text-gray-800">Tekrarlayan Kalem Ekle</p>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="col-span-2">
-                  <label className="text-[10px] text-gray-400 uppercase tracking-wide block mb-1">Ad (örn: Personel Maaş, Kira)</label>
-                  <input type="text" value={tkAd} onChange={(e) => setTkAd(e.target.value)}
-                    placeholder="Tekrarlayan kalem adı"
-                    className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none focus:border-[var(--leaf)]" />
-                </div>
-                <div>
-                  <label className="text-[10px] text-gray-400 uppercase tracking-wide block mb-1">Tip</label>
-                  <select value={tkTip} onChange={(e) => setTkTip(e.target.value as "gelir" | "gider")}
-                    className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none">
-                    <option value="gider" className="bg-white">Gider</option>
-                    <option value="gelir" className="bg-white">Gelir</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] text-gray-400 uppercase tracking-wide block mb-1">Kategori</label>
-                  <select value={tkKategori} onChange={(e) => setTkKategori(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none">
-                    {tkKategoriler.map((k) =>
-                      <option key={k} value={k} className="bg-white">{k}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] text-gray-400 uppercase tracking-wide block mb-1">Aylık Tutar (₺)</label>
-                  <input type="number" min="0" value={tkTutar} onChange={(e) => setTkTutar(e.target.value)}
-                    placeholder="0.00"
-                    className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none focus:border-[var(--leaf)] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none" />
-                </div>
-                <div>
-                  <label className="text-[10px] text-gray-400 uppercase tracking-wide block mb-1">Her ayın kaçında?</label>
-                  <input type="number" min="1" max="31" value={tkGun} onChange={(e) => setTkGun(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none focus:border-[var(--leaf)] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none" />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => setTekrarAcik(false)}
-                  className="flex-1 py-2 rounded-xl border border-gray-200 text-gray-400 text-sm">İptal</button>
-                <button onClick={handleTekrarlayanEkle} disabled={!tkAd || !tkTutar}
-                  className="flex-1 py-2 rounded-xl bg-[#22c55e] text-gray-900 text-sm font-bold disabled:opacity-40">
-                  Kaydet
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Aktif tekrarlayan kalemler */}
-      {tekrarlayanlar.length > 0 && (
-        <div className="card rounded-2xl overflow-hidden">
-          <div className="px-4 py-3 border-b border-gray-200 flex items-center gap-2">
-            <RepeatIcon className="w-3.5 h-3.5 text-[#22c55e]" />
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
-              Tekrarlayan Kalemler
-            </span>
           </div>
-          <div className="divide-y divide-gray-100">
+          <button
+            onClick={kdvOtomatikEkle}
+            className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors hover:bg-[#F3F4F6]"
+            style={{ border: "1px solid rgba(0,0,0,0.10)", color: "var(--forest)" }}
+          >
+            <Zap className="w-3 h-3" />
+            Ayın 28'ine Ekle
+          </button>
+        </div>
+      )}
+
+      {/* Tekrarlayan kalemler */}
+      {tekrarlayanlar.length > 0 && (
+        <div className="rounded-xl border border-black/8 overflow-hidden">
+          <div className="px-4 py-2.5 flex items-center gap-2 border-b border-black/5">
+            <RepeatIcon className="w-3.5 h-3.5" style={{ color: "var(--leaf)" }} />
+            <span className="label-caps">Tekrarlayan</span>
+          </div>
+          <div className="divide-y divide-black/5">
             {tekrarlayanlar.map((t) => (
-              <div key={t.id} className="flex items-center gap-3 px-4 py-3">
-                <div className={`w-2 h-2 rounded-full shrink-0 ${t.aktif ? "bg-[#22c55e]" : "bg-[#475569]"}`} />
+              <div key={t.id} className="flex items-center gap-3 px-4 py-3 hover:bg-[#F3F4F6] transition-colors">
+                <div className={`w-2 h-2 rounded-full shrink-0 ${t.aktif ? "bg-emerald-500" : "bg-gray-400"}`} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-800 truncate">{t.ad}</p>
-                  <p className="text-[10px] text-gray-500">
-                    Her ayın {t.odemeGunu}'i · {t.kategori}
+                  <p className="text-sm font-medium truncate">{t.ad}</p>
+                  <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                    Her ayın {t.odemeGunu}. günü · {t.kategori}
                   </p>
                 </div>
-                <span className={`text-sm font-semibold ${t.tip === "gelir" ? "text-[#22c55e]" : "text-[#ef4444]"}`}>
-                  {t.tip === "gelir" ? "+" : "−"}{tl(t.tutarKurus)}
+                <span className={`font-number text-sm font-medium ${t.tip === "gelir" ? "text-emerald-600" : "text-[#C97676]"}`}>
+                  {t.tip === "gelir" ? "+" : "−"}{formatTL(t.tutarKurus)}
                 </span>
-                <button onClick={() => tekrarlayanSil(t.id)} className="text-gray-500 hover:text-[#ef4444] transition-colors">
+                <button
+                  onClick={() => tekrarlayanSil(t.id)}
+                  className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-[#C97676] hover:bg-[#C97676]/10 transition-colors"
+                >
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -316,71 +133,63 @@ export default function PlanlananKalemler() {
         </div>
       )}
 
-      {/* KDV Otomasyonu */}
-      {netKdv > 0 && (
-        <div className="p-4 rounded-2xl bg-[var(--mint)] border border-[var(--forest-100, #D9F2E4)] space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Receipt className="w-4 h-4 text-[var(--leaf)]" />
-              <div>
-                <p className="text-sm font-semibold text-gray-800">KDV Borcu Otomasyonu</p>
-                <p className="text-[10px] text-gray-500">
-                  Bu ay ödenecek net KDV: <span className="text-[var(--leaf)] font-semibold">{tl(netKdv)}</span>
-                </p>
-              </div>
-            </div>
-            <button onClick={kdvOtomatikEkle}
-              className="px-3 py-1.5 rounded-lg bg-[var(--mint)] text-[var(--leaf)] text-xs font-semibold hover:bg-[var(--forest-200, #B3E8C8)] transition-colors flex items-center gap-1.5">
-              <Zap className="w-3 h-3" />
-              Ayın 28'ine Ekle
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Planlanan kalemler listesi */}
       {gorunenKalemler.length === 0 ? (
-        <div className="card rounded-2xl py-10 text-center space-y-2">
-          <Calendar className="w-8 h-8 mx-auto text-gray-600 opacity-50" />
-          <p className="text-sm text-gray-500">Henüz planlanan kalem yok</p>
-          <p className="text-xs text-gray-500">Gelecekteki ödemelerini ekleyerek nakit akışını öngör</p>
+        <div className="rounded-xl border border-black/8 py-10 text-center space-y-2">
+          <Calendar className="w-8 h-8 mx-auto text-gray-400" />
+          <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Henüz planlanan kalem yok</p>
+          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+            Gelecekteki ödemeleri ekleyerek nakit akışını öngör
+          </p>
         </div>
       ) : (
-        <div className="card rounded-2xl overflow-hidden">
-          <div className="hidden md:grid md:grid-cols-[1fr_100px_100px_80px_100px_40px] gap-3 px-4 py-2.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">
-            <span>Kalem</span><span>Kategori</span><span>Vade</span><span>Durum</span><span className="text-right">Tutar</span><span />
+        <div className="rounded-xl border border-black/8 overflow-hidden">
+          <div className="hidden md:grid md:grid-cols-[1fr_100px_100px_80px_100px_40px] gap-3 px-4 py-2.5 border-b border-black/5">
+            {["Kalem", "Kategori", "Vade", "Durum", "Tutar", ""].map((h) => (
+              <span key={h} className="label-caps">{h}</span>
+            ))}
           </div>
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-black/5">
             {gorunenKalemler.map((k) => {
               const vb = vadeBadge(k.vadeTarihi);
               return (
-                <div key={k.id} className={`grid grid-cols-[1fr_auto] md:grid-cols-[1fr_100px_100px_80px_100px_40px] gap-3 px-4 py-3.5 items-center ${k.tamamlandi ? "opacity-50" : ""}`}>
+                <div
+                  key={k.id}
+                  className={`grid grid-cols-[1fr_auto] md:grid-cols-[1fr_100px_100px_80px_100px_40px] gap-3 px-4 py-3 items-center hover:bg-[#F3F4F6] transition-colors ${k.tamamlandi ? "opacity-50" : ""}`}
+                >
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${k.tip === "gelir" ? "bg-[#22c55e]" : "bg-[#ef4444]"}`} />
-                      <p className="text-sm text-gray-800 truncate">{k.aciklama || k.kategori}</p>
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${k.tip === "gelir" ? "bg-emerald-500" : "bg-[#C97676]"}`} />
+                      <p className="text-sm font-medium truncate">{k.aciklama || k.kategori}</p>
                       {k.kaynak !== "manuel" && (
-                        <span className="text-[9px] px-1 py-0.5 rounded bg-[var(--mint)] text-[var(--leaf)]">Otomatik</span>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: "var(--mint)", color: "var(--forest)" }}>
+                          Otomatik
+                        </span>
                       )}
                     </div>
                   </div>
-                  <span className="text-xs text-gray-500">{k.kategori}</span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs" style={{ color: "var(--text-secondary)" }}>{k.kategori}</span>
+                  <span className="text-xs" style={{ color: "var(--text-muted)" }}>
                     {new Date(k.vadeTarihi).toLocaleDateString("tr-TR", { day: "numeric", month: "short" })}
                   </span>
-                  <span className="text-[10px] font-semibold" style={{ color: vb.color }}>{vb.label}</span>
-                  <p className={`text-sm font-semibold text-right ${k.tip === "gelir" ? "text-[#22c55e]" : "text-[#ef4444]"}`}>
-                    {k.tip === "gelir" ? "+" : "−"}{tl(k.tutarKurus)}
+                  <span className="text-[10px] font-medium" style={{ color: vb.color }}>{vb.label}</span>
+                  <p className={`font-number text-sm font-medium text-right ${k.tip === "gelir" ? "text-emerald-600" : "text-[#C97676]"}`}>
+                    {k.tip === "gelir" ? "+" : "−"}{formatTL(k.tutarKurus)}
                   </p>
                   <div className="flex items-center gap-1 justify-end">
                     {!k.tamamlandi && (
-                      <button onClick={() => tamamla(k.id)} title="Tamamlandı işaretle"
-                        className="w-6 h-6 flex items-center justify-center rounded text-gray-500 hover:text-[#22c55e] transition-colors">
+                      <button
+                        onClick={() => tamamla(k.id)}
+                        title="Tamamlandı"
+                        className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+                      >
                         <Check className="w-3.5 h-3.5" />
                       </button>
                     )}
-                    <button onClick={() => sil(k.id)}
-                      className="w-6 h-6 flex items-center justify-center rounded text-gray-500 hover:text-[#ef4444] transition-colors">
+                    <button
+                      onClick={() => sil(k.id)}
+                      className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-[#C97676] hover:bg-[#C97676]/10 transition-colors"
+                    >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -390,6 +199,8 @@ export default function PlanlananKalemler() {
           </div>
         </div>
       )}
+
+      <PlanlananKalemModal acik={modalAcik} kapat={() => setModalAcik(false)} />
     </div>
   );
 }

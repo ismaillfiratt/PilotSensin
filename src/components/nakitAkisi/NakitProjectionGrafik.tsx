@@ -1,33 +1,31 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
-  ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid,
-  Tooltip, ReferenceLine, ResponsiveContainer, Legend,
+  LineChart, Line, XAxis, YAxis, CartesianGrid,
+  Tooltip, ReferenceLine, ResponsiveContainer,
 } from "recharts";
 import { useNakit }             from "@/store/nakit";
 import { useNakitAkis }         from "@/store/nakitAkis";
 import { useIsletmeGiderleri }  from "@/store/isletmeGiderleri";
 import { kasaBakiyesi, projeksiyon30Gun, kritikGunVarMi } from "@/lib/nakitAkis-engine";
+import { formatTL } from "@/lib/para";
+import { cn } from "@/lib/utils";
 
-const tl = (n: number) =>
-  (n / 100).toLocaleString("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 });
-
-function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value?: number; dataKey?: string }>; label?: string }) {
+function CustomTooltip({ active, payload, label }: {
+  active?: boolean;
+  payload?: Array<{ value?: number; dataKey?: string }>;
+  label?: string;
+}) {
   if (!active || !payload?.length) return null;
   const bakiye = payload.find((p) => p.dataKey === "bakiye")?.value ?? 0;
-  const giren  = payload.find((p) => p.dataKey === "giren")?.value ?? 0;
-  const cikan  = payload.find((p) => p.dataKey === "cikan")?.value ?? 0;
   const negatif = (bakiye as number) < 0;
-
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-3 text-xs space-y-1 shadow-xl">
-      <p className="font-semibold text-gray-400">{label}</p>
-      <p className={`font-bold text-sm ${negatif ? "text-[#ef4444]" : "text-gray-800"}`}>
-        Bakiye: {tl(bakiye as number)}
+    <div className="bg-white border border-gray-200 rounded-xl p-3 text-xs space-y-1 shadow-lg">
+      <p className="font-medium" style={{ color: "var(--text-secondary)" }}>{label}</p>
+      <p className={`font-number font-bold text-sm ${negatif ? "text-[#C97676]" : "text-[#0F172A]"}`}>
+        {formatTL(bakiye as number)}
       </p>
-      {(giren as number) > 0 && <p className="text-[#22c55e]">+{tl(giren as number)} Gelir</p>}
-      {(cikan as number) > 0 && <p className="text-[#ef4444]">-{tl(cikan as number)} Gider</p>}
     </div>
   );
 }
@@ -37,114 +35,108 @@ export default function NakitProjectionGrafik() {
   const { kalemler, tekrarlayanlar } = useNakitAkis();
   const { giderler }                 = useIsletmeGiderleri();
 
-  const { data, kritik } = useMemo(() => {
-    const kasa          = kasaBakiyesi(islemler);
-    const aylikSabit    = giderler.reduce((t, g) => t + g.tutarKurus, 0);
-    const proj          = projeksiyon30Gun(kasa, kalemler, tekrarlayanlar, aylikSabit);
-    const kritik        = kritikGunVarMi(proj);
-    return { data: proj, kritik };
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const { data, kritik, bugunBakiye, sonBakiye, enDusuk } = useMemo(() => {
+    const kasa       = kasaBakiyesi(islemler);
+    const aylikSabit = giderler.reduce((t, g) => t + g.tutarKurus, 0);
+    const proj       = projeksiyon30Gun(kasa, kalemler, tekrarlayanlar, aylikSabit);
+    const kritik     = kritikGunVarMi(proj);
+    const bugun      = proj[0]?.bakiye ?? kasa;
+    const son        = proj[proj.length - 1]?.bakiye ?? kasa;
+    const enD        = proj.length ? proj.reduce((m, g) => g.bakiye < m.bakiye ? g : m) : null;
+    return { data: proj, kritik, bugunBakiye: bugun, sonBakiye: son, enDusuk: enD };
   }, [islemler, kalemler, tekrarlayanlar, giderler]);
 
-  const lineColor = kritik ? "#ef4444" : "#22c55e";
-
-  const yMin = Math.min(...data.map((d) => d.bakiye));
-  const yMax = Math.max(...data.map((d) => d.bakiye));
-  const padding = Math.abs(yMax - yMin) * 0.15 || 1000;
+  const fark = sonBakiye - bugunBakiye;
 
   return (
-    <div className="card rounded-2xl p-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-base font-bold text-gray-800">30 Günlük Nakit Projeksiyonu</h2>
-          <p className="text-xs text-gray-500 mt-0.5">Planlanan gelir ve giderler dahil tahmini bakiye</p>
-        </div>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
+          Bugünkü kasa + planlanan + tekrarlayan
+        </p>
         {kritik && (
-          <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[rgba(239,68,68,0.12)] text-[#ef4444] border border-[rgba(239,68,68,0.25)] flex items-center gap-1.5">
-            ⚠ Kritik Sıkışıklık Riski
+          <span className="text-[10px] px-2.5 py-1 rounded-full font-medium bg-[#C97676]/10 text-[#C97676]">
+            Kritik sıkışıklık riski
           </span>
         )}
       </div>
 
-      <div className="h-[220px] md:h-[280px]">
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={data} margin={{ top: 5, right: 10, bottom: 5, left: 10 }}>
-          <defs>
-            <linearGradient id="gradPos" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%"  stopColor="#22c55e" stopOpacity={0.25} />
-              <stop offset="95%" stopColor="#22c55e" stopOpacity={0.02} />
-            </linearGradient>
-            <linearGradient id="gradNeg" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%"  stopColor="#ef4444" stopOpacity={0.05} />
-              <stop offset="95%" stopColor="#ef4444" stopOpacity={0.35} />
-            </linearGradient>
-          </defs>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-6">
 
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-          <XAxis
-            dataKey="etiket"
-            tick={{ fontSize: 10, fill: "#64748b" }}
-            tickLine={false}
-            axisLine={false}
-            interval={4}
-          />
-          <YAxis
-            tickFormatter={(v) => `₺${(v / 100000).toFixed(0)}K`}
-            tick={{ fontSize: 10, fill: "#64748b" }}
-            tickLine={false}
-            axisLine={false}
-            domain={[yMin - padding, yMax + padding]}
-            width={55}
-          />
-          <Tooltip content={<CustomTooltip />} />
+        {/* Sol: line chart */}
+        <div className="h-[220px]">
+          {mounted ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" vertical={false} />
+                <XAxis
+                  dataKey="etiket"
+                  tick={{ fontSize: 10, fill: "#94A3B8" }}
+                  tickLine={false}
+                  axisLine={false}
+                  interval={4}
+                />
+                <YAxis
+                  tickFormatter={(v) => `${(v / 100000).toFixed(0)}K`}
+                  tick={{ fontSize: 10, fill: "#94A3B8" }}
+                  tickLine={false}
+                  axisLine={false}
+                  width={45}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <ReferenceLine y={0} stroke="#C97676" strokeDasharray="4 4" strokeWidth={1} />
+                <Line
+                  type="monotone"
+                  dataKey="bakiye"
+                  stroke={kritik ? "#C97676" : "var(--forest)"}
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4, strokeWidth: 0 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-full rounded-lg bg-gray-50 animate-pulse" />
+          )}
+        </div>
 
-          {/* Sıfır çizgisi */}
-          <ReferenceLine y={0} stroke="rgba(255,255,255,0.2)" strokeDasharray="4 4" strokeWidth={1.5} />
+        {/* Sağ: özet panel */}
+        <div className="space-y-3">
+          <div className="p-3 rounded-lg border border-black/8">
+            <p className="label-caps mb-1">BUGÜN</p>
+            <p className="font-number font-semibold text-lg text-[#0F172A]">
+              {formatTL(bugunBakiye)}
+            </p>
+          </div>
 
-          {/* Pozitif bakiye alanı (yeşil) */}
-          <Area
-            type="monotone"
-            dataKey="bakiyePos"
-            fill="url(#gradPos)"
-            stroke="transparent"
-            baseValue={0}
-            isAnimationActive={false}
-          />
-          {/* Negatif bakiye alanı (kırmızı) */}
-          <Area
-            type="monotone"
-            dataKey="bakiyeNeg"
-            fill="url(#gradNeg)"
-            stroke="transparent"
-            baseValue={0}
-            isAnimationActive={false}
-          />
-          {/* Bakiye çizgisi */}
-          <Line
-            type="monotone"
-            dataKey="bakiye"
-            stroke={lineColor}
-            strokeWidth={2.5}
-            dot={false}
-            activeDot={{ r: 4, fill: lineColor, stroke: "var(--forest)", strokeWidth: 2 }}
-          />
-        </ComposedChart>
-      </ResponsiveContainer>
-      </div>
+          <div className="p-3 rounded-lg border border-black/8">
+            <p className="label-caps mb-1">30 GÜN SONRA</p>
+            <p className="font-number font-semibold text-lg text-[#0F172A]">
+              {formatTL(sonBakiye)}
+            </p>
+            <p className={cn(
+              "text-xs mt-1 font-number font-medium",
+              fark >= 0 ? "text-emerald-600" : "text-[#C97676]"
+            )}>
+              {fark >= 0 ? "↑" : "↓"} {formatTL(Math.abs(fark))}
+            </p>
+          </div>
 
-      {/* Gün açıklaması */}
-      <div className="flex items-center gap-4 text-xs text-gray-500">
-        <span className="flex items-center gap-1.5">
-          <span className="w-3 h-0.5 rounded bg-[#22c55e]" />
-          Pozitif bakiye
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-3 h-0.5 rounded bg-[#ef4444]" />
-          Negatif bakiye
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-3 h-0.5 rounded bg-gray-50" style={{ border: "1px dashed rgba(255,255,255,0.2)" }} />
-          Sıfır seviyesi
-        </span>
+          {enDusuk && enDusuk.bakiye < bugunBakiye && (
+            <div className="p-3 rounded-lg border border-[#C97676]/20 bg-[#C97676]/5">
+              <p className="label-caps text-[#C97676] mb-1">EN DÜŞÜK GÜN</p>
+              <p className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
+                {enDusuk.etiket}
+              </p>
+              <p className="font-number font-semibold text-sm mt-1 text-[#C97676]">
+                {formatTL(enDusuk.bakiye)}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
