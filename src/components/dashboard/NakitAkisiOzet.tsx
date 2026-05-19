@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid,
@@ -28,6 +28,9 @@ export default function NakitAkisiOzet() {
   const toplamGider = useMemo(() => veri.reduce((s, x) => s + x.gider, 0), [veri]);
   const net         = toplamGelir - toplamGider;
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   return (
     <section className="py-4 space-y-3">
       <div className="flex justify-between items-center">
@@ -52,35 +55,39 @@ export default function NakitAkisiOzet() {
       </div>
 
       <div className="h-44">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={veri} barGap={2} barCategoryGap="30%">
-            <CartesianGrid vertical={false} stroke="rgba(0,0,0,0.05)" />
-            <XAxis
-              dataKey="etiket"
-              tick={{ fontSize: 10, fill: "#94A3B8" }}
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis
-              width={55}
-              tick={{ fontSize: 10, fill: "#94A3B8" }}
-              axisLine={false}
-              tickLine={false}
-              tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
-            />
-            <Tooltip
-              formatter={(value) => [typeof value === "number" ? formatTL(value * 100) : String(value), ""]}
-              contentStyle={{
-                fontSize: 12,
-                borderRadius: 8,
-                border: "1px solid #E2E8F0",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-              }}
-            />
-            <Bar dataKey="gelir" name="Gelir" fill="var(--leaf)"    radius={[3, 3, 0, 0]} />
-            <Bar dataKey="gider" name="Gider" fill="#C97676"        radius={[3, 3, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+        {mounted ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={veri} barGap={2} barCategoryGap="30%">
+              <CartesianGrid vertical={false} stroke="rgba(0,0,0,0.05)" />
+              <XAxis
+                dataKey="etiket"
+                tick={{ fontSize: 10, fill: "#94A3B8" }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                width={55}
+                tick={{ fontSize: 10, fill: "#94A3B8" }}
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
+              />
+              <Tooltip
+                formatter={(value) => [typeof value === "number" ? formatTL(value * 100) : String(value), ""]}
+                contentStyle={{
+                  fontSize: 12,
+                  borderRadius: 8,
+                  border: "1px solid #E2E8F0",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                }}
+              />
+              <Bar dataKey="gelir" name="Gelir" fill="var(--leaf)" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="gider" name="Gider" fill="#C97676"     radius={[3, 3, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="h-full rounded-lg bg-gray-50 animate-pulse" />
+        )}
       </div>
 
       <div className="flex gap-5 text-xs">
