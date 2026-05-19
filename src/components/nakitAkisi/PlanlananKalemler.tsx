@@ -30,20 +30,25 @@ export default function PlanlananKalemler() {
 
   const [modalAcik,        setModalAcik]        = useState(false);
   const [gosterTamamlandi, setGosterTamamlandi] = useState(false);
-  const [tarihFiltre,      setTarihFiltre]      = useState("");
+  const [aralikAcik,       setAralikAcik]       = useState(false);
+  const [aralikBas,        setAralikBas]        = useState("");
+  const [aralikBit,        setAralikBit]        = useState("");
 
   const netKdv = useMemo(() => netKdvBakiye(havuzKayitlari), [havuzKayitlari]);
+
+  const aralikAktif = !!(aralikBas || aralikBit);
 
   const gorunenKalemler = useMemo(() => {
     let liste = [...kalemler]
       .filter((k) => gosterTamamlandi || !k.tamamlandi)
       .sort((a, b) => a.vadeTarihi.localeCompare(b.vadeTarihi));
 
-    if (tarihFiltre) {
-      liste = liste.filter((k) => k.vadeTarihi === tarihFiltre);
-    }
+    if (aralikBas) liste = liste.filter((k) => k.vadeTarihi >= aralikBas);
+    if (aralikBit) liste = liste.filter((k) => k.vadeTarihi <= aralikBit);
     return liste;
-  }, [kalemler, gosterTamamlandi, tarihFiltre]);
+  }, [kalemler, gosterTamamlandi, aralikBas, aralikBit]);
+
+  const aralikTemizle = () => { setAralikBas(""); setAralikBit(""); setAralikAcik(false); };
 
   const tamamlananlar = useMemo(
     () => kalemler.filter((k) => k.tamamlandi),
@@ -67,23 +72,25 @@ export default function PlanlananKalemler() {
       {/* Başlık + aksiyon */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-sm font-semibold">Planlanan kalemler</h2>
-        <div className="flex items-center gap-2">
-          {/* Tarih filtresi */}
-          <div className="relative flex items-center">
-            <input
-              type="date"
-              value={tarihFiltre}
-              onChange={(e) => setTarihFiltre(e.target.value)}
-              title="Tarihe göre filtrele"
-              className="px-2.5 py-1.5 rounded-lg border border-black/10 text-xs focus:outline-none"
-            />
-            {tarihFiltre && (
-              <button onClick={() => setTarihFiltre("")}
-                className="absolute right-2 text-gray-400 hover:text-gray-600">
-                <X className="w-3 h-3" />
-              </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Tarih aralığı toggle */}
+          <button
+            onClick={() => { setAralikAcik((v) => !v); if (aralikAcik) aralikTemizle(); }}
+            className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition-colors"
+            style={{
+              borderColor: aralikAktif || aralikAcik ? "var(--forest)" : "rgba(0,0,0,0.10)",
+              color:       aralikAktif || aralikAcik ? "var(--forest)" : "var(--text-secondary)",
+              background:  aralikAktif ? "rgba(15,61,46,0.06)" : "transparent",
+            }}
+          >
+            <Calendar className="w-3.5 h-3.5" />
+            {aralikAktif
+              ? `${aralikBas ? tarihStr(aralikBas) : "…"} — ${aralikBit ? tarihStr(aralikBit) : "…"}`
+              : "Tarih aralığı"}
+            {aralikAktif && (
+              <X className="w-3 h-3 ml-0.5" onClick={(e) => { e.stopPropagation(); aralikTemizle(); }} />
             )}
-          </div>
+          </button>
           <button
             onClick={() => setGosterTamamlandi((v) => !v)}
             className="text-xs px-2.5 py-1.5 rounded-lg border transition-colors"
@@ -103,6 +110,53 @@ export default function PlanlananKalemler() {
           </button>
         </div>
       </div>
+
+      {/* Tarih aralığı picker */}
+      {aralikAcik && (
+        <div className="flex flex-wrap items-center gap-3 px-4 py-3 rounded-xl border border-black/8 bg-gray-50">
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>Başlangıç</label>
+            <input
+              type="date"
+              value={aralikBas}
+              max={aralikBit || undefined}
+              onChange={(e) => setAralikBas(e.target.value)}
+              className="px-2.5 py-1.5 rounded-lg border border-black/10 text-xs bg-white focus:outline-none"
+            />
+          </div>
+          <span className="text-gray-400">—</span>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>Bitiş</label>
+            <input
+              type="date"
+              value={aralikBit}
+              min={aralikBas || undefined}
+              onChange={(e) => setAralikBit(e.target.value)}
+              className="px-2.5 py-1.5 rounded-lg border border-black/10 text-xs bg-white focus:outline-none"
+            />
+          </div>
+          {/* Hızlı seçenekler */}
+          <div className="flex gap-1.5 ml-auto flex-wrap">
+            {[
+              { label: "Bu hafta", fn: () => { const d = new Date(); const gun = d.getDay() === 0 ? 6 : d.getDay() - 1; const bas = new Date(d); bas.setDate(d.getDate() - gun); const bit = new Date(bas); bit.setDate(bas.getDate() + 6); setAralikBas(bas.toISOString().split("T")[0]); setAralikBit(bit.toISOString().split("T")[0]); } },
+              { label: "Bu ay",   fn: () => { const d = new Date(); const bas = new Date(d.getFullYear(), d.getMonth(), 1); const bit = new Date(d.getFullYear(), d.getMonth() + 1, 0); setAralikBas(bas.toISOString().split("T")[0]); setAralikBit(bit.toISOString().split("T")[0]); } },
+              { label: "30 gün",  fn: () => { const d = new Date(); const bit = new Date(d); bit.setDate(d.getDate() + 30); setAralikBas(d.toISOString().split("T")[0]); setAralikBit(bit.toISOString().split("T")[0]); } },
+            ].map(({ label, fn }) => (
+              <button key={label} onClick={fn}
+                className="text-[11px] font-medium px-2 py-1 rounded-lg border border-black/10 hover:bg-white transition-colors"
+                style={{ color: "var(--forest)" }}>
+                {label}
+              </button>
+            ))}
+            {aralikAktif && (
+              <button onClick={aralikTemizle}
+                className="text-[11px] font-medium px-2 py-1 rounded-lg border border-black/10 hover:bg-white transition-colors text-gray-500">
+                Temizle
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* KDV Otomasyonu */}
       {netKdv > 0 && (
@@ -164,10 +218,10 @@ export default function PlanlananKalemler() {
         <div className="rounded-xl border border-black/8 py-10 text-center space-y-2">
           <Calendar className="w-8 h-8 mx-auto text-gray-400" />
           <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-            {tarihFiltre ? `${tarihStr(tarihFiltre)} tarihinde planlanan kalem yok` : "Henüz planlanan kalem yok"}
+            {aralikAktif ? "Seçilen tarih aralığında planlanan kalem yok" : "Henüz planlanan kalem yok"}
           </p>
-          {tarihFiltre && (
-            <button onClick={() => setTarihFiltre("")} className="text-xs" style={{ color: "var(--leaf)" }}>
+          {aralikAktif && (
+            <button onClick={aralikTemizle} className="text-xs" style={{ color: "var(--leaf)" }}>
               Filtreyi kaldır
             </button>
           )}
