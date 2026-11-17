@@ -3,7 +3,6 @@
 import { useSearchParams } from "next/navigation";
 import AyarlarSidebar  from "@/components/ayarlar/AyarlarSidebar";
 import BildirimPanel   from "@/components/ayarlar/panels/BildirimPanel";
-import GorunumPanel    from "@/components/ayarlar/panels/GorunumPanel";
 import SifrePanel      from "@/components/ayarlar/panels/SifrePanel";
 import GuvenlikPanel   from "@/components/ayarlar/panels/GuvenlikPanel";
 import VeriIndirPanel  from "@/components/ayarlar/panels/VeriIndirPanel";
@@ -15,11 +14,11 @@ import CopKutusuPanel  from "@/components/ayarlar/panels/CopKutusuPanel";
 import IletisimPanel   from "@/components/ayarlar/panels/IletisimPanel";
 
 type Tab =
-  | "bildirim" | "gorunum" | "sifre" | "guvenlik"
+  | "bildirim" | "sifre" | "guvenlik"
   | "veri-indir" | "cop-kutusu" | "iletisim" | "yasal" | "sss" | "surum" | "tehlike";
 
 const GECERLI_TABLER: Tab[] = [
-  "bildirim", "gorunum", "sifre", "guvenlik",
+  "bildirim", "sifre", "guvenlik",
   "veri-indir", "cop-kutusu", "iletisim", "yasal", "sss", "surum", "tehlike",
 ];
 
@@ -30,7 +29,6 @@ function gecerliTab(s: string | null): Tab {
 
 const PANELLER: Record<Tab, React.ReactNode> = {
   bildirim:      <BildirimPanel />,
-  gorunum:       <GorunumPanel />,
   sifre:         <SifrePanel />,
   guvenlik:      <GuvenlikPanel />,
   "veri-indir":  <VeriIndirPanel />,

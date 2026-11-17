@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Bell, Palette, Lock, ShieldCheck, Download, Trash2,
+  Bell, Lock, ShieldCheck, Download, Trash2,
   FileText, HelpCircle, MessageCircle, Package,
   User, LogOut, AlertTriangle, ArrowUpRight,
 } from "lucide-react";
@@ -27,7 +27,6 @@ const GRUPLAR: Grup[] = [
     baslik: "TERCİHLER",
     maddeler: [
       { key: "bildirim", label: "Bildirimler", icon: Bell    },
-      { key: "gorunum",  label: "Görünüm",     icon: Palette },
     ],
   },
   {
@@ -110,7 +109,7 @@ export default function AyarlarSidebar({ aktifTab }: Props) {
         {/* Üst başlık */}
         <div className="px-4 py-4 border-b border-gray-100">
           <p className="label-caps text-[10px]">AYARLAR</p>
-          <p className="text-xs text-gray-400 mt-0.5">Bildirim, tema ve hesap tercihleri</p>
+          <p className="text-xs text-gray-400 mt-0.5">Bildirim ve hesap tercihleri</p>
         </div>
 
         {/* Menü grupları */}
