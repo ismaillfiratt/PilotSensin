@@ -12,6 +12,7 @@
 import { useStok }             from "@/store/stok";
 import { useSirket }           from "@/store/sirket";
 import { useBildirimler }      from "@/store/bildirimler";
+import { useIsletmeGiderleri } from "@/store/isletmeGiderleri";
 import { yayin }               from "@/lib/realtime";
 import { yazabilir, yetkiYok } from "./yetki";
 import { stokDuzeltmeFireBildirim } from "@/lib/bildirimler/anlik";
@@ -69,6 +70,19 @@ export async function stokDuzelt(girdi: DuzeltmeGirdi): Promise<IslemSonuc<{ onc
       const rol = (useSirket.getState().rol || "pilot") as "pilot" | "copilot";
       const b   = stokDuzeltmeFireBildirim(urun, Math.abs(fark));
       if (b) void useBildirimler.getState().hedefliEkle(b, rol);
+
+      // ── 3b. Fire maliyetini işletme giderlerine yansıt ──────────────
+      const fireAdet         = Math.abs(fark);
+      const fireMaliyetKurus = Math.round(fireAdet * (urun.birimMaliyetKurus ?? 0));
+      if (fireMaliyetKurus > 0) {
+        const kategoriDetay = girdi.aciklama
+          ? `Stok Fire / Zayi — ${urun.ad} (${fireAdet} ${urun.birim}) — ${girdi.aciklama}`
+          : `Stok Fire / Zayi — ${urun.ad} (${fireAdet} ${urun.birim})`;
+        await useIsletmeGiderleri.getState().ekle({
+          kategori:   kategoriDetay,
+          tutarKurus: fireMaliyetKurus,
+        });
+      }
     }
 
     // ── 4. Realtime yayın ─────────────────────────────────────────────

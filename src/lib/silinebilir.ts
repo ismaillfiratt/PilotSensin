@@ -12,5 +12,6 @@ export const TUM_TIPLER = [
   "urun", "satisKaydi", "nakitIslem", "kdvKaydi", "gorev",
   "prosedur", "checklistMaddesi", "acilFonIslem", "acilFonHedef",
   "isletmeGideri", "bildirim", "stokHareketi", "ekipUye", "davet",
+  "sopGrup", "checklistGrup", "borç", "ödeme",
 ] as const;
 export type SilinebilirTip = typeof TUM_TIPLER[number];

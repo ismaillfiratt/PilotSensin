@@ -10,37 +10,52 @@ type Siralama = "marj" | "kar" | "ciro";
 const tl = (n: number) =>
   (n / 100).toLocaleString("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 });
 
-const marjRenk = (m: number) => m >= 30 ? "#22c55e" : m >= 15 ? "var(--leaf)" : "#ef4444";
+const marjRenk = (m: number) => m >= 30 ? "#22c55e" : m >= 15 ? "#F59E0B" : "#ef4444";
 
-/** Gerçek satış kayıtlarından ürün bazlı marj özeti */
+/** Snapshot varsa birimBrutKarKurus, yoksa eski brutKarKurus */
+function kayitKar(k: SatisKaydi): number {
+  return k.birimBrutKarKurus != null ? k.birimBrutKarKurus * k.adet : k.brutKarKurus;
+}
+
+/** Net satış tutarı (KDV hariç) — snapshot varsa kdvTutariKurus düşülür */
+function kayitNetCiro(k: SatisKaydi): number {
+  return k.birimBrutKarKurus != null
+    ? k.toplamCiroKurus - (k.kdvTutariKurus ?? 0)
+    : k.toplamCiroKurus;
+}
+
+/** Gerçek satış kayıtlarından ürün bazlı brüt kâr özeti */
 function urunMarjlari(kayitlar: SatisKaydi[]) {
   const map: Record<string, {
     urunId: string; urunAd: string; kategori: string;
-    toplamCiroKurus: number; toplamKar: number; toplamSMM: number; toplamAdet: number;
+    toplamCiroKurus: number; toplamNetCiro: number;
+    toplamKar: number; toplamAdet: number;
   }> = {};
 
   for (const k of kayitlar) {
     if (k.iadeEdildi) continue;
     const key = k.urunId ?? k.urunAd;
     if (!map[key]) {
-      map[key] = { urunId: key, urunAd: k.urunAd, kategori: k.kategori,
-                   toplamCiroKurus: 0, toplamKar: 0, toplamSMM: 0, toplamAdet: 0 };
+      map[key] = {
+        urunId: key, urunAd: k.urunAd, kategori: k.kategori,
+        toplamCiroKurus: 0, toplamNetCiro: 0, toplamKar: 0, toplamAdet: 0,
+      };
     }
     map[key].toplamCiroKurus += k.toplamCiroKurus;
-    map[key].toplamKar  += k.brutKarKurus;
-    map[key].toplamSMM  += k.birimAlisFiyatiKurus * k.adet;
-    map[key].toplamAdet += k.adet;
+    map[key].toplamNetCiro   += kayitNetCiro(k);
+    map[key].toplamKar       += kayitKar(k);
+    map[key].toplamAdet      += k.adet;
   }
 
   return Object.values(map).map((u) => ({
     ...u,
-    marjYuzde: u.toplamCiroKurus > 0 ? (u.toplamKar / u.toplamCiroKurus) * 100 : 0,
+    marjYuzde: u.toplamNetCiro > 0 ? (u.toplamKar / u.toplamNetCiro) * 100 : 0,
   }));
 }
 
 export default function UrunMarjTablosu() {
-  const { kayitlar }         = useSatislar();
-  const [arama, setArama]    = useState("");
+  const { kayitlar }            = useSatislar();
+  const [arama, setArama]       = useState("");
   const [siralama, setSiralama] = useState<Siralama>("marj");
 
   const veri = useMemo(() => urunMarjlari(kayitlar), [kayitlar]);
@@ -69,21 +84,20 @@ export default function UrunMarjTablosu() {
           <input
             value={arama} onChange={(e) => setArama(e.target.value)}
             placeholder="Ürün veya kategori ara..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-[var(--border-medium)] transition-colors"
           />
         </div>
-        <div className="flex gap-1 p-1 rounded-xl bg-gray-50 border border-gray-200">
+        <div className="flex gap-1 p-1 rounded-xl bg-[#F3F4F6] border border-black/5">
           {([
             { v: "marj", label: "Marj" },
-            { v: "kar",  label: "Kar"  },
+            { v: "kar",  label: "Kâr"  },
             { v: "ciro", label: "Ciro" },
           ] as const).map(({ v, label }) => (
             <button key={v} onClick={() => setSiralama(v)}
               className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
               style={{
-                backgroundColor: siralama === v ? "var(--mint)" : "transparent",
-                color:  siralama === v ? "var(--leaf)" : "#94a3b8",
-                border: siralama === v ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid transparent",
+                backgroundColor: siralama === v ? "var(--bg-tertiary)" : "transparent",
+                color:           siralama === v ? "var(--text-primary)" : "#94a3b8",
               }}>
               <ArrowUpDown className="w-3 h-3" />{label}
             </button>
@@ -92,13 +106,13 @@ export default function UrunMarjTablosu() {
       </div>
 
       {/* Tablo / Kartlar */}
-      <div className="card rounded-2xl overflow-hidden">
+      <div className="rounded-xl border border-black/8 bg-white overflow-hidden">
         {/* Desktop başlık */}
-        <div className="hidden md:grid md:grid-cols-[2fr_1fr_1fr_1fr] gap-4 px-5 py-3 border-b border-gray-200 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-          <span>Ürün</span><span>Kar Marjı</span><span>Toplam Ciro</span><span>Brüt Kâr</span>
+        <div className="hidden md:grid md:grid-cols-[2fr_1fr_1fr_1fr] gap-4 px-5 py-3 border-b border-black/5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          <span>Ürün</span><span>Brüt Marjı</span><span>Toplam Ciro</span><span>Brüt Kâr</span>
         </div>
 
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-black/4">
           {sirali.length === 0 ? (
             <div className="py-16 text-center">
               <p className="text-sm text-gray-500">
@@ -131,15 +145,19 @@ export default function UrunMarjTablosu() {
                     <div className="text-right">
                       <p className="text-[10px] text-gray-500 uppercase tracking-wide">Brüt Kâr</p>
                       <div className="flex items-center gap-1 justify-end">
-                        {u.toplamKar >= 0 ? <TrendingUp className="w-3.5 h-3.5 text-[#22c55e]" /> : <TrendingDown className="w-3.5 h-3.5 text-[#ef4444]" />}
-                        <p className="text-sm font-bold" style={{ color: renk }}>{u.toplamKar >= 0 ? "+" : ""}{tl(u.toplamKar)}</p>
+                        {u.toplamKar >= 0
+                          ? <TrendingUp  className="w-3.5 h-3.5 text-[#e5e5e5]" />
+                          : <TrendingDown className="w-3.5 h-3.5 text-[#ef4444]" />}
+                        <p className="text-sm font-bold" style={{ color: renk }}>
+                          {u.toplamKar >= 0 ? "+" : ""}{tl(u.toplamKar)}
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Desktop satır */}
-                <div className="hidden md:grid md:grid-cols-[2fr_1fr_1fr_1fr] gap-4 px-5 py-4 items-center hover:bg-[var(--mint)] transition-colors">
+                <div className="hidden md:grid md:grid-cols-[2fr_1fr_1fr_1fr] gap-4 px-5 py-4 items-center hover:bg-[#F9FAFB] transition-colors">
                   <div>
                     <p className="text-sm font-semibold text-gray-800">{u.urunAd}</p>
                     <p className="text-xs text-gray-400 mt-0.5">{u.kategori} · {u.toplamAdet} adet</p>
@@ -152,8 +170,12 @@ export default function UrunMarjTablosu() {
                   </div>
                   <p className="text-sm text-gray-800 font-medium">{tl(u.toplamCiroKurus)}</p>
                   <div className="flex items-center gap-1.5">
-                    {u.toplamKar >= 0 ? <TrendingUp className="w-3.5 h-3.5 text-[#22c55e]" /> : <TrendingDown className="w-3.5 h-3.5 text-[#ef4444]" />}
-                    <p className="text-sm font-bold" style={{ color: renk }}>{u.toplamKar >= 0 ? "+" : ""}{tl(u.toplamKar)}</p>
+                    {u.toplamKar >= 0
+                      ? <TrendingUp  className="w-3.5 h-3.5 text-[#e5e5e5]" />
+                      : <TrendingDown className="w-3.5 h-3.5 text-[#ef4444]" />}
+                    <p className="text-sm font-bold" style={{ color: renk }}>
+                      {u.toplamKar >= 0 ? "+" : ""}{tl(u.toplamKar)}
+                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -161,8 +183,8 @@ export default function UrunMarjTablosu() {
           })}
         </div>
 
-        <div className="px-5 py-3 border-t border-gray-200 text-xs text-gray-400">
-          {sirali.length} / {veri.length} ürün gösteriliyor · Gerçek satış verisine göre
+        <div className="px-5 py-3 border-t border-black/5 text-xs text-gray-400">
+          {sirali.length} / {veri.length} ürün · Direct costs dahil brüt marj
         </div>
       </div>
     </div>

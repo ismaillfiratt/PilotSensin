@@ -3,6 +3,8 @@ import { persist } from "zustand/middleware";
 import { storeKaydet } from "@/lib/db";
 import { yayin } from "@/lib/realtime";
 import { getKullaniciId } from "@/lib/auth";
+import { aktiviteKaydet } from "@/lib/aktiviteLog";
+import { aksiyonKaydet }  from "@/lib/uyari-motoru/aksiyonTakipci";
 import type { Kurus } from "@/lib/para";
 import type { Silinebilir } from "@/lib/silinebilir";
 
@@ -24,6 +26,14 @@ export interface SatisKaydi extends Silinebilir {
   tip:                   "urun" | "hizmet";
   islemId?:              string;
   iadeEdildi?:           boolean;
+
+  // Marj analizi snapshot (satış anında dondurulur, sonradan değişmez)
+  toplamDirectMaliyetKurus?: Kurus;    // tüm direct cost × adet
+  birimBrutKarKurus?:        Kurus;    // satisNet - directMaliyetNet (birim başı)
+  birimBrutMarjYuzde?:       number;   // % (0–100)
+  directMaliyetNetKurus?:    Kurus;    // KDV hariç direct cost (birim başı)
+  directMaliyetKdvKurus?:    Kurus;    // İndirilebilir KDV (birim başı)
+  marjSnapshotTarihi?:       string;   // ISO — snapshot ne zaman alındı
 }
 
 interface SatislarStore {
@@ -47,25 +57,33 @@ export const useSatislar = create<SatislarStore>()(
       kayitlar: [],
 
       ekle: async (kayit) => {
-        set((s) => ({
-          kayitlar: [{ ...kayit, id: crypto.randomUUID() }, ...s.kayitlar],
-        }));
+        const yeni = { ...kayit, id: crypto.randomUUID() };
+        set((s) => ({ kayitlar: [yeni, ...s.kayitlar] }));
         yayin({ tip: "satislar", veri: get().kayitlar });
         await kaydet(get().kayitlar);
+        const ciro = (kayit.toplamCiroKurus / 100).toLocaleString("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 });
+        void aktiviteKaydet({ modul: "satis", eylem: "ekle", ozet: `"${kayit.urunAd}" satışı kaydedildi (${kayit.adet} adet, ${ciro})`, meta: { satisId: yeni.id, urunId: kayit.urunId, kategori: kayit.kategori } });
+        aksiyonKaydet("kar-zarar");
       },
 
       guncelle: async (id, guncelleme) => {
+        const onceki = get().kayitlar.find(k => k.id === id);
         set((s) => ({ kayitlar: s.kayitlar.map((k) => k.id === id ? { ...k, ...guncelleme } : k) }));
         yayin({ tip: "satislar", veri: get().kayitlar });
         await kaydet(get().kayitlar);
+        void aktiviteKaydet({ modul: "satis", eylem: "guncelle", ozet: `"${onceki?.urunAd ?? id}" satış kaydı güncellendi`, meta: { satisId: id } });
+        aksiyonKaydet("kar-zarar");
       },
 
       sil: async (id, opts) => {
+        const kayit = get().kayitlar.find(k => k.id === id);
         const { softDeletePatch } = await import("@/lib/softDelete");
         const patch = await softDeletePatch(opts);
         set((s) => ({ kayitlar: s.kayitlar.map((k) => k.id === id ? { ...k, ...patch } : k) }));
         yayin({ tip: "satislar", veri: get().kayitlar });
         await kaydet(get().kayitlar);
+        void aktiviteKaydet({ modul: "satis", eylem: "sil", ozet: `"${kayit?.urunAd ?? id}" satış kaydı silindi`, meta: { satisId: id } });
+        aksiyonKaydet("kar-zarar");
       },
 
       geriAl: async (id) => {

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { createClient }        from "@/utils/supabase/client";
 import { userStoreDB }         from "@/lib/db";
+import { storesSifirla }       from "@/lib/auth-temizlik";
 import { useNakit }            from "@/store/nakit";
 import { useGorevler }         from "@/store/gorevler";
 import { useStok }             from "@/store/stok";
@@ -12,6 +13,8 @@ import { useAcilFon }          from "@/store/acilFon";
 import { useIsletmeGiderleri } from "@/store/isletmeGiderleri";
 import { useNakitAkis }        from "@/store/nakitAkis";
 import { useSatislar }         from "@/store/satislar";
+import { useKdvHavuzu }       from "@/store/kdvHavuzu";
+import { useBorclar }          from "@/store/borclar";
 
 // Modül-seviyesi singleton: sayfa navigasyonlarında yeniden çalışmaz,
 // sadece ilk oturumda başlatılır. Bu race condition'ı önler.
@@ -30,17 +33,36 @@ async function initDataProvider() {
   }
   const userId = sessionData.session.user.id;
 
+  // Farklı kullanıcı mı? → eski verileri temizle
+  const oncekiId = localStorage.getItem("pilot-last-user-id");
+  if (oncekiId && oncekiId !== userId) {
+    storesSifirla();
+  }
+  localStorage.setItem("pilot-last-user-id", userId);
+
+  let yukleRunning = false;
+  let yukleQueued  = false;
+
   async function yukle() {
-    const veri = await userStoreDB.getAll();
-    useNakit.getState().syncFromRemote(veri.nakit_islemler);
-    useGorevler.getState().syncFromRemote(veri.gorevler);
-    useStok.getState().syncFromRemote(veri.stok_urunler);
-    useBildirimler.getState().syncFromRemote(veri.bildirimler);
-    useProsedurler.getState().syncFromRemote({ prosedurler: veri.prosedurler, checklist: veri.checklist_items });
-    useAcilFon.getState().syncFromRemote({ hedefler: veri.acil_fon_hedefler, islemler: veri.acil_fon_islemler, aktifHedefId: null });
-    useIsletmeGiderleri.getState().syncFromRemote(veri.isletme_giderleri);
-    useNakitAkis.getState().syncFromRemote({ kalemler: veri.nakit_planlanan, tekrarlayanlar: veri.nakit_tekrarlayan });
-    useSatislar.getState().syncFromRemote(veri.satislar);
+    if (yukleRunning) { yukleQueued = true; return; }
+    yukleRunning = true;
+    try {
+      const veri = await userStoreDB.getAll();
+      useNakit.getState().syncFromRemote(veri.nakit_islemler);
+      useGorevler.getState().syncFromRemote(veri.gorevler);
+      useStok.getState().syncFromRemote(veri.stok_urunler);
+      useBildirimler.getState().syncFromRemote(veri.bildirimler);
+      useProsedurler.getState().syncFromRemote({ prosedurler: veri.prosedurler, checklist: veri.checklist_items });
+      useAcilFon.getState().syncFromRemote({ hedefler: veri.acil_fon_hedefler, islemler: veri.acil_fon_islemler });
+      useIsletmeGiderleri.getState().syncFromRemote(veri.isletme_giderleri);
+      useNakitAkis.getState().syncFromRemote({ kalemler: veri.nakit_planlanan, tekrarlayanlar: veri.nakit_tekrarlayan });
+      useSatislar.getState().syncFromRemote(veri.satislar);
+      useKdvHavuzu.getState().syncFromRemote(veri.kdv_havuzu);
+      useBorclar.getState().syncFromRemote(veri.borclar);
+    } finally {
+      yukleRunning = false;
+      if (yukleQueued) { yukleQueued = false; void yukle(); }
+    }
   }
 
   await yukle();

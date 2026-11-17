@@ -18,7 +18,7 @@ export interface ModulSkoru {
   uyariSayisi: number;
 }
 
-const fmt = (n: number) => "₺" + Math.abs(n).toLocaleString("tr-TR");
+const fmt = (n: number) => "₺" + (Math.abs(n) / 100).toLocaleString("tr-TR", { minimumFractionDigits: 2 });
 
 /* ── Nakit Akışı ── */
 export function nakitSkoru(islemler: Islem[]): ModulSkoru {
@@ -91,40 +91,83 @@ export function stokSkoru(urunler: Urun[]): ModulSkoru {
 
 /* ── Prosedürler ── */
 export function prosedurSkoru(prosedurler: Prosedur[], checklist: ChecklistItem[]): ModulSkoru {
-  if (prosedurler.length === 0 && checklist.length === 0)
-    return { baslik: "Prosedürler", skor: 100, durum: "ok", metrik: "%100", metrikLabel: "Prosedür eklenmedi", uyariSayisi: 0 };
+  const aktifCL = checklist.filter(c => !c.silindi);
 
-  const uyum      = uyumSkoru(checklist);
-  const bekleyen  = checklist.filter(c => isDue(c)).length;
+  if (aktifCL.length === 0)
+    return { baslik: "Prosedürler", skor: 100, durum: "ok", metrik: "%100", metrikLabel: "Kontrol maddesi yok", uyariSayisi: 0 };
+
+  const uyum     = uyumSkoru(aktifCL);
+  const bekleyen = aktifCL.filter(c => c.otomatikKontrol ? !c.tamamlandi : isDue(c)).length;
+  const uyumlu   = aktifCL.length - bekleyen;
   return {
     baslik:      "Prosedürler",
     skor:        uyum,
     durum:       uyum >= 75 ? "ok" : uyum >= 40 ? "warning" : "critical",
     metrik:      `%${uyum}`,
-    metrikLabel: `${prosedurler.length} SOP · ${bekleyen} bekleyen kontrol`,
+    metrikLabel: `${prosedurler.length} SOP · ${bekleyen} bekleyen · ${uyumlu}/${aktifCL.length} uyumlu`,
     uyariSayisi: bekleyen,
   };
 }
 
 /* ── Acil Durum Fonu ── */
 export function acilFonSkoru(islemler: FonIslem[], hedefler: FonHedef[]): ModulSkoru {
-  if (hedefler.length === 0)
-    return { baslik: "Acil Durum Fonu", skor: 100, durum: "ok", metrik: "₺0", metrikLabel: "Hedef eklenmedi", uyariSayisi: 0 };
+  const aktif = hedefler.filter(h => !h.silindi);
 
-  if (islemler.length === 0)
-    return { baslik: "Acil Durum Fonu", skor: 0, durum: "critical", metrik: "₺0", metrikLabel: "Birikim eklenmedi", uyariSayisi: 1 };
+  if (aktif.length === 0)
+    return { baslik: "Acil Durum Fonu", skor: 0, durum: "critical", metrik: "₺0", metrikLabel: "Hedef eklenmedi", uyariSayisi: 1 };
 
-  const toplamHedefKurus = hedefler.reduce((s, h) => s + h.toplamHedefKurus, 0);
-  const mevcut = mevcutBirikim(islemler);
-  const oran   = toplamHedefKurus > 0 ? Math.min(1, mevcut / toplamHedefKurus) : 0;
-  const skor   = Math.round(oran * 100);
+  const temiz = islemler.filter(i => !i.silindi);
+
+  // 1. Genel doluluk (0-100) — %40 ağırlık
+  const toplamHedef  = aktif.reduce((s, h) => s + h.toplamHedefKurus, 0);
+  const toplamMevcut = mevcutBirikim(temiz);
+  const genelDoluluk = toplamHedef > 0 ? Math.min(100, (toplamMevcut / toplamHedef) * 100) : 0;
+
+  // 2. Birikim disiplini — son 3 takvim ayında yatırma yapılmış mı? (0-100) — %30 ağırlık
+  const simdi = new Date();
+  let aktifAylar = 0;
+  for (let i = 0; i < 3; i++) {
+    const yil = simdi.getFullYear();
+    const ay  = simdi.getMonth() - i;
+    const varMi = temiz.some(is => {
+      if (is.tip !== "yatirma") return false;
+      const t = new Date(is.tarih);
+      return t.getFullYear() === new Date(yil, ay, 1).getFullYear() &&
+             t.getMonth()    === new Date(yil, ay, 1).getMonth();
+    });
+    if (varMi) aktifAylar++;
+  }
+  const birikimDisiplin = temiz.some(i => i.tip === "yatirma")
+    ? (aktifAylar / 3) * 100
+    : 0;
+
+  // 3. Hedef sağlığı — aktif hedeflerin ortalama doluluk % (0-100) — %20 ağırlık
+  const hedefOranlar = aktif.map(h => {
+    const mev = mevcutBirikim(temiz, h.id);
+    return h.toplamHedefKurus > 0 ? Math.min(100, (mev / h.toplamHedefKurus) * 100) : 0;
+  });
+  const hedefSagligi = hedefOranlar.length > 0
+    ? hedefOranlar.reduce((s, o) => s + o, 0) / hedefOranlar.length
+    : 0;
+
+  // 4. Tamamlanan bonus — tamamlanmış hedef × 5, max 20 — %10 ağırlık
+  const tamamlanan     = aktif.filter(h => mevcutBirikim(temiz, h.id) >= h.toplamHedefKurus).length;
+  const tamamlananBonus = Math.min(20, tamamlanan * 5);
+
+  const skor = Math.round(Math.max(0, Math.min(100,
+    genelDoluluk    * 0.40 +
+    birikimDisiplin * 0.30 +
+    hedefSagligi    * 0.20 +
+    tamamlananBonus * 0.10,
+  )));
+
   return {
     baslik:      "Acil Durum Fonu",
     skor,
-    durum:       skor >= 80 ? "ok" : skor >= 40 ? "warning" : "critical",
-    metrik:      fmt(mevcut),
-    metrikLabel: `Toplam hedef: ${fmt(toplamHedefKurus)}`,
-    uyariSayisi: skor < 40 ? 1 : 0,
+    durum:       skor >= 75 ? "ok" : skor >= 50 ? "warning" : "critical",
+    metrik:      fmt(toplamMevcut),
+    metrikLabel: toplamHedef > 0 ? `%${Math.round(genelDoluluk)} hedef doluluk` : "Hedef tutarı yok",
+    uyariSayisi: skor < 50 ? 1 : 0,
   };
 }
 

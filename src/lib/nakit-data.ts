@@ -17,6 +17,8 @@ export interface Islem extends Silinebilir {
   odemeYontemi: OdemeyYontemi;
   /** Atomik iş olayı bağlantısı — aynı islemId tüm ilgili kayıtları birleştirir */
   islemId?: string;
+  /** Dahili transfer mi? (Acil Fon vb.) — Kar-Zarar'da gelir/gider sayılmaz. */
+  transferMi?: boolean;
 }
 
 export const GELIR_KATEGORILERI = [

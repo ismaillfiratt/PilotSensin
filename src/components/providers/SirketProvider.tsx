@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSirket } from "@/store/sirket";
-import { MODULLER } from "@/lib/permissions";
+import { MODULLER, type ModulKey } from "@/lib/permissions";
 
 const ONBOARDING_YOK = [
   "/onboarding", "/davet", "/giris", "/kayit",
@@ -45,16 +45,16 @@ export default function SirketProvider() {
 
       // Dashboard'a erişim yoksa → ilk izinli modüle git
       if (pathname === "/dashboard" && !permissions.modules["dashboard"]) {
-        const ilkModul = MODULLER.find((m) => permissions.modules[m.key]);
+        const ilkModul = MODULLER.find((m) => permissions.modules[m.key as ModulKey]);
         router.replace(ilkModul ? `/${ilkModul.key}` : "/bildirimler");
         return;
       }
 
       // Diğer kısıtlı rotalar
       const kısıtlı = SADECE_PILOT.some((r) => pathname.startsWith(r));
-      const izinli  = permissions.modules[modul as keyof typeof permissions.modules];
+      const izinli  = permissions.modules[modul as ModulKey];
       if (kısıtlı || izinli === false) {
-        const ilkModul = MODULLER.find((m) => permissions.modules[m.key]);
+        const ilkModul = MODULLER.find((m) => permissions.modules[m.key as ModulKey]);
         router.replace(ilkModul ? `/${ilkModul.key}` : "/bildirimler");
       }
     }

@@ -44,7 +44,7 @@ export default function NakitAkisiOzet() {
               onClick={() => setPeriyot(p)}
               className="px-3 py-1 transition-colors"
               style={{
-                background: periyot === p ? "var(--forest)" : "transparent",
+                background: periyot === p ? "var(--accent)" : "transparent",
                 color:      periyot === p ? "#fff" : "var(--text-secondary)",
               }}
             >
@@ -81,7 +81,7 @@ export default function NakitAkisiOzet() {
                   boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
                 }}
               />
-              <Bar dataKey="gelir" name="Gelir" fill="var(--leaf)" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="gelir" name="Gelir" fill="var(--accent)" radius={[3, 3, 0, 0]} />
               <Bar dataKey="gider" name="Gider" fill="#C97676"     radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>

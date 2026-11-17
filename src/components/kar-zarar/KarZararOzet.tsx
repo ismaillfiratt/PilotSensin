@@ -51,9 +51,9 @@ export default function KarZararOzet() {
       value: formatTL(brutKarKurus),
       alt:   `Brüt marj %${brutMarj.toFixed(1)}`,
       icon:  DollarSign,
-      color: brutMarj >= 25 ? "#22c55e" : brutMarj >= 15 ? "var(--leaf)" : "#ef4444",
-      bg:    brutMarj >= 25 ? "rgba(34,197,94,0.1)" : brutMarj >= 15 ? "var(--mint)" : "rgba(239,68,68,0.1)",
-      border:brutMarj >= 25 ? "rgba(34,197,94,0.2)" : brutMarj >= 15 ? "var(--forest-100, #D9F2E4)" : "rgba(239,68,68,0.2)",
+      color: brutMarj >= 25 ? "#22c55e" : brutMarj >= 15 ? "#F59E0B" : "#ef4444",
+      bg:    brutMarj >= 25 ? "rgba(34,197,94,0.1)"  : brutMarj >= 15 ? "rgba(245,158,11,0.1)"  : "rgba(239,68,68,0.1)",
+      border:brutMarj >= 25 ? "rgba(34,197,94,0.2)"  : brutMarj >= 15 ? "rgba(245,158,11,0.2)"  : "rgba(239,68,68,0.2)",
     },
     {
       label: "Net Kâr",
@@ -61,8 +61,8 @@ export default function KarZararOzet() {
       alt:   `Net marj %${netMarj.toFixed(1)} · Op.Gider ${formatTL(toplamOpGider)}`,
       icon:  Percent,
       color: netKar >= 0 ? "#22c55e" : "#ef4444",
-      bg:    netKar >= 0 ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
-      border:netKar >= 0 ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)",
+      bg:    netKar >= 0 ? "rgba(34,197,94,0.1)"  : "rgba(239,68,68,0.1)",
+      border:netKar >= 0 ? "rgba(34,197,94,0.2)"  : "rgba(239,68,68,0.2)",
     },
   ];
 

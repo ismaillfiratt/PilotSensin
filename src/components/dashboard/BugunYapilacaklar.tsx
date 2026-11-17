@@ -102,8 +102,8 @@ export default function BugunYapilacaklar() {
     <div className="card p-4 md:p-5 flex flex-col h-full">
       <div className="flex items-center gap-2 mb-3 md:mb-4">
         <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-          style={{ background: "var(--mint)" }}>
-          <Zap className="w-4 h-4" style={{ color: "var(--forest)" }} />
+          style={{ background: "rgba(250,250,250,0.06)" }}>
+          <Zap className="w-4 h-4" style={{ color: "var(--text-primary)" }} />
         </div>
         <h2 className="text-xs md:text-sm font-semibold text-gray-700">Bugün Ne Yapmalısın?</h2>
       </div>
@@ -113,7 +113,7 @@ export default function BugunYapilacaklar() {
           {gorevListesi.length === 0 ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="flex flex-col items-center justify-center py-6 gap-2">
-              <CheckCircle2 className="w-8 h-8 md:w-10 md:h-10 text-emerald-400" />
+              <CheckCircle2 className="w-8 h-8 md:w-10 md:h-10 text-gray-300" />
               <p className="text-sm text-gray-700 font-medium">Her şey yolunda!</p>
               <p className="text-xs text-gray-400 text-center">Bugün için bekleyen önemli bir görev yok.</p>
             </motion.div>
@@ -139,7 +139,7 @@ export default function BugunYapilacaklar() {
               {kalan > 0 && (
                 <div className="md:hidden">
                   <Link href="/gorevler" className="block text-center text-xs py-2 font-medium"
-                    style={{ color: "var(--leaf)" }}>
+                    style={{ color: "var(--text-secondary)" }}>
                     +{kalan} daha →
                   </Link>
                 </div>

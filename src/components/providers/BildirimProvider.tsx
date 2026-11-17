@@ -13,7 +13,10 @@ import { useIsletmeGiderleri } from "@/store/isletmeGiderleri";
 import {
   stokTetikle, nakitTetikle, sopTetikle, gorevTetikle,
   gunlukOzetTetikle, staleIdler, nakitRiskTetikle, karZararTetikle,
+  urunMarjTetikle,
 } from "@/lib/bildirim-engine";
+import { useUrunMarjAnalizi } from "@/store/urunMarjAnalizi";
+import { tumUrunMarjlari } from "@/lib/selectors/urun-marj";
 import {
   kasaBakiyesi, gunlukOrtalamaGider, runway,
   projeksiyon30Gun, kritikGunVarMi, ilkKritikGun,
@@ -33,6 +36,7 @@ export default function BildirimProvider() {
   const { kalemler: nakitKalemler, tekrarlayanlar } = useNakitAkis();
   const { kayitlar: satisKayitlari }            = useSatislar();
   const { giderler }                            = useIsletmeGiderleri();
+  const { kayitlar: marjKayitlari }             = useUrunMarjAnalizi();
 
   const kontrol = useRef<() => void>(() => {});
 
@@ -57,6 +61,7 @@ export default function BildirimProvider() {
       ...(pilot || m?.["gorevler"]    ? gorevTetikle(gorevler, bildirimler)                                     : []),
       ...(pilot || m?.["kar-zarar"]   ? karZararTetikle(satisKayitlari, giderler, bildirimler)                  : []),
       ...(pilot                       ? gunlukOzetTetikle(gorevler, islemler, bildirimler)                      : []),
+      ...(pilot || m?.["stok"]        ? urunMarjTetikle(tumUrunMarjlari(urunler.filter((u) => !u.silindi), marjKayitlari), bildirimler) : []),
     ];
     yeniler.forEach((b) => ekle(b));
 

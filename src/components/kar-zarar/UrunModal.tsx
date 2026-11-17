@@ -42,7 +42,7 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
   const birimMaliyetKurus = Number(form.birimMaliyetKurus) || 0;
   const birimKarKurus = satisFiyati - birimMaliyetKurus;
   const marj = satisFiyati > 0 ? (birimKarKurus / satisFiyati) * 100 : 0;
-  const marjRenk = marj >= 30 ? "#22c55e" : marj >= 15 ? "var(--leaf)" : "#ef4444";
+  const marjRenk = marj >= 30 ? "#22c55e" : marj >= 15 ? "#F59E0B" : "#ef4444";
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -94,21 +94,21 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
             <div>
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Ürün / Hizmet Adı *</label>
               <input required value={form.ad} onChange={(e) => set("ad", e.target.value)} placeholder="örn. Süt 1L"
-                className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-base" />
+                className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--border-medium)] transition-colors text-base" />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-gray-400 font-medium block mb-1.5">Kategori</label>
                 <select value={form.kategori} onChange={(e) => set("kategori", e.target.value)}
-                  className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-[var(--leaf)] transition-colors text-base">
+                  className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-[var(--border-medium)] transition-colors text-base">
                   {KATEGORILER.map((k) => <option key={k} value={k} className="bg-white">{k}</option>)}
                 </select>
               </div>
               <div>
                 <label className="text-xs text-gray-400 font-medium block mb-1.5">Birim</label>
                 <select value={form.birim} onChange={(e) => set("birim", e.target.value)}
-                  className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-[var(--leaf)] transition-colors text-base">
+                  className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-[var(--border-medium)] transition-colors text-base">
                   {BIRIMLER.map((b) => <option key={b} value={b} className="bg-white">{b}</option>)}
                 </select>
               </div>
@@ -122,14 +122,14 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
                   <input type="text" inputMode="decimal" required value={form.satisFiyati}
                     onChange={(e) => { const v = e.target.value; if (/^[0-9]*[.,]?[0-9]*$/.test(v)) set("satisFiyati", v); }}
                     placeholder="0,00"
-                    className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-base font-bold" />
+                    className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--border-medium)] transition-colors text-base font-bold" />
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Birim Maliyet (₺) *</label>
                   <input type="text" inputMode="decimal" required value={form.birimMaliyetKurus}
                     onChange={(e) => { const v = e.target.value; if (/^[0-9]*[.,]?[0-9]*$/.test(v)) set("birimMaliyetKurus", v); }}
                     placeholder="0,00"
-                    className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-base font-bold" />
+                    className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--border-medium)] transition-colors text-base font-bold" />
                 </div>
               </div>
               {satisFiyati > 0 && birimMaliyetKurus > 0 && (
@@ -145,7 +145,7 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Aylık Satış Adedi *</label>
               <input type="number" min="0" required value={form.aylikSatis}
                 onChange={(e) => set("aylikSatis", e.target.value)} placeholder="0"
-                className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-base" />
+                className="w-full px-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--border-medium)] transition-colors text-base" />
             </div>
           </div>
 
@@ -158,7 +158,7 @@ export default function UrunModal({ open, onClose, urun, onKaydet }: Props) {
                 İptal
               </button>
               <button type="submit"
-                className="flex-1 min-h-12 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors">
+                className="flex-1 min-h-12 rounded-xl bg-[var(--accent)] text-[#0a0a0a] text-sm font-bold hover:opacity-90 transition-colors">
                 {duzenlemeModu ? "Kaydet" : "Ekle"}
               </button>
             </div>

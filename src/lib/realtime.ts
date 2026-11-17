@@ -17,7 +17,8 @@ export type SyncEvent =
   | { tip: "acil-fon";          veri: unknown }
   | { tip: "isletme-giderleri"; veri: unknown }
   | { tip: "satislar";          veri: unknown }
-  | { tip: "kdv-havuzu";        veri: unknown };
+  | { tip: "kdv-havuzu";        veri: unknown }
+  | { tip: "borclar";           veri: unknown };
 
 export function yayin(event: SyncEvent) {
   if (!_channel) return;

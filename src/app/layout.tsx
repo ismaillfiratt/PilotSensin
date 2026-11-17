@@ -1,11 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono } from "next/font/google";
-import TemaProvider from "@/components/providers/TemaProvider";
+import Script        from "next/script";
+import TemaProvider       from "@/components/providers/TemaProvider";
+import UyariMotorProvider  from "@/components/providers/UyariMotorProvider";
+import OtoKontrolProvider  from "@/components/providers/OtoKontrolProvider";
 import ToastContainer from "@/components/ui/ToastContainer";
-import SwProvider from "@/components/providers/SwProvider";
-import OnayDialog from "@/components/onay/OnayDialog";
+import SwProvider    from "@/components/providers/SwProvider";
+import OnayDialog    from "@/components/onay/OnayDialog";
 import GeriAlSnackbar from "@/components/snackbar/GeriAlSnackbar";
-import CerezBanner from "@/components/cerez/CerezBanner";
+import CerezBanner   from "@/components/cerez/CerezBanner";
 import "./globals.css";
 
 const jetbrains = JetBrains_Mono({
@@ -36,13 +39,16 @@ export const viewport: Viewport = {
   themeColor: "#0F3D2E",
 };
 
+// FOUC önleme: localStorage'dan temayı okuyup <html data-theme="..."> set eder
+const FOUC_SCRIPT = `(function(){try{document.documentElement.setAttribute('data-theme','light');}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className={`${jetbrains.variable} h-full antialiased`}>
+    <html lang="tr" suppressHydrationWarning className={`${jetbrains.variable} h-full antialiased`}>
       <head>
         <link rel="preconnect" href="https://api.fontshare.com" />
         <link
@@ -51,7 +57,19 @@ export default function RootLayout({
         />
       </head>
       <body className="h-full">
-        <TemaProvider>{children}</TemaProvider>
+        {/* FOUC önleme — React 19 uyumlu, beforeInteractive */}
+        <Script
+          id="tema-fouc"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: FOUC_SCRIPT }}
+        />
+        <TemaProvider>
+          <OtoKontrolProvider>
+            <UyariMotorProvider>
+              {children}
+            </UyariMotorProvider>
+          </OtoKontrolProvider>
+        </TemaProvider>
         <ToastContainer />
         <OnayDialog />
         <GeriAlSnackbar />

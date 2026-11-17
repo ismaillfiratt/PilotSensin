@@ -1,6 +1,23 @@
-export const MODULLER = [
+export interface AltSekme {
+  key:   string;
+  label: string;
+  href:  string;
+}
+
+export interface Modul {
+  key:         string;
+  label:       string;
+  altSekmeler?: readonly AltSekme[];
+}
+
+export const MODULLER: readonly Modul[] = [
   { key: "dashboard",   label: "Dashboard"        },
-  { key: "nakit-akisi", label: "Nakit Akışı"      },
+  {
+    key: "nakit-akisi", label: "Nakit Akışı",
+    altSekmeler: [
+      { key: "borclar", label: "Borçlar", href: "/nakit-akisi/borclar" },
+    ],
+  },
   { key: "kar-zarar",   label: "Kar-Zarar"        },
   { key: "stok",        label: "Stok Yönetimi"    },
   { key: "gorevler",    label: "Görevler"         },
@@ -9,7 +26,15 @@ export const MODULLER = [
   { key: "ekip",        label: "Ekip Yönetimi"    },
 ] as const;
 
-export type ModulKey = typeof MODULLER[number]["key"];
+export type ModulKey =
+  | "dashboard"
+  | "nakit-akisi"
+  | "kar-zarar"
+  | "stok"
+  | "gorevler"
+  | "prosedurler"
+  | "acil-fon"
+  | "ekip";
 
 export interface Permissions {
   modules: Record<ModulKey, boolean>;
@@ -33,13 +58,13 @@ export const PILOT_PERMISSIONS: Permissions = {
 export const COPILOT_PERMISSIONS: Permissions = {
   modules: {
     "dashboard":   true,
-    "nakit-akisi": false,
-    "kar-zarar":   false,
+    "nakit-akisi": true,
+    "kar-zarar":   true,
     "stok":        true,
     "gorevler":    true,
     "prosedurler": true,
-    "acil-fon":    false,
-    "ekip":        false,
+    "acil-fon":    true,
+    "ekip":        true,
   },
   canEdit: true,
 };

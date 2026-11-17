@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Plane, Mail, Lock, User, Building2, Eye, EyeOff, AlertCircle, CheckCircle2, MailCheck, Check } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
+import { SEKTORLER }    from "@/lib/sektorler";
 
 function GoogleIcon() {
   return (
@@ -25,11 +26,6 @@ function getRedirectUrl() {
   return `${base}/auth/callback`;
 }
 
-const SEKTORLER = [
-  "Market / Bakkal", "Kafe / Restoran", "Kuaför / Güzellik",
-  "Butik / Giyim", "Eczane", "Elektronik", "Fırın / Pastane",
-  "Çiçekçi", "Kırtasiye", "Diğer",
-];
 
 const INPUT =
   "w-full min-h-12 px-4 rounded-xl text-sm text-gray-800 bg-white border border-gray-200 " +

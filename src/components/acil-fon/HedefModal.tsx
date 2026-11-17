@@ -65,7 +65,7 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
     <>
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+        className="fixed inset-0 bg-black/40 z-40"
         onClick={onClose}
       />
       <motion.div
@@ -81,7 +81,7 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
         <form onSubmit={handleSubmit}>
           <div className="px-5 pt-4 pb-1 flex items-start justify-between">
             <div>
-              <h2 className="text-base font-bold text-gray-800">{duzenleMi ? "Hedefi Düzenle" : "Yeni Hedef Ekle"}</h2>
+              <h2 className="text-lg font-medium text-gray-800">{duzenleMi ? "Hedefi Düzenle" : "Hedef Ekle"}</h2>
               <p className="text-xs text-gray-400 mt-0.5">Tasarruf hedefini tanımla</p>
             </div>
             <button type="button" onClick={onClose} className="min-w-11 min-h-11 flex items-center justify-center rounded-xl text-gray-400 active:bg-gray-100 transition-colors">
@@ -91,7 +91,7 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
           <div className="px-5 pt-2 pb-3 space-y-4">
             {/* Hedef adı */}
             <div>
-              <label className="text-xs text-gray-400 font-medium block mb-1.5">Hedef Adı *</label>
+              <label className="label-caps block mb-1.5">Hedef Adı *</label>
               <input type="text" required value={ad} onChange={(e) => setAd(e.target.value)}
                 placeholder="örn. Makine Alımı, İşletme Güvenliği"
                 className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
@@ -99,7 +99,7 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
 
             {/* Toplam hedef */}
             <div>
-              <label className="text-xs text-gray-400 font-medium block mb-1.5">Toplam Hedef Tutarı (₺) *</label>
+              <label className="label-caps block mb-1.5">Toplam Hedef Tutarı (₺) *</label>
               <input type="text" inputMode="numeric" required
                 value={toplam.display} onChange={toplam.onChange}
                 placeholder="50.000"
@@ -108,13 +108,13 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
 
             {/* Aylık ödeme */}
             <div>
-              <label className="text-xs text-gray-400 font-medium block mb-1.5">Aylık Ödeme (₺) *</label>
+              <label className="label-caps block mb-1.5">Aylık Ödeme (₺) *</label>
               <input type="text" inputMode="numeric" required
                 value={aylik.display} onChange={aylik.onChange}
                 placeholder="2.000"
                 className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm font-bold" />
               {aylarSayisi > 0 && (
-                <p className="text-xs text-[var(--leaf)] mt-1">
+                <p className="text-[11px] text-gray-400 mt-1">
                   ~{aylarSayisi} ay ({Math.floor(aylarSayisi / 12) > 0 ? `${Math.floor(aylarSayisi / 12)} yıl ` : ""}{aylarSayisi % 12 > 0 ? `${aylarSayisi % 12} ay` : ""})
                 </p>
               )}
@@ -122,7 +122,7 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
 
             {/* Ödeme günü */}
             <div>
-              <label className="text-xs text-gray-400 font-medium block mb-1.5">Her Ayın Kaçında Ödensin? *</label>
+              <label className="label-caps block mb-1.5">Her Ayın Kaçında Ödensin? *</label>
               <div className="flex items-center gap-3">
                 <input type="number" min="1" max="31" required
                   value={odemeGun} onChange={(e) => setOdemeGun(e.target.value)}
@@ -135,7 +135,7 @@ export default function HedefModal({ open, onClose, onKaydet, mevcutHedef }: Pro
 
             {/* Açıklama */}
             <div>
-              <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama / Not</label>
+              <label className="label-caps block mb-1.5">Açıklama / Not</label>
               <input type="text" value={aciklama} onChange={(e) => setAciklama(e.target.value)}
                 placeholder="örn. Depo binası için birikim"
                 className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />

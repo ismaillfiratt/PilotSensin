@@ -144,8 +144,14 @@ export default function SistemBildirimBand() {
   /* ─── Realtime: anlık bildirimler ─── */
   useEffect(() => {
     const supabase = createClient();
+
+    // Önceki mount'tan kalan kanalları temizle (React Strict Mode guard)
+    supabase.getChannels()
+      .filter((ch) => ch.topic.startsWith("realtime:sistem-bildirimler-rt"))
+      .forEach((ch) => supabase.removeChannel(ch));
+
     const kanal = supabase
-      .channel("sistem-bildirimler-rt")
+      .channel(`sistem-bildirimler-rt-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "system_notifications" }, (payload) => {
         const b = payload.new as SistemBildirim;
         const { rol: r, yuklendi: y } = useSirket.getState();
@@ -156,6 +162,7 @@ export default function SistemBildirimBand() {
 
     kanalRef.current = kanal;
     return () => {
+      kanalRef.current = null;
       supabase.removeChannel(kanal);
       timerRef.current.forEach(clearTimeout);
       timerRef.current.clear();

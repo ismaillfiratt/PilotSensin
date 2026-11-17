@@ -1,13 +1,19 @@
 import { Resend } from "resend";
 
-const resend   = new Resend(process.env.RESEND_API_KEY!);
-const FROM     = process.env.RESEND_FROM ?? "PilotSensin Destek <destek@pilotsensin.com>";
-const DESTEK   = process.env.DESTEK_EMAIL ?? "destek@pilotsensin.com";
-const APP_URL  = process.env.NEXT_PUBLIC_APP_URL ?? "https://pilotsensin.com";
+const FROM    = process.env.RESEND_FROM    ?? "PilotSensin Destek <destek@pilotsensin.com>";
+const DESTEK  = process.env.DESTEK_EMAIL   ?? "destek@pilotsensin.com";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://pilotsensin.com";
 
-async function gonder(opts: Parameters<typeof resend.emails.send>[0], deneme = 1): Promise<void> {
+// Lazy init — build sırasında env boş olabilir, runtime'da key zorunlu
+function getResend(): Resend {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) throw new Error("RESEND_API_KEY env değişkeni tanımlı değil");
+  return new Resend(key);
+}
+
+async function gonder(opts: Parameters<Resend["emails"]["send"]>[0], deneme = 1): Promise<void> {
   try {
-    await resend.emails.send(opts);
+    await getResend().emails.send(opts);
   } catch (err) {
     if (deneme < 3) {
       await new Promise(r => setTimeout(r, 1000 * 2 ** deneme));

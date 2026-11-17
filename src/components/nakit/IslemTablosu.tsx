@@ -326,6 +326,14 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
                             style={{ backgroundColor: `${renk}14`, color: renk }}>
                             {islem.kategori}
                           </span>
+                          {islem.transferMi && (
+                            <span className="shrink-0" style={{
+                              fontSize: 10, padding: "2px 6px", borderRadius: 4,
+                              background: "#F1EFE8", color: "#525252",
+                            }}>
+                              Transfer
+                            </span>
+                          )}
                         </div>
                         <div className="flex items-center gap-2 text-[11px] text-gray-500">
                           <span>{tarihEtiket(islem.tarih)}</span>
@@ -342,7 +350,7 @@ export default function IslemTablosu({ otomatikAcilModal }: Props) {
 
                       {/* Tutar */}
                       <div className="text-right shrink-0">
-                        <p className="text-base font-bold tabular-nums" style={{ color: renk }}>
+                        <p className="font-number font-semibold tabular-nums" style={{ color: gelirMi ? "#047857" : "#C97676", fontSize: 14 }}>
                           {gelirMi ? "+" : "−"}{formatTL(islem.tutarKurus)}
                         </p>
                       </div>

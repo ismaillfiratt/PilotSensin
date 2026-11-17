@@ -9,6 +9,7 @@ export { satisYap, satisIade } from "./satis";
 export { alimYap }             from "./alim";
 export { giderEkle }           from "./gider";
 export { stokDuzelt }          from "./duzeltme";
+export { taksitOdemeYap, taksitOdemeGeriAl } from "./taksitOdeme";
 export type {
   SatisGirdi,
   AlimGirdi,
@@ -17,3 +18,4 @@ export type {
   IslemSonuc,
   OdemeYontemi,
 } from "./types";
+export type { TaksitOdemeGirdi } from "./taksitOdeme";

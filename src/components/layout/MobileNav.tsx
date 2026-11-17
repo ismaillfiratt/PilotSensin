@@ -13,6 +13,7 @@ import {
 import { useSirket }      from "@/store/sirket";
 import { useBildirimler } from "@/store/bildirimler";
 import { createClient }   from "@/utils/supabase/client";
+import { storesSifirla }  from "@/lib/auth-temizlik";
 
 interface Sekme {
   key:   string;
@@ -32,7 +33,7 @@ const PILOT_DAHA: SayfaItem[] = [
   { label: "Prosedürler",        href: "/prosedurler",  ikon: ClipboardCheck },
   { label: "Acil Fon",           href: "/acil-fon",     ikon: Shield         },
   { label: "Bildirimler",        href: "/bildirimler",  ikon: Bell           },
-  { label: "İletişim & Destek",  href: "/iletisim",     ikon: MessageCircle  },
+  { label: "İletişim & Destek",  href: "/ayarlar?tab=iletisim",     ikon: MessageCircle  },
   { label: "Yasal Bilgiler",     href: "/politikalar",  ikon: Scale          },
   { label: "Profil",             href: "/profil",       ikon: User           },
   { label: "Ayarlar",            href: "/ayarlar",      ikon: Settings       },
@@ -41,7 +42,7 @@ const PILOT_DAHA: SayfaItem[] = [
 
 const COPILOT_DAHA: SayfaItem[] = [
   { label: "Bildirimler",        href: "/bildirimler",  ikon: Bell           },
-  { label: "İletişim & Destek",  href: "/iletisim",     ikon: MessageCircle  },
+  { label: "İletişim & Destek",  href: "/ayarlar?tab=iletisim",     ikon: MessageCircle  },
   { label: "Yasal Bilgiler",     href: "/politikalar",  ikon: Scale          },
   { label: "Profil",             href: "/profil",       ikon: User           },
   { label: "Ayarlar",            href: "/ayarlar",      ikon: Settings       },
@@ -53,7 +54,7 @@ export default function MobileNav() {
   const [dahaAcik, setDahaAcik] = useState(false);
 
   const { rol }    = useSirket();
-  const okunmamis  = useBildirimler((s) => s.bildirimler.filter((b) => !b.okundu).length);
+  const okunmamis  = useBildirimler((s) => s.bildirimler.filter((b) => !b.okundu && !b.silindi).length);
   const copilot    = rol === "copilot";
 
   const sekmeler: Sekme[] = useMemo(() => [
@@ -83,6 +84,7 @@ export default function MobileNav() {
 
   const handleCikis = async () => {
     setDahaAcik(false);
+    storesSifirla();
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/giris");

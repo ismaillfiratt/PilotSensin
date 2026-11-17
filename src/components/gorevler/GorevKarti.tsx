@@ -51,13 +51,11 @@ export default function GorevKarti({ gorev, index, onDuzenle, onSil, onTasi, isO
   return (
     <motion.div
       ref={!isOverlay ? setNodeRef : undefined}
-      layout={!isOverlay}
-      initial={!isOverlay ? { opacity: 0, y: 12 } : false}
-      animate={!isOverlay ? { opacity: isDragging ? 0 : 1, y: 0 } : undefined}
-      exit={!isOverlay ? { opacity: 0, scale: 0.95 } : undefined}
-      transition={{ duration: 0.22, delay: !isOverlay ? index * 0.04 : 0 }}
+      initial={!isOverlay ? { opacity: 0 } : false}
+      animate={!isOverlay ? { opacity: isDragging ? 0 : 1 } : undefined}
+      transition={{ duration: 0.18 }}
       style={style}
-      className={`card rounded-xl p-4 group hover:border-[var(--forest-200, #B3E8C8)] transition-all ${isOverlay ? "shadow-2xl ring-1 ring-[var(--forest-300, #7DD0A0)]" : ""}`}
+      className={`card rounded-xl p-4 group hover:border-[var(--border-medium)] transition-all ${isOverlay ? "shadow-2xl ring-1 ring-[var(--border-strong)]" : ""}`}
     >
       {/* Başlık satırı */}
       <div className="flex items-start gap-2 mb-2">
@@ -104,17 +102,17 @@ export default function GorevKarti({ gorev, index, onDuzenle, onSil, onTasi, isO
         <div className="flex items-center gap-1.5 pt-2 border-t border-gray-200">
           <button onClick={() => solDurum && onTasi(solDurum)} disabled={!solDurum}
             title={solDurum ? DURUM_CONFIG[solDurum].label : ""}
-            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 disabled:opacity-20 hover:enabled:border-[var(--forest-300, #7DD0A0)] hover:enabled:text-[var(--leaf)] transition-all">
+            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 disabled:opacity-20 hover:enabled:border-[var(--border-medium)] hover:enabled:text-[var(--text-primary)] transition-all">
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
           <button onClick={() => sagDurum && onTasi(sagDurum)} disabled={!sagDurum}
             title={sagDurum ? DURUM_CONFIG[sagDurum].label : ""}
-            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 disabled:opacity-20 hover:enabled:border-[rgba(34,197,94,0.4)] hover:enabled:text-[#22c55e] transition-all">
+            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 disabled:opacity-20 hover:enabled:border-[var(--border-medium)] hover:enabled:text-[var(--text-primary)] transition-all">
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
           <div className="flex-1" />
           <button onClick={onDuzenle}
-            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-[var(--forest-300, #7DD0A0)] hover:text-[var(--leaf)] transition-all">
+            className="w-9 h-9 md:w-7 md:h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-[var(--border-medium)] hover:text-[var(--text-primary)] transition-all">
             <Pencil className="w-3.5 h-3.5" />
           </button>
           <button onClick={onSil}

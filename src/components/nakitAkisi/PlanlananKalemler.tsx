@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { Trash2, Check, Calendar, RepeatIcon, Zap, X, Receipt, RotateCcw } from "lucide-react";
 import { useNakitAkis } from "@/store/nakitAkis";
-import { useKdvHavuzu, netKdvBakiye } from "@/store/kdvHavuzu";
+import { useKdvHavuzu } from "@/store/kdvHavuzu";
 import { formatTL } from "@/lib/para";
 import PlanlananKalemModal from "@/components/nakit/PlanlananKalemModal";
 
@@ -26,7 +26,8 @@ const TEKRAR_ETIKET: Record<string, string> = {
 
 export default function PlanlananKalemler() {
   const { kalemler, tekrarlayanlar, sil, tamamla, tamamlaGeriAl, tekrarlayanSil, ekle } = useNakitAkis();
-  const { kayitlar: havuzKayitlari } = useKdvHavuzu();
+  const kdvKayitlar = useKdvHavuzu(s => s.kayitlar);
+  const isaretle    = useKdvHavuzu(s => s.isaretle);
 
   const [modalAcik,        setModalAcik]        = useState(false);
   const [gosterTamamlandi, setGosterTamamlandi] = useState(false);
@@ -34,7 +35,19 @@ export default function PlanlananKalemler() {
   const [aralikBas,        setAralikBas]        = useState("");
   const [aralikBit,        setAralikBit]        = useState("");
 
-  const netKdv = useMemo(() => netKdvBakiye(havuzKayitlari), [havuzKayitlari]);
+  // Reaktif: kayitlar değişince yeniden hesaplanır
+  const bekleyenKdvKayitlari = useMemo(
+    () => kdvKayitlar.filter(k => !k.silindi && k.tip === "cikis" && !k.eklendigiKalemId),
+    [kdvKayitlar]
+  );
+  const bekleyenKdv = useMemo(
+    () => bekleyenKdvKayitlari.reduce((t, k) => t + k.toplamKdvKurus, 0),
+    [bekleyenKdvKayitlari]
+  );
+  const herseyCikisKaydedildi = useMemo(
+    () => kdvKayitlar.some((k) => k.tip === "cikis" && !k.silindi),
+    [kdvKayitlar]
+  );
 
   const aralikAktif = !!(aralikBas || aralikBit);
 
@@ -55,15 +68,33 @@ export default function PlanlananKalemler() {
     [kalemler]
   );
 
-  const kdvOtomatikEkle = () => {
-    if (netKdv <= 0) return;
-    const simdi     = new Date();
-    const ayBasi    = new Date(simdi.getFullYear(), simdi.getMonth(), 28);
-    const vadeTarihi = ayBasi < simdi
-      ? new Date(simdi.getFullYear(), simdi.getMonth() + 1, 28).toISOString().split("T")[0]
-      : ayBasi.toISOString().split("T")[0];
+  const kdvOtomatikEkle = async () => {
+    if (bekleyenKdv <= 0 || bekleyenKdvKayitlari.length === 0) return;
 
-    ekle({ tip: "gider", kategori: "Vergi & SGK", tutarKurus: netKdv, vadeTarihi, tamamlandi: false, aciklama: `Net KDV Borcu — ${new Date(vadeTarihi).toLocaleDateString("tr-TR")}`, kaynak: "kdv_otomatik" });
+    const simdi      = new Date();
+    const hedef28    = new Date(simdi.getFullYear(), simdi.getMonth(), 28);
+    const vadeTarihi = hedef28 <= simdi
+      ? new Date(simdi.getFullYear(), simdi.getMonth() + 1, 28).toISOString().split("T")[0]
+      : hedef28.toISOString().split("T")[0];
+
+    const kalemId     = crypto.randomUUID();
+    const bekleyenIds = bekleyenKdvKayitlari.map((k) => k.id);
+
+    try {
+      await ekle({
+        id:          kalemId,
+        tip:         "gider",
+        kategori:    "Vergi & SGK",
+        tutarKurus:  bekleyenKdv,
+        vadeTarihi,
+        tamamlandi:  false,
+        aciklama:    `KDV ödemesi (${bekleyenKdvKayitlari.length} satış) — ${new Date(vadeTarihi).toLocaleDateString("tr-TR")}`,
+        kaynak:      "kdv_otomatik",
+      });
+      await isaretle(bekleyenIds, kalemId);
+    } catch (e) {
+      console.error("KDV otomasyon hatası:", e);
+    }
   };
 
   return (
@@ -159,14 +190,16 @@ export default function PlanlananKalemler() {
       )}
 
       {/* KDV Otomasyonu */}
-      {netKdv > 0 && (
+      {bekleyenKdv > 0 ? (
         <div className="p-4 rounded-xl border border-black/8 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Receipt className="w-4 h-4 shrink-0" style={{ color: "var(--leaf)" }} />
             <div>
-              <p className="text-sm font-medium">KDV borcu otomasyonu</p>
+              <p className="text-sm font-medium">KDV otomasyonu</p>
               <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
-                Net KDV: <span className="font-number font-medium">{formatTL(netKdv)}</span>
+                <span className="font-number font-medium text-[#0F172A]">{formatTL(bekleyenKdv)}</span>
+                {" bekliyor · "}
+                {bekleyenKdvKayitlari.length} satış
               </p>
             </div>
           </div>
@@ -176,7 +209,14 @@ export default function PlanlananKalemler() {
             <Zap className="w-3 h-3" />Ayın 28'ine Ekle
           </button>
         </div>
-      )}
+      ) : bekleyenKdvKayitlari.length === 0 && herseyCikisKaydedildi ? (
+        <div className="p-3.5 rounded-xl border border-black/8 flex items-center gap-2.5">
+          <Receipt className="w-4 h-4 shrink-0 text-emerald-500" />
+          <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
+            Tüm KDV kayıtları zaten planlandı
+          </p>
+        </div>
+      ) : null}
 
       {/* Tekrarlayan kalemler */}
       {tekrarlayanlar.length > 0 && (

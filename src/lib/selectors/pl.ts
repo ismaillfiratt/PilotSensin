@@ -18,17 +18,24 @@ export interface PLSatiri {
 }
 
 export interface PLSonucu {
-  ciroKurus:          Kurus;
-  smmKurus:           Kurus;
-  brutKarKurus:       Kurus;
-  brutMarj:      number;
-  toplamGiderKurus:   Kurus;
-  netKarKurus:        Kurus;
-  netMarj:       number;
-  basaBazCiroKurus:   Kurus;
-  satirlar:      PLSatiri[];
-  donemBaslangic: string;
-  donemBitis:    string;
+  ciroKurus:               Kurus;
+  /** Total direct costs — uses marj snapshot when available */
+  directMaliyetKurus:      Kurus;
+  /** Alias kept for backward compat */
+  smmKurus:                Kurus;
+  brutKarKurus:            Kurus;
+  brutMarj:                number;
+  toplamGiderKurus:        Kurus;
+  netKarKurus:             Kurus;
+  netMarj:                 number;
+  basaBazCiroKurus:        Kurus;
+  // KDV pozisyonu
+  toplamSatisKdvKurus:     Kurus;
+  toplamIndirilebilirKdvKurus: Kurus;
+  netKdvBorcKurus:         Kurus;
+  satirlar:                PLSatiri[];
+  donemBaslangic:          string;
+  donemBitis:              string;
 }
 
 /**
@@ -60,14 +67,28 @@ export function plTablosu(
     return t >= basTs && t <= bitTs;
   });
 
-  const ciroKurus        = donemKayitlar.reduce((t, k) => t + k.toplamCiroKurus, 0);
-  const smmKurus         = donemKayitlar.reduce((t, k) => t + k.birimAlisFiyatiKurus * k.adet, 0);
-  const brutKarKurus     = (ciroKurus - smmKurus);
+  const ciroKurus = donemKayitlar.reduce((t, k) => t + k.toplamCiroKurus, 0);
+
+  // Direct maliyet: snapshot varsa kullan (kargo, komisyon vb. dahil), yoksa sadece alış maliyeti
+  const directMaliyetKurus = donemKayitlar.reduce((t, k) => {
+    if (k.toplamDirectMaliyetKurus != null) return t + k.toplamDirectMaliyetKurus;
+    return t + k.birimAlisFiyatiKurus * k.adet;
+  }, 0);
+
+  // KDV pozisyonu
+  const toplamSatisKdvKurus = donemKayitlar.reduce((t, k) => t + (k.kdvTutariKurus ?? 0), 0);
+  const toplamIndirilebilirKdvKurus = donemKayitlar.reduce((t, k) => {
+    if (k.directMaliyetKdvKurus != null) return t + k.directMaliyetKdvKurus * k.adet;
+    return t;
+  }, 0);
+  const netKdvBorcKurus = Math.max(0, toplamSatisKdvKurus - toplamIndirilebilirKdvKurus);
+
+  const brutKarKurus     = ciroKurus - directMaliyetKurus;
   const brutMarj         = ciroKurus > 0 ? brutKarKurus / ciroKurus : 0;
   const toplamGiderKurus = giderler.reduce((t, g) => t + g.tutarKurus, 0);
-  const netKarKurus      = (brutKarKurus - toplamGiderKurus);
+  const netKarKurus      = brutKarKurus - toplamGiderKurus;
   const netMarj          = ciroKurus > 0 ? netKarKurus / ciroKurus : 0;
-  const basaBazCiroKurus = (brutMarj > 0 ? toplamGiderKurus / brutMarj : 0);
+  const basaBazCiroKurus = brutMarj > 0 ? toplamGiderKurus / brutMarj : 0;
 
   const oran = (t: number) => (ciroKurus > 0 ? t / ciroKurus : 0);
 
@@ -76,8 +97,8 @@ export function plTablosu(
     { etiket: "Satış Hasılatı", tutarKurus: ciroKurus, oran: 1, vurgu: "pozitif" },
     { etiket: "─", tutarKurus: 0, ayrac: true },
 
-    // ── SMM ──────────────────────────────────────────────────────────────
-    { etiket: "Satılan Mal Maliyeti (SMM)", tutarKurus: (-smmKurus), oran: oran(smmKurus), altSatir: true, vurgu: "negatif" },
+    // ── Direct Maliyetler ─────────────────────────────────────────────────
+    { etiket: "Direct Maliyetler", tutarKurus: (-directMaliyetKurus), oran: oran(directMaliyetKurus), altSatir: true, vurgu: "negatif" },
     { etiket: "─", tutarKurus: 0, ayrac: true },
 
     // ── Brüt Kâr ─────────────────────────────────────────────────────────
@@ -116,13 +137,17 @@ export function plTablosu(
 
   return {
     ciroKurus,
-    smmKurus,
+    directMaliyetKurus,
+    smmKurus: directMaliyetKurus,   // backward compat alias
     brutKarKurus,
     brutMarj,
     toplamGiderKurus,
     netKarKurus,
     netMarj,
     basaBazCiroKurus,
+    toplamSatisKdvKurus,
+    toplamIndirilebilirKdvKurus,
+    netKdvBorcKurus,
     satirlar,
     donemBaslangic: new Date(basTs).toISOString().split("T")[0],
     donemBitis:     new Date(bitTs).toISOString().split("T")[0],

@@ -20,9 +20,9 @@ import {
 } from "@/lib/pilot-score";
 
 function skorRengiClass(s: number) {
-  if (s >= 80) return { text: "text-emerald-600", bg: "bg-emerald-50" };
-  if (s >= 60) return { text: "text-amber-500",   bg: "bg-amber-50"   };
-  return          { text: "text-red-500",          bg: "bg-red-50"     };
+  if (s >= 80) return { text: "text-gray-400",  bg: "bg-gray-100" };
+  if (s >= 60) return { text: "text-amber-500", bg: "bg-amber-50" };
+  return          { text: "text-red-500",        bg: "bg-red-50"   };
 }
 
 export default function ModuleHizliErisim() {
@@ -68,8 +68,8 @@ export default function ModuleHizliErisim() {
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-                  style={{ background: "rgba(15,61,46,0.08)" }}>
-                  <Icon className="w-4 h-4" style={{ color: "var(--forest)" }} />
+                  style={{ background: "rgba(250,250,250,0.06)" }}>
+                  <Icon className="w-4 h-4" style={{ color: "var(--text-primary)" }} />
                 </div>
                 <span className={cn("font-number text-[11px] font-semibold px-2 py-0.5 rounded-full", text, bg)}>
                   %{m.skor}

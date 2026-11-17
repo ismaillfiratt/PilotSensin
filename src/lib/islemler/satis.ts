@@ -17,6 +17,8 @@ import { useStok }             from "@/store/stok";
 import { useNakit }            from "@/store/nakit";
 import { useSatislar }         from "@/store/satislar";
 import { useKdvHavuzu }        from "@/store/kdvHavuzu";
+import { useUrunMarjAnalizi }  from "@/store/urunMarjAnalizi";
+import { urunBrutKarHesapla }  from "@/lib/selectors/urun-marj";
 import { useBildirimler }      from "@/store/bildirimler";
 import { useSirket }           from "@/store/sirket";
 import { useBildirimAyarlari } from "@/store/bildirimAyarlari";
@@ -70,7 +72,11 @@ export async function satisYap(girdi: SatisGirdi): Promise<IslemSonuc> {
 
   // Hesaplanan değerler — tümü kuruş tamsayı
   const toplamCiroKurus = Math.round(girdi.birimSatisFiyatiKurus * girdi.adet);
-  const kdvTutariKurus  = Math.round(toplamCiroKurus * girdi.kdvOrani);
+  // KDV oranı: stok'ta tanımlıysa oradan al, yoksa girdi'den
+  const efektifKdvOrani = urun?.satisKdvOrani != null
+    ? urun.satisKdvOrani / 100
+    : girdi.kdvOrani;
+  const kdvTutariKurus  = Math.round(toplamCiroKurus * efektifKdvOrani);
   const kasaGirisKurus  = toplamCiroKurus + kdvTutariKurus;
   const birimKarKurus   = girdi.birimSatisFiyatiKurus - birimMaliyetKurus;
   const brutKarKurus    = Math.round(birimKarKurus * girdi.adet);
@@ -95,7 +101,31 @@ export async function satisYap(girdi: SatisGirdi): Promise<IslemSonuc> {
       });
     }
 
-    // ── 3. Satış kaydı oluştur ─────────────────────────────────────────
+    // ── 3. Satış kaydı oluştur (marj snapshot dahil) ──────────────────
+    // Marj analizi snapshot — anında dondurulur, sonradan değişmez
+    let marjSnapshot: {
+      toplamDirectMaliyetKurus?: number;
+      birimBrutKarKurus?:        number;
+      birimBrutMarjYuzde?:       number;
+      directMaliyetNetKurus?:    number;
+      directMaliyetKdvKurus?:    number;
+      marjSnapshotTarihi?:       string;
+    } = {};
+    if (urun) {
+      const marjKayit = useUrunMarjAnalizi.getState().kayitlar.find((k) => k.urunId === urun.id);
+      if (marjKayit) {
+        const hesap = urunBrutKarHesapla(urun, marjKayit);
+        marjSnapshot = {
+          toplamDirectMaliyetKurus: Math.round(hesap.toplamDirectNet * girdi.adet * 100),
+          birimBrutKarKurus:        Math.round(hesap.birimBrutKar * 100),
+          birimBrutMarjYuzde:       hesap.birimBrutMarj,
+          directMaliyetNetKurus:    Math.round(hesap.toplamDirectNet * 100),
+          directMaliyetKdvKurus:    Math.round(hesap.toplamIndirilebilirKdv * 100),
+          marjSnapshotTarihi:       new Date().toISOString(),
+        };
+      }
+    }
+
     await useSatislar.getState().ekle({
       urunId:           girdi.urunId,
       urunAd,
@@ -107,11 +137,12 @@ export async function satisYap(girdi: SatisGirdi): Promise<IslemSonuc> {
       birimKarKurus,
       toplamCiroKurus,
       brutKarKurus,
-      kdvOrani:         girdi.kdvOrani,
+      kdvOrani:         efektifKdvOrani,
       kdvTutariKurus,
       kasaGirisKurus,
       tip:              urun ? "urun" : "hizmet",
       islemId,
+      ...marjSnapshot,
     });
 
     // ── 4. Nakit gelir kaydı (vadeli değilse) ─────────────────────────
@@ -128,14 +159,14 @@ export async function satisYap(girdi: SatisGirdi): Promise<IslemSonuc> {
     }
 
     // ── 5. Hesaplanan KDV kaydı ────────────────────────────────────────
-    if (girdi.kdvOrani > 0) {
+    if (efektifKdvOrani > 0) {
       useKdvHavuzu.getState().ekle({
         hareketId: islemId,
         urunId:    girdi.urunId ?? "hizmet",
         urunAd,
-        tip:       "cikis",          // hesaplanan KDV
+        tip:       "cikis",
         adet:      girdi.adet,
-        birimKdvKurus:  Math.round(girdi.birimSatisFiyatiKurus * girdi.kdvOrani),
+        birimKdvKurus:  Math.round(girdi.birimSatisFiyatiKurus * efektifKdvOrani),
         toplamKdvKurus: kdvTutariKurus,
         tarih,
         islemId,

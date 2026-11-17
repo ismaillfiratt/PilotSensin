@@ -9,6 +9,7 @@ import {
 import { yayin } from "@/lib/realtime";
 import { userStoreDB } from "@/lib/db";
 import { getKullaniciId } from "@/lib/auth";
+import { aktiviteKaydet } from "@/lib/aktiviteLog";
 
 export interface OzelSablonMaddesi extends ChecklistSablon {
   id: string;
@@ -46,6 +47,9 @@ interface ProsedurStore {
   ozelSopSablonMaddeleri:     OzelSopSablonMaddesi[];
   ozelSopGrupAdlari:          Record<string, string>;
   ozelSopSablonGruplari:      OzelGrubu[];
+  // Gizlenen grup id'leri (varsayılan gruplar için)
+  gizliSopGrupIdleri:         string[];
+  gizliChecklistGrupIdleri:   string[];
 
   // SOP CRUD
   prosedurEkle:     (p: Omit<Prosedur, "id" | "sonGuncelleme">) => void;
@@ -87,6 +91,10 @@ interface ProsedurStore {
   sopGrupAdGuncelle:     (grupId: string, yeniAd: string) => void;
   ozelSopGrupEkle:       (g: Omit<OzelGrubu, "id">) => void;
   ozelSopGrupSil:        (id: string) => void;
+  sopGrupGizle:          (id: string) => void;
+  sopGrupGoster:         (id: string) => void;
+  checklistGrupGizle:    (id: string) => void;
+  checklistGrupGoster:   (id: string) => void;
 
   syncFromRemote: (data: { prosedurler: Prosedur[]; checklist: ChecklistItem[] }) => void;
 }
@@ -115,6 +123,8 @@ export const useProsedurler = create<ProsedurStore>()(
       ozelSopSablonMaddeleri:     [],
       ozelSopGrupAdlari:          {},
       ozelSopSablonGruplari:      [],
+      gizliSopGrupIdleri:         [],
+      gizliChecklistGrupIdleri:   [],
 
       prosedurEkle: async (p) => {
         const yeni = { ...p, id: uid(), sonGuncelleme: new Date().toISOString() };
@@ -122,20 +132,25 @@ export const useProsedurler = create<ProsedurStore>()(
         yayinla(get);
         const kulId = await getKullaniciId();
         if (kulId) await userStoreDB.kaydet(kulId, "prosedurler", get().prosedurler);
+        void aktiviteKaydet({ modul: "prosedur", eylem: "ekle", ozet: `"${p.baslik}" SOP eklendi`, meta: { prosedurId: yeni.id, kategori: p.kategori } });
       },
       prosedurGuncelle: async (id, p) => {
+        const onceki = get().prosedurler.find(x => x.id === id);
         set(s => ({ prosedurler: s.prosedurler.map(x => x.id === id ? { ...x, ...p, sonGuncelleme: new Date().toISOString() } : x) }));
         yayinla(get);
         const kulId = await getKullaniciId();
         if (kulId) await userStoreDB.kaydet(kulId, "prosedurler", get().prosedurler);
+        void aktiviteKaydet({ modul: "prosedur", eylem: "guncelle", ozet: `"${onceki?.baslik ?? id}" SOP güncellendi`, meta: { prosedurId: id } });
       },
       prosedurSil: async (id) => {
+        const prosedur = get().prosedurler.find(x => x.id === id);
         const { softDeletePatch } = await import("@/lib/softDelete");
         const patch = await softDeletePatch();
         set(s => ({ prosedurler: s.prosedurler.map(x => x.id === id ? { ...x, ...patch } : x) }));
         yayinla(get);
         const kulId = await getKullaniciId();
         if (kulId) await userStoreDB.kaydet(kulId, "prosedurler", get().prosedurler);
+        void aktiviteKaydet({ modul: "prosedur", eylem: "sil", ozet: `"${prosedur?.baslik ?? id}" SOP silindi`, meta: { prosedurId: id } });
       },
       prosedurGeriAl: async (id) => {
         const { softDeleteTemizle } = await import("@/lib/softDelete");
@@ -158,8 +173,11 @@ export const useProsedurler = create<ProsedurStore>()(
         yayinla(get);
         const kulId = await getKullaniciId();
         if (kulId) await userStoreDB.kaydet(kulId, "checklist_items", get().checklist);
+        void aktiviteKaydet({ modul: "prosedur", eylem: "checklist-ekle", ozet: `"${item.baslik}" kontrol maddesi eklendi`, meta: { itemId: yeni.id } });
       },
       checklistToggle: async (id) => {
+        const item = get().checklist.find(x => x.id === id);
+        const tamamlanacak = item ? isDue(item) : false;
         set(s => ({
           checklist: s.checklist.map(x => {
             if (x.id !== id) return x;
@@ -177,6 +195,7 @@ export const useProsedurler = create<ProsedurStore>()(
         yayinla(get);
         const kulId = await getKullaniciId();
         if (kulId) await userStoreDB.kaydet(kulId, "checklist_items", get().checklist);
+        if (item) void aktiviteKaydet({ modul: "prosedur", eylem: tamamlanacak ? "checklist-tamamla" : "checklist-geri-al", ozet: `"${item.baslik}" kontrol maddesi ${tamamlanacak ? "tamamlandı" : "geri alındı"}`, meta: { itemId: id } });
       },
       checklistSifirla: async (sikligi) => {
         set(s => ({ checklist: s.checklist.map(x => x.sikligi === sikligi ? { ...x, tamamlandi: false } : x) }));
@@ -185,12 +204,14 @@ export const useProsedurler = create<ProsedurStore>()(
         if (kulId) await userStoreDB.kaydet(kulId, "checklist_items", get().checklist);
       },
       checklistSil: async (id) => {
+        const item = get().checklist.find(x => x.id === id);
         const { softDeletePatch } = await import("@/lib/softDelete");
         const patch = await softDeletePatch();
         set(s => ({ checklist: s.checklist.map(x => x.id === id ? { ...x, ...patch } : x) }));
         yayinla(get);
         const kulId = await getKullaniciId();
         if (kulId) await userStoreDB.kaydet(kulId, "checklist_items", get().checklist);
+        void aktiviteKaydet({ modul: "prosedur", eylem: "checklist-sil", ozet: `"${item?.baslik ?? id}" kontrol maddesi silindi`, meta: { itemId: id } });
       },
       checklistGeriAl: async (id) => {
         const { softDeleteTemizle } = await import("@/lib/softDelete");
@@ -286,6 +307,12 @@ export const useProsedurler = create<ProsedurStore>()(
           ozelSopSablonMaddeleri: s.ozelSopSablonMaddeleri.filter(x => x.grupId !== id),
         }));
       },
+
+      sopGrupGizle:  (id) => set(s => ({ gizliSopGrupIdleri: [...s.gizliSopGrupIdleri.filter(x => x !== id), id] })),
+      sopGrupGoster: (id) => set(s => ({ gizliSopGrupIdleri: s.gizliSopGrupIdleri.filter(x => x !== id) })),
+
+      checklistGrupGizle:  (id) => set(s => ({ gizliChecklistGrupIdleri: [...s.gizliChecklistGrupIdleri.filter(x => x !== id), id] })),
+      checklistGrupGoster: (id) => set(s => ({ gizliChecklistGrupIdleri: s.gizliChecklistGrupIdleri.filter(x => x !== id) })),
 
       syncFromRemote: (data) => set((s) => ({
         ...s,

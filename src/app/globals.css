@@ -7,18 +7,18 @@
   --font-sans: "General Sans", system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-jetbrains), "JetBrains Mono", ui-monospace, monospace;
 
-  /* ── Forest palette ── */
-  --color-forest-950: #071E14;
-  --color-forest-900: #0F3D2E;
-  --color-forest-800: #145233;
-  --color-forest-700: #1A6640;
-  --color-forest-600: #22804E;
-  --color-forest-500: #2D9A5C;
-  --color-forest-400: #4DB87A;
-  --color-forest-300: #7DD0A0;
-  --color-forest-200: #B3E8C8;
-  --color-forest-100: #D9F2E4;
-  --color-forest-50:  #EEF9F3;
+  /* ── Forest palette — nötr griye dönüştürüldü (monochrome) ── */
+  --color-forest-950: #0a0a0a;
+  --color-forest-900: #141414;
+  --color-forest-800: #1c1c1c;
+  --color-forest-700: #262626;
+  --color-forest-600: #3a3a3a;
+  --color-forest-500: #525252;
+  --color-forest-400: #737373;
+  --color-forest-300: #a3a3a3;
+  --color-forest-200: #d4d4d4;
+  --color-forest-100: #e5e5e5;
+  --color-forest-50:  #f5f5f5;
 
   /* ── Neutral ── */
   --color-gray-950: #0F172A;
@@ -34,49 +34,446 @@
   --color-gray-50:  #F8FAFC;
 
   /* ── Semantic ── */
-  --color-danger:  #EF4444;
-  --color-warning: #F59E0B;
-  --color-info:    #3B82F6;
-  --color-success: #10B981;
+  --color-danger:  #C97676;
+  --color-warning: #d4a373;
+  --color-info:    #a3a3a3;
+  --color-success: #e5e5e5;
 }
 
 /* ══════════════════════════════════════
    DESIGN TOKENS (semantic CSS variables)
    ══════════════════════════════════════ */
 :root {
-  /* Brand */
+  /* Brand — orijinal orman yeşili */
   --forest:     #0F3D2E;
+  --forest-100: rgba(15,61,46,0.06);
+  --forest-200: rgba(15,61,46,0.12);
+  --forest-300: rgba(15,61,46,0.20);
   --leaf:       #2D9A5C;
-  --leaf-hover: #22804E;
-  --mint:       #EEF9F3;
+  --leaf-hover: #1E8049;
+  --mint:       #E8F5EE;
 
-  /* Surfaces (light) */
-  --bg-primary:    #FFFFFF;
-  --bg-secondary:  #FFFFFF;
-  --bg-card:       #FFFFFF;
+  /* Surfaces — LIGHT */
+  --bg-primary:    #ffffff;
+  --bg-secondary:  #fafafa;
+  --bg-tertiary:   #f5f5f5;
+  --bg-card:       #ffffff;
   --bg-sidebar:    #0F3D2E;
+  --bg-elevated:   #ffffff;
+  --bg-input:      #ffffff;
+  --input-bg:      #ffffff;
+  --input-border:  #e2e8f0;
+  --input-focus:   #0F3D2E;
 
-  /* Text */
+  /* Text — LIGHT */
   --text-primary:   #0F172A;
   --text-secondary: #475569;
+  --text-tertiary:  #64748B;
   --text-muted:     #94A3B8;
-  --text-on-forest: #FFFFFF;
+  --text-on-forest: #ffffff;
 
-  /* Borders */
-  --border-color:  #D1D5DB;
-  --border-subtle: rgba(0, 0, 0, 0.10);
+  /* Borders — LIGHT */
+  --border-color:   #e2e8f0;
+  --border-subtle:  #e2e8f0;
+  --border-medium:  #cbd5e1;
+  --border-strong:  #94A3B8;
+  --border-default: #e2e8f0;
 
-  /* Inputs */
-  --input-bg:      #FFFFFF;
-  --input-border:  #E2E8F0;
-  --input-focus:   #2D9A5C;
+  /* Status — LIGHT */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger:  #EF4444;
+  --color-info:    #3B82F6;
 
-  /* Scrollbar */
-  --scrollbar-bg:    #F1F5F9;
-  --scrollbar-thumb: #CBD5E1;
+  /* Accent */
+  --accent:       #0F3D2E;
+  --accent-hover: #1E8049;
+
+  /* Scrollbar — LIGHT */
+  --scrollbar-bg:    #fafafa;
+  --scrollbar-thumb: #cbd5e1;
 }
 
-/* Dark mode intentionally not supported in this design version */
+/* ══════════════════════════════════════
+   DARK THEME — Monochrome override
+   ══════════════════════════════════════ */
+[data-theme="dark"] {
+  /* Backgrounds */
+  --bg-primary:    #0a0a0a;
+  --bg-secondary:  #141414;
+  --bg-tertiary:   #1c1c1c;
+  --bg-card:       #141414;
+  --bg-elevated:   #1c1c1c;
+  --bg-sidebar:    #0a0a0a;
+  --bg-input:      #1c1c1c;
+  --input-bg:      #1c1c1c;
+  --input-border:  #262626;
+  --input-focus:   #fafafa;
+
+  /* Text */
+  --text-primary:   #f5f5f5;
+  --text-secondary: #a3a3a3;
+  --text-tertiary:  #737373;
+  --text-muted:     #737373;
+  --text-on-forest: #0a0a0a;
+
+  /* Borders */
+  --border-color:   #262626;
+  --border-subtle:  #262626;
+  --border-medium:  #3a3a3a;
+  --border-strong:  #525252;
+  --border-default: #262626;
+
+  /* Forest brand — monochrome (uyumluluk için korundu) */
+  --forest:       #fafafa;
+  --forest-100:   rgba(250,250,250,0.06);
+  --forest-200:   rgba(250,250,250,0.10);
+  --forest-300:   rgba(250,250,250,0.20);
+  --leaf:         #fafafa;
+  --leaf-hover:   #ffffff;
+  --mint:         rgba(250,250,250,0.04);
+
+  /* Accent */
+  --accent:       #fafafa;
+  --accent-hover: #ffffff;
+
+  /* Status */
+  --color-success: #d4d4d4;
+  --color-warning: #d4a373;
+  --color-danger:  #C97676;
+  --color-info:    #a3a3a3;
+
+  /* Scrollbar */
+  --scrollbar-bg:    #0a0a0a;
+  --scrollbar-thumb: #262626;
+
+  /* AramaModal dark arka plan */
+  --bg-card-elevated: #1c1c1c;
+}
+
+/* ── Dark scrollbar ── */
+[data-theme="dark"] ::-webkit-scrollbar          { width: 10px; height: 10px; }
+[data-theme="dark"] ::-webkit-scrollbar-track    { background: #0a0a0a; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb    { background: #262626; border-radius: 5px; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+
+/* ── Card ── */
+[data-theme="dark"] .card {
+  background:   var(--bg-secondary);
+  border-color: var(--border-subtle);
+}
+
+/* ── Inputs ── */
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background:   var(--bg-input);
+  border-color: var(--border-default, #262626);
+  color:        var(--text-primary);
+}
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder { color: var(--text-muted); }
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  border-color: var(--forest);
+  outline: none;
+}
+
+/* ── Dividers ── */
+[data-theme="dark"] hr,
+[data-theme="dark"] .section-rule { border-color: var(--border-subtle); }
+
+/* ── Tailwind hardcoded renk override'ları ── */
+[data-theme="dark"] .bg-white        { background-color: var(--bg-card)      !important; }
+[data-theme="dark"] .bg-gray-50      { background-color: var(--bg-secondary)  !important; }
+[data-theme="dark"] .bg-gray-100     { background-color: var(--bg-elevated)   !important; }
+[data-theme="dark"] .text-gray-900   { color: var(--text-primary)             !important; }
+[data-theme="dark"] .text-gray-800   { color: var(--text-primary)             !important; }
+[data-theme="dark"] .text-gray-700   { color: var(--text-primary)             !important; }
+[data-theme="dark"] .text-gray-600   { color: var(--text-secondary)           !important; }
+[data-theme="dark"] .text-gray-500   { color: var(--text-secondary)           !important; }
+[data-theme="dark"] .text-gray-400   { color: var(--text-tertiary)            !important; }
+[data-theme="dark"] .text-gray-300   { color: var(--text-muted)               !important; }
+[data-theme="dark"] .border-gray-100 { border-color: var(--border-subtle)     !important; }
+[data-theme="dark"] .border-gray-200 { border-color: var(--border-default, #262626) !important; }
+[data-theme="dark"] .border-gray-300 { border-color: var(--border-strong)     !important; }
+[data-theme="dark"] .divide-gray-100 > * + * { border-color: var(--border-subtle) !important; }
+[data-theme="dark"] .hover\:bg-gray-50:hover  { background-color: var(--bg-elevated) !important; }
+[data-theme="dark"] .hover\:bg-gray-100:hover { background-color: var(--bg-elevated) !important; }
+
+/* ── Ek override'lar ── */
+[data-theme="dark"] body                     { background-color: var(--bg-primary)   !important; }
+[data-theme="dark"] main                     { background-color: transparent; }
+
+[data-theme="dark"] .bg-gray-200             { background-color: var(--bg-elevated)  !important; }
+[data-theme="dark"] .bg-slate-50             { background-color: var(--bg-secondary) !important; }
+[data-theme="dark"] .bg-slate-100            { background-color: var(--bg-elevated)  !important; }
+
+[data-theme="dark"] .text-black              { color: var(--text-primary)            !important; }
+[data-theme="dark"] .text-slate-900          { color: var(--text-primary)            !important; }
+[data-theme="dark"] .text-slate-800          { color: var(--text-primary)            !important; }
+[data-theme="dark"] .text-slate-700          { color: var(--text-secondary)          !important; }
+[data-theme="dark"] .text-slate-500          { color: var(--text-secondary)          !important; }
+[data-theme="dark"] .text-slate-400          { color: var(--text-tertiary)           !important; }
+
+[data-theme="dark"] .border-black            { border-color: var(--border-default)   !important; }
+[data-theme="dark"] .border-slate-100        { border-color: var(--border-subtle)    !important; }
+[data-theme="dark"] .border-slate-200        { border-color: var(--border-default)   !important; }
+
+[data-theme="dark"] .divide-gray-200 > * + *,
+[data-theme="dark"] .divide-slate-100 > * + *,
+[data-theme="dark"] .divide-black\/4 > * + *,
+[data-theme="dark"] .divide-black\/5 > * + *,
+[data-theme="dark"] .divide-black\/8 > * + * { border-color: var(--border-subtle)   !important; }
+
+[data-theme="dark"] .hover\:bg-slate-50:hover { background-color: var(--bg-elevated) !important; }
+[data-theme="dark"] .hover\:bg-white:hover    { background-color: var(--bg-card)     !important; }
+
+[data-theme="dark"] .bg-black\/5,
+[data-theme="dark"] .bg-black\/10            { background-color: rgba(255,255,255,0.05) !important; }
+[data-theme="dark"] .border-black\/5,
+[data-theme="dark"] .border-black\/6,
+[data-theme="dark"] .border-black\/8,
+[data-theme="dark"] .border-black\/10        { border-color: rgba(255,255,255,0.08)   !important; }
+
+[data-theme="dark"] .stat-card               { background-color: var(--bg-tertiary) !important; border-color: var(--border-subtle) !important; }
+
+/* Inline style force — hardcoded white/dark renk override */
+[data-theme="dark"] [style*="background:#FFFFFF" i],
+[data-theme="dark"] [style*="background-color:#FFFFFF" i],
+[data-theme="dark"] [style*="background:white" i],
+[data-theme="dark"] [style*="background-color:white" i] {
+  background-color: var(--bg-card) !important;
+  background: var(--bg-card) !important;
+}
+[data-theme="dark"] [style*="color:#0F172A" i],
+[data-theme="dark"] [style*="color: #0F172A" i] { color: var(--text-primary) !important; }
+[data-theme="dark"] [style*="color:#0F3D2E" i],
+[data-theme="dark"] [style*="color: #0F3D2E" i] { color: var(--accent)       !important; }
+
+/* ── Tailwind semantic renk class'ları — monochrome ── */
+[data-theme="dark"] .text-emerald-400,
+[data-theme="dark"] .text-emerald-500,
+[data-theme="dark"] .text-emerald-600,
+[data-theme="dark"] .text-emerald-700,
+[data-theme="dark"] .text-emerald-800 { color: #d4d4d4 !important; }
+
+[data-theme="dark"] .text-green-400,
+[data-theme="dark"] .text-green-500,
+[data-theme="dark"] .text-green-600,
+[data-theme="dark"] .text-green-700 { color: #d4d4d4 !important; }
+
+[data-theme="dark"] .text-amber-600,
+[data-theme="dark"] .text-amber-700,
+[data-theme="dark"] .text-amber-800 { color: #d4a373 !important; }
+
+[data-theme="dark"] .text-red-600,
+[data-theme="dark"] .text-red-700,
+[data-theme="dark"] .text-red-800 { color: #F87171 !important; }
+
+[data-theme="dark"] .text-blue-400,
+[data-theme="dark"] .text-blue-500,
+[data-theme="dark"] .text-blue-600,
+[data-theme="dark"] .text-blue-700,
+[data-theme="dark"] .text-blue-800 { color: var(--text-primary) !important; }
+
+[data-theme="dark"] .text-indigo-500,
+[data-theme="dark"] .text-indigo-600 { color: var(--text-primary) !important; }
+
+[data-theme="dark"] .text-purple-600,
+[data-theme="dark"] .text-purple-700,
+[data-theme="dark"] .text-purple-800 { color: #a3a3a3 !important; }
+
+[data-theme="dark"] .text-orange-600,
+[data-theme="dark"] .text-orange-700,
+[data-theme="dark"] .text-orange-800 { color: #d4a373 !important; }
+
+/* ── Hardcoded yeşil hex override — dark ── */
+[data-theme="dark"] [style*="#10B981" i],
+[data-theme="dark"] [style*="#22c55e" i],
+[data-theme="dark"] [style*="#22C55E" i],
+[data-theme="dark"] [style*="#16a34a" i],
+[data-theme="dark"] [style*="#15803d" i] { color: var(--text-primary) !important; }
+
+[data-theme="dark"] [style*="background:#10B981" i],
+[data-theme="dark"] [style*="background-color:#10B981" i],
+[data-theme="dark"] [style*="background:#22c55e" i],
+[data-theme="dark"] [style*="background-color:#22c55e" i] {
+  background-color: rgba(212,212,212,0.15) !important;
+}
+
+/* ══════════════════════════════════════
+   --forest / --leaf zeminli butonlar — koyu metin zorla
+   (--forest dark'ta beyaz olduğu için beyaz metin görünmez)
+   ══════════════════════════════════════ */
+[data-theme="dark"] [style*="background: var(--forest)" i],
+[data-theme="dark"] [style*="background:var(--forest)" i],
+[data-theme="dark"] [style*="background-color: var(--forest)" i],
+[data-theme="dark"] [style*="background-color:var(--forest)" i],
+[data-theme="dark"] [style*="background: var(--leaf)" i],
+[data-theme="dark"] [style*="background:var(--leaf)" i] {
+  color: #0a0a0a !important;
+}
+
+[data-theme="dark"] [style*="background: var(--forest)" i] .text-white,
+[data-theme="dark"] [style*="background:var(--forest)" i] .text-white,
+[data-theme="dark"] [style*="background: var(--leaf)" i] .text-white {
+  color: #0a0a0a !important;
+}
+
+[data-theme="dark"] [style*="background: var(--forest)" i] svg,
+[data-theme="dark"] [style*="background:var(--forest)" i] svg,
+[data-theme="dark"] [style*="background: var(--leaf)" i] svg {
+  color: #0a0a0a !important;
+  stroke: #0a0a0a !important;
+}
+
+/* ══════════════════════════════════════
+   TAILWIND ARBITRARY COLOR CLASSES — Hardcoded hex override
+   text-[#0F172A], text-[#0F3D2E] gibi sınıflar her iki temada da
+   doğru renge map edilir
+   ══════════════════════════════════════ */
+/* Dark mode: navy/forest → beyaz */
+[data-theme="dark"] .text-\[\#0F172A\],
+[data-theme="dark"] .text-\[\#1E293B\],
+[data-theme="dark"] .text-\[\#0F3D2E\],
+[data-theme="dark"] .text-\[\#1F5C44\] {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .bg-\[\#0F172A\],
+[data-theme="dark"] .bg-\[\#1E293B\],
+[data-theme="dark"] .bg-\[\#0F3D2E\] {
+  background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .border-\[\#0F172A\],
+[data-theme="dark"] .border-\[\#0F3D2E\] {
+  border-color: var(--border-subtle) !important;
+}
+
+/* Light mode: forest yeşil → siyah (navy zaten light'ta okunabilir) */
+:root .text-\[\#0F3D2E\],
+:root .text-\[\#1F5C44\] {
+  color: #0a0a0a !important;
+}
+
+/* ══════════════════════════════════════
+   LIGHT MODE — yeşil ve eski forest override
+   ══════════════════════════════════════ */
+:root .text-emerald-400,
+:root .text-emerald-500,
+:root .text-emerald-600,
+:root .text-emerald-700,
+:root .text-green-400,
+:root .text-green-500,
+:root .text-green-600,
+:root .text-green-700 { color: #0a0a0a !important; }
+
+:root .text-blue-400,
+:root .text-blue-500,
+:root .text-blue-600,
+:root .text-blue-700,
+:root .text-indigo-500,
+:root .text-indigo-600 { color: #0a0a0a !important; }
+
+:root .text-amber-600,
+:root .text-amber-700,
+:root .text-orange-600,
+:root .text-orange-700 { color: #b8804a !important; }
+
+:root .text-red-600,
+:root .text-red-700 { color: #C97676 !important; }
+
+/* Hardcoded eski forest renk override — light */
+:root [style*="#0F3D2E" i],
+:root [style*="#1F5C44" i],
+:root [style*="#10B981" i],
+:root [style*="#22c55e" i],
+:root [style*="#22C55E" i],
+:root [style*="#16a34a" i] { color: #0a0a0a !important; }
+
+:root [style*="background:#10B981" i],
+:root [style*="background-color:#10B981" i],
+:root [style*="background:#22c55e" i],
+:root [style*="background-color:#22c55e" i] {
+  background-color: rgba(10,10,10,0.08) !important;
+}
+
+/* Light mode skor halka rengi */
+:root [style*="color: var(--forest)" i],
+:root [style*="color:var(--forest)" i],
+:root [style*="color: var(--leaf)" i],
+:root [style*="color:var(--leaf)" i] { color: #0a0a0a !important; }
+
+/* ── Hardcoded inline renk override'ları ── */
+[data-theme="dark"] [style*="color:#C97676" i],
+[data-theme="dark"] [style*="color: #C97676" i] { color: #C97676 !important; }
+
+[data-theme="dark"] [style*="color:#047857" i],
+[data-theme="dark"] [style*="color: #047857" i] { color: #e5e5e5 !important; }
+
+[data-theme="dark"] [style*="color:#B45309" i],
+[data-theme="dark"] [style*="color: #B45309" i] { color: #d4a373 !important; }
+
+[data-theme="dark"] [style*="color:#475569" i],
+[data-theme="dark"] [style*="color: #475569" i] { color: var(--text-secondary) !important; }
+
+[data-theme="dark"] [style*="color:#94A3B8" i],
+[data-theme="dark"] [style*="color: #94A3B8" i],
+[data-theme="dark"] [style*="color:#94a3b8" i],
+[data-theme="dark"] [style*="color: #94a3b8" i] { color: var(--text-tertiary) !important; }
+
+[data-theme="dark"] [style*="color:#FFFFFF" i],
+[data-theme="dark"] [style*="color: #FFFFFF" i],
+[data-theme="dark"] [style*="color:white" i] { color: var(--text-primary) !important; }
+
+/* ── Renkli rgba background'ları güçlendir ── */
+[data-theme="dark"] [style*="background-color:rgba(15,61,46" i],
+[data-theme="dark"] [style*="background:rgba(15,61,46" i] {
+  background-color: rgba(250,250,250,0.06) !important;
+}
+
+[data-theme="dark"] [style*="background-color:rgba(201,118,118" i],
+[data-theme="dark"] [style*="background:rgba(201,118,118" i] {
+  background-color: rgba(201,118,118,0.15) !important;
+}
+
+[data-theme="dark"] [style*="background-color:rgba(245,158,11" i],
+[data-theme="dark"] [style*="background:rgba(245,158,11" i] {
+  background-color: rgba(212,163,115,0.15) !important;
+}
+
+/* ── Disabled / readonly input'lar ── */
+[data-theme="dark"] input[readonly],
+[data-theme="dark"] input:disabled,
+[data-theme="dark"] select:disabled,
+[data-theme="dark"] textarea:disabled {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-tertiary) !important;
+  cursor: not-allowed;
+}
+
+/* ── Modal backdrop ── */
+[data-theme="dark"] .bg-black\/40,
+[data-theme="dark"] .bg-black\/50,
+[data-theme="dark"] .bg-black\/60 {
+  background-color: rgba(0,0,0,0.85) !important;
+}
+
+/* ── AramaModal ── */
+[data-theme="dark"] .arama-modal {
+  background: var(--bg-card-elevated) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+/* ── QR kod wrapper — Supabase SVG boyutunu zorla ── */
+.qr-wrapper svg {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
 
 /* ══════════════════════════════════════
    BASE
@@ -128,7 +525,7 @@ button, [role="button"], a {
 ::-webkit-scrollbar          { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track    { background: var(--scrollbar-bg); }
 ::-webkit-scrollbar-thumb    { background: var(--scrollbar-thumb); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--leaf); }
+::-webkit-scrollbar-thumb:hover { background: var(--border-medium); }
 
 /* ══════════════════════════════════════
    UTILITY CLASSES
@@ -147,13 +544,13 @@ button, [role="button"], a {
   font-size: 3.5rem;
   font-weight: 600;
   line-height: 1;
-  color: #0F172A;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
 }
 
 /* Heading defaults */
 h1, h2, h3, h4 {
-  color: #0F172A;
+  color: var(--text-primary);
 }
 
 /* Small caps üst etiket */
@@ -168,30 +565,30 @@ h1, h2, h3, h4 {
 /* Editorial section divider */
 .section-rule {
   border: none;
-  border-top: 1px solid rgba(0,0,0,0.10);
+  border-top: 1px solid var(--border-subtle);
   margin: 2rem 0;
 }
 
-/* Stat kart (cool gray bg) */
+/* Stat kart */
 .stat-card {
-  background: #F3F4F6;
-  border: 1px solid rgba(0,0,0,0.04);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
   border-radius: 10px;
   padding: 1rem;
 }
 
 /* Modal / dialog kartı */
 .modal-card {
-  background: #FFFFFF;
-  border: 1px solid rgba(0,0,0,0.08);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.40);
 }
 
 /* Primary button */
 .btn-primary {
-  background: #0F3D2E;
-  color: #FFFFFF;
+  background: var(--accent);
+  color: #0a0a0a;
   font-weight: 500;
 }
 .btn-primary:disabled {
@@ -201,8 +598,8 @@ h1, h2, h3, h4 {
 
 /* Card surface */
 .card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
 }
 
@@ -218,7 +615,7 @@ h1, h2, h3, h4 {
 /* Editorial divider */
 .divider {
   border: none;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-subtle);
   margin: 0;
 }
 
@@ -237,7 +634,7 @@ h1, h2, h3, h4 {
   font-size: 0.95rem;
   color: var(--text-secondary);
   margin-bottom: 2rem;
-  border-left: 3px solid var(--leaf);
+  border-left: 3px solid var(--accent);
   padding-left: 1rem;
   line-height: 1.7;
 }
@@ -245,7 +642,7 @@ h1, h2, h3, h4 {
 .prose-custom h2 {
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--forest);
+  color: var(--accent);
   margin-bottom: 0.75rem;
   padding-bottom: 0.4rem;
   border-bottom: 1px solid var(--border-subtle);
@@ -254,7 +651,7 @@ h1, h2, h3, h4 {
 .prose-custom ul { padding-left: 1.25rem; margin-bottom: 0.75rem; }
 .prose-custom li { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.3rem; list-style: disc; }
 .prose-custom strong { color: var(--text-primary); font-weight: 600; }
-.prose-custom a      { color: var(--leaf); text-decoration: none; }
+.prose-custom a      { color: var(--accent); text-decoration: none; }
 .prose-custom a:hover { text-decoration: underline; }
 .prose-custom .meta  {
   font-size: 0.75rem;
@@ -295,3 +692,16 @@ h1, h2, h3, h4 {
   to   { transform: translateY(0);    }
 }
 .slide-up { animation: slide-up 0.3s ease forwards; }
+
+@keyframes uyari-pulse-soft {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 118, 118, 0.4); }
+  50%       { box-shadow: 0 0 0 6px rgba(201, 118, 118, 0); }
+}
+.uyari-pulse { animation: uyari-pulse-soft 2.4s ease-in-out infinite; }
+
+html { scroll-behavior: smooth; }
+
+/* Carousel scrollbar custom */
+.deepdive-carousel::-webkit-scrollbar { height: 6px; }
+.deepdive-carousel::-webkit-scrollbar-track { background: transparent; }
+.deepdive-carousel::-webkit-scrollbar-thumb { background: #D3D1C7; border-radius: 3px; }

@@ -4,12 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Save, CheckCircle2 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
-
-const SEKTORLER = [
-  "Market / Bakkal", "Kafe / Restoran", "Kuaför / Güzellik",
-  "Butik / Giyim", "Eczane", "Elektronik", "Fırın / Pastane",
-  "Çiçekçi", "Kırtasiye", "Diğer",
-];
+import { SEKTORLER }    from "@/lib/sektorler";
 
 interface Props {
   businessAd: string;

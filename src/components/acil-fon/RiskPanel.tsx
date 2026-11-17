@@ -30,7 +30,7 @@ export default function RiskPanel({ islemler, hedef, mevcut, toplamHedefKurus }:
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-gray-800">Bu Ay Birikimi</h3>
           {varVeri && aylikOdemeKurus > 0 && (
-            <span className="text-xs text-gray-400">{formatTL(buAy)} / {formatTL(aylikOdemeKurus)}</span>
+            <span className="text-xs text-gray-400 font-number tabular-nums">{formatTL(buAy)} / {formatTL(aylikOdemeKurus)}</span>
           )}
         </div>
 
@@ -75,11 +75,11 @@ export default function RiskPanel({ islemler, hedef, mevcut, toplamHedefKurus }:
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">Kalan tutar</span>
-              <span className="text-gray-800 font-bold">{formatTL(kalan)}</span>
+              <span className="text-gray-800 font-bold font-number tabular-nums">{formatTL(kalan)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">Hedef süresi</span>
-              <span className="text-[var(--leaf)] font-bold">{ayKaldi > 0 ? `~${ayKaldi} ay` : "—"}</span>
+              <span className="text-[var(--leaf)] font-bold font-number tabular-nums">{ayKaldi > 0 ? `~${ayKaldi} ay` : "—"}</span>
             </div>
             {hedef?.odemeGunu && (
               <div className="flex justify-between text-sm">

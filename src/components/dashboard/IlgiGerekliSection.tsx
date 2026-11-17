@@ -1,123 +1,106 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
-import { useStok } from "@/store/stok";
-import { useGorevler } from "@/store/gorevler";
-import { useNakit } from "@/store/nakit";
-import { useAcilFon } from "@/store/acilFon";
-import { stokDurumu } from "@/lib/stok-data";
-import { trGunBaslangici } from "@/lib/tarih";
-
-interface Uyari {
-  id: string;
-  baslik: string;
-  detay: string;
-  href: string;
-  seviye: "kritik" | "uyari";
-}
+import { X } from "lucide-react";
+import { useBildirimler } from "@/store/bildirimler";
+import { snoozeAl, snoozeMi } from "@/lib/uyari-motoru/snooze";
 
 export default function IlgiGerekliSection() {
-  const { urunler }           = useStok();
-  const { gorevler }          = useGorevler();
-  const { islemler }          = useNakit();
-  const { hedefler, mevcut }  = useAcilFon();
+  const bildirimler      = useBildirimler((s) => s.bildirimler);
+  const [, forceRender]  = useState(0);
 
-  const uyarilar = useMemo<Uyari[]>(() => {
-    const list: Uyari[] = [];
+  const ilgiGerekli = useMemo(() => {
+    return bildirimler
+      .filter((b) =>
+        !b.silindi &&
+        !b.okundu &&
+        b.kaynak === "tarama" &&
+        (b.tip === "kritik" || b.tip === "uyari") &&
+        !snoozeMi(b.olayId ?? b.id)
+      )
+      .sort((a, b) => {
+        if (a.tip !== b.tip) return a.tip === "kritik" ? -1 : 1;
+        return new Date(b.tarih).getTime() - new Date(a.tarih).getTime();
+      })
+      .slice(0, 5);
+  // forceRender dahil edilmiyor — snoozeMi localStorage'dan okur, dependency değil
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bildirimler, forceRender]);
 
-    const kritikUrunler = urunler.filter((u) => !u.silindi && stokDurumu(u) === "kritik");
-    if (kritikUrunler.length > 0) {
-      list.push({
-        id: "stok-kritik",
-        baslik: `${kritikUrunler.length} ürün kritik seviyede`,
-        detay: kritikUrunler.slice(0, 3).map((u) => u.ad).join(", ") + (kritikUrunler.length > 3 ? "…" : ""),
-        href: "/stok",
-        seviye: "kritik",
-      });
-    }
+  const handleSnooze = (b: (typeof bildirimler)[number]) => {
+    snoozeAl(b.olayId ?? b.id, 4);
+    forceRender((n) => n + 1);
+  };
 
-    const gunBasi = trGunBaslangici();
-    const gecikGorevler = gorevler.filter(
-      (g) => !g.silindi && g.durum !== "tamamlandi" && new Date(g.sonTarih) < gunBasi
-    );
-    if (gecikGorevler.length > 0) {
-      list.push({
-        id: "gorev-gecikti",
-        baslik: `${gecikGorevler.length} görev gecikti`,
-        detay: gecikGorevler.slice(0, 2).map((g) => g.baslik).join(", ") + (gecikGorevler.length > 2 ? "…" : ""),
-        href: "/gorevler",
-        seviye: "uyari",
-      });
-    }
-
-    const aktif = islemler.filter((x) => !x.silindi);
-    const net   = aktif.reduce((s, x) => s + (x.tip === "gelir" ? x.tutarKurus : -x.tutarKurus), 0);
-    if (net < 0) {
-      list.push({
-        id: "nakit-negatif",
-        baslik: "Kasa bakiyesi negatife döndü",
-        detay: "Gelir-gider dengesini kontrol et",
-        href: "/nakit-akisi",
-        seviye: "kritik",
-      });
-    }
-
-    const aktifHedefler = hedefler.filter((h) => !h.silindi);
-    for (const h of aktifHedefler) {
-      const birikim = mevcut(h.id);
-      const yuzde   = h.toplamHedefKurus > 0 ? (birikim / h.toplamHedefKurus) * 100 : 100;
-      if (yuzde < 50) {
-        list.push({
-          id: `acil-fon-${h.id}`,
-          baslik: `Acil fon yetersiz: ${h.ad}`,
-          detay: `Hedefin %${Math.round(yuzde)}'i tamamlandı`,
-          href: "/acil-fon",
-          seviye: "uyari",
-        });
-        break;
-      }
-    }
-
-    return list;
-  }, [urunler, gorevler, islemler, hedefler, mevcut]);
+  const toplamOkunmamis = bildirimler.filter((b) => !b.silindi && !b.okundu).length;
 
   return (
     <section className="py-4 space-y-3">
       <div className="flex justify-between items-center">
         <h2 className="text-sm font-semibold">İlgi gerekli</h2>
-        <Link
-          href="/bildirimler"
-          className="text-xs font-medium transition-colors hover:opacity-75"
-          style={{ color: "var(--leaf)" }}
-        >
-          Tüm uyarılar →
-        </Link>
+        {toplamOkunmamis > 5 && (
+          <Link
+            href="/bildirimler"
+            className="text-xs font-medium hover:opacity-75 transition-opacity"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Tümünü gör →
+          </Link>
+        )}
       </div>
 
-      {uyarilar.length === 0 ? (
+      {ilgiGerekli.length === 0 ? (
         <p className="text-sm py-4" style={{ color: "var(--text-secondary)" }}>
           ✓ Sistemler temiz. Hiçbir uyarı yok.
         </p>
       ) : (
         <div className="space-y-1">
-          {uyarilar.map((u) => (
-            <div key={u.id} className="flex items-center gap-3 py-2">
+          {ilgiGerekli.map((b) => (
+            <div
+              key={b.id}
+              className="group flex items-center gap-3 py-2 rounded-lg hover:bg-gray-50 transition-colors px-2 -mx-2"
+            >
+              {/* Seviye noktası */}
               <div
                 className="w-2 h-2 rounded-full shrink-0"
-                style={{ background: u.seviye === "kritik" ? "var(--color-danger)" : "var(--color-warning)" }}
+                style={{
+                  background: b.tip === "kritik"
+                    ? "var(--color-danger)"
+                    : "var(--color-warning)",
+                }}
               />
+
+              {/* İçerik */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium">{u.baslik}</p>
-                <p className="text-xs truncate" style={{ color: "var(--text-secondary)" }}>{u.detay}</p>
+                <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                  {b.baslik}
+                </p>
+                <p className="text-xs truncate" style={{ color: "var(--text-secondary)" }}>
+                  {b.mesaj}
+                </p>
               </div>
-              <Link
-                href={u.href}
-                className="text-xs font-medium whitespace-nowrap transition-colors hover:opacity-75"
-                style={{ color: "var(--leaf)" }}
-              >
-                Şimdi düzelt →
-              </Link>
+
+              {/* Aksiyonlar */}
+              <div className="flex items-center gap-1 shrink-0">
+                {b.ilgiliLink && (
+                  <Link
+                    href={b.ilgiliLink}
+                    className="text-xs font-medium whitespace-nowrap px-2 py-1 rounded transition-opacity hover:opacity-75"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    Şimdi düzelt →
+                  </Link>
+                )}
+
+                <button
+                  onClick={() => handleSnooze(b)}
+                  title="4 saat ertele"
+                  className="opacity-0 group-hover:opacity-100 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-all"
+                >
+                  <X className="w-3.5 h-3.5 text-gray-400" />
+                </button>
+              </div>
             </div>
           ))}
         </div>

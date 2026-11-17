@@ -10,18 +10,17 @@ import { kurus }     from "@/lib/para";
 const tl = (n: number) =>
   n.toLocaleString("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 2 });
 
-const KDV_ORANLARI = [0, 1, 10, 20];
-
 interface Props { urun: Urun | null; onClose: () => void; }
 
 export default function SatisModal({ urun, onClose }: Props) {
   // birimMaliyetKurus: TL float (for display/hesap calculation)
   const birimMaliyetKurus = urun?.birimMaliyetKurus != null ? urun.birimMaliyetKurus / 100 : 0;
 
-  const [adet,     setAdet]     = useState("1");
-  const [fiyat,    setFiyat]    = useState("");
-  const [kdvOrani, setKdvOrani] = useState(20);
-  const [kdvDahil,   setKdvDahil]   = useState(false);
+  const [adet,     setAdet]  = useState("1");
+  const [fiyat,    setFiyat] = useState("");
+  const [kdvDahil, setKdvDahil] = useState(false);
+  // KDV oranı stok'tan — kullanıcı seçmez
+  const kdvOrani = urun?.satisKdvOrani ?? 20;
   const [aciklama,   setAciklama]   = useState("");
   const [yukleniyor, setYukleniyor] = useState(false);
   const [hata,       setHata]       = useState<string | null>(null);
@@ -133,22 +132,13 @@ export default function SatisModal({ urun, onClose }: Props) {
               </div>
             </div>
 
-            {/* KDV oranı */}
-            <div>
-              <label className="text-xs text-gray-400 font-medium block mb-1.5">Satış KDV Oranı</label>
-              <div className="flex gap-2">
-                {KDV_ORANLARI.map((r) => (
-                  <button key={r} type="button" onClick={() => setKdvOrani(r)}
-                    className="flex-1 py-2 rounded-xl text-xs font-semibold border transition-all"
-                    style={{
-                      borderColor:     kdvOrani === r ? "#22c55e" : "rgba(255,255,255,0.08)",
-                      backgroundColor: kdvOrani === r ? "rgba(34,197,94,0.12)" : "transparent",
-                      color:           kdvOrani === r ? "#22c55e" : "#64748b",
-                    }}>
-                    {r === 0 ? "Yok" : `%${r}`}
-                  </button>
-                ))}
-              </div>
+            {/* KDV oranı — stoktan, read-only */}
+            <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-gray-50 border border-gray-200">
+              <span className="text-xs text-gray-400">Satış KDV Oranı</span>
+              <span className="text-xs font-semibold text-gray-600">
+                %{kdvOrani}
+                <span className="text-gray-400 font-normal ml-1">(Stok'tan)</span>
+              </span>
             </div>
 
             {/* Açıklama */}

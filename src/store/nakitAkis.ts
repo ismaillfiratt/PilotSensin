@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { storeKaydet } from "@/lib/db";
 import type { Kurus } from "@/lib/para";
+import { useKdvHavuzu } from "@/store/kdvHavuzu";
 
 export type PlanlananTip = "gelir" | "gider";
 export type PlanlananKaynak = "manuel" | "kdv_otomatik" | "maas_otomatik";
@@ -34,7 +35,7 @@ interface NakitAkisStore {
   kalemler:       PlanlananKalem[];
   tekrarlayanlar: TekrarlayanKayit[];
 
-  ekle:                (kalem: Omit<PlanlananKalem, "id">) => Promise<void>;
+  ekle:                (kalem: Omit<PlanlananKalem, "id"> & { id?: string }) => Promise<void>;
   sil:                 (id: string) => Promise<void>;
   tamamla:             (id: string) => Promise<void>;
   tamamlaGeriAl:       (id: string) => Promise<void>;
@@ -60,14 +61,19 @@ export const useNakitAkis = create<NakitAkisStore>()(
       tekrarlayanlar: [],
 
       ekle: async (kalem) => {
+        const id = kalem.id ?? crypto.randomUUID();
         set((s) => ({
-          kalemler: [{ ...kalem, id: crypto.randomUUID() }, ...s.kalemler],
+          kalemler: [{ ...kalem, id }, ...s.kalemler],
         }));
         const { kalemler, tekrarlayanlar } = get();
         await kaydet(kalemler, tekrarlayanlar);
       },
 
       sil: async (id) => {
+        const kalem = get().kalemler.find((k) => k.id === id);
+        if (kalem?.kaynak === "kdv_otomatik") {
+          useKdvHavuzu.getState().isaretiKaldir(id);
+        }
         set((s) => ({ kalemler: s.kalemler.filter((k) => k.id !== id) }));
         const { kalemler, tekrarlayanlar } = get();
         await kaydet(kalemler, tekrarlayanlar);

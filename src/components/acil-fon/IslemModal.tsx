@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { X, Banknote, ArrowUpFromLine } from "lucide-react";
 import { type FonIslem, type IslemTipi } from "@/lib/acil-fon-data";
 import { kurus } from "@/lib/para";
@@ -55,6 +55,8 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
     onClose();
   };
 
+  const dragControls = useDragControls();
+
   if (!open) return null;
 
   return (
@@ -66,12 +68,17 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
       />
       <motion.div
         initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
-        drag="y" dragConstraints={{ top: 0 }} dragElastic={{ top: 0, bottom: 0.3 }}
+        drag="y" dragControls={dragControls} dragListener={false}
+        dragConstraints={{ top: 0 }} dragElastic={{ top: 0, bottom: 0.3 }}
         onDragEnd={(_, info) => { if (info.velocity.y > 300 || info.offset.y > 120) onClose(); }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
         className="fixed z-50 bg-white bottom-0 inset-x-0 rounded-t-2xl border-t border-gray-200 max-h-[90vh] overflow-y-auto md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border md:max-w-sm md:w-full"
       >
-        <div className="md:hidden flex justify-center pt-3 pb-1">
+        <div
+          className="md:hidden flex justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing"
+          onPointerDown={(e) => dragControls.start(e)}
+          style={{ touchAction: "none" }}
+        >
           <div className="w-12 h-1 rounded-full bg-gray-200" />
         </div>
         <form onSubmit={handleSubmit}>
@@ -91,7 +98,7 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
                 <select
                   value={hedefId ?? ""}
                   onChange={(e) => setHedefId(e.target.value || undefined)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors"
+                  className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:outline-none focus:border-(--leaf) transition-colors"
                 >
                   <option value="">Hedefe bağlı değil</option>
                   {hedefler.map(h => (
@@ -126,7 +133,7 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-bold">₺</span>
                 <input type="text" inputMode="numeric" required value={tutar} onChange={handleTutar}
                   placeholder="0"
-                  className="w-full pl-8 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-xl font-bold" />
+                  className="w-full pl-8 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-(--leaf) transition-colors text-xl font-bold" />
               </div>
             </div>
 
@@ -134,7 +141,7 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
             <div>
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Tarih</label>
               <input type="date" value={tarih} onChange={(e) => setTarih(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm scheme-dark" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 focus:outline-none focus:border-(--leaf) transition-colors text-sm scheme-dark" />
             </div>
 
             {/* Açıklama */}
@@ -142,7 +149,7 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
               <label className="text-xs text-gray-400 font-medium block mb-1.5">Açıklama</label>
               <input type="text" value={aciklama} onChange={(e) => setAcikl(e.target.value)}
                 placeholder="örn. Aylık birikim, Acil tamir..."
-                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[var(--leaf)] transition-colors text-sm" />
+                className="w-full px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-(--leaf) transition-colors text-sm" />
             </div>
 
           </div>
@@ -155,7 +162,7 @@ export default function IslemModal({ open, onClose, onKaydet, mevcutIslem, defau
                 İptal
               </button>
               <button type="submit"
-                className="flex-1 min-h-12 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors">
+                className="flex-1 min-h-12 rounded-xl bg-(--forest) text-white text-sm font-bold hover:opacity-90 transition-colors">
                 {mevcutIslem ? "Güncelle" : "Kaydet"}
               </button>
             </div>

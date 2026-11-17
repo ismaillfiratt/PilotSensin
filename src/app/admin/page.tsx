@@ -26,8 +26,8 @@ interface KullaniciRow {
   system_admin: boolean; created_at: string;
 }
 interface UyeRow {
-  user_id: string; email: string; role: string; status: string;
-  companies: { name: string } | null;
+  user_id: string; role: string; status: string;
+  companies: { name: string } | { name: string }[] | null;
 }
 
 interface AdminProfil { id: string; email: string; full_name: string | null; created_at: string; }
@@ -43,7 +43,18 @@ interface AdminLog {
   islem: string; detay: Record<string, unknown> | null; olusturma: string;
 }
 
-type TabAdi = "sirketler" | "adminler" | "admin-yonetimi" | "bildirim" | "denetim" | "destek";
+type TabAdi = "sirketler" | "adminler" | "admin-yonetimi" | "bildirim" | "denetim" | "destek" | "surum-notlari";
+
+interface AppVersion {
+  id:             string;
+  version_string: string;
+  release_date:   string;
+  baslik:         string;
+  ozet:           string | null;
+  maddeler:       string[];
+  yayinlandi:     boolean;
+  yayin_tarihi:   string | null;
+}
 
 /* ─── Şirket filtre ─── */
 type TarihSecim = "tumu" | "bugun" | "dun" | "hafta" | "ay" | "ozel";
@@ -365,10 +376,11 @@ function SirketleriGoster({
                   {/* Şirket adı — tıklanabilir */}
                   <td className="py-3 px-4" style={{ position: "relative" }}>
                     <button onClick={() => sirketTikla(s)}
-                      className="font-semibold text-left transition-all"
-                      style={{ color: popup?.sirket.id === s.id ? "var(--leaf)" : "#ffffff",
-                        textDecoration: "underline", textDecorationStyle: "dashed",
-                        textDecorationColor: "var(--forest-300, #7DD0A0)", cursor: "pointer" }}>
+                      className="font-semibold text-left transition-colors"
+                      style={{ color: popup?.sirket.id === s.id ? "var(--leaf)" : "var(--text-primary)",
+                        textDecoration: "none", fontWeight: 500, cursor: "pointer" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = "var(--leaf)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = popup?.sirket.id === s.id ? "var(--leaf)" : "var(--text-primary)")}>
                       {s.name}
                     </button>
 
@@ -453,8 +465,9 @@ function SirketleriGoster({
 export default function AdminPage() {
   const supabase = createClient();
 
-  const [adminEmail, setAdminEmail] = useState("");
-  const [adminId,    setAdminId]    = useState("");
+  const [adminEmail,  setAdminEmail]  = useState("");
+  const [adminId,     setAdminId]     = useState("");
+  const [superAdmin,  setSuperAdmin]  = useState(false);
 
   const [toplamSirket,    setToplamSirket]    = useState(0);
   const [toplamKullanici, setToplamKullanici] = useState(0);
@@ -481,14 +494,36 @@ export default function AdminPage() {
   // Bildirim
   const [bildBaslik,    setBildBaslik]    = useState("");
   const [bildMesaj,     setBildMesaj]     = useState("");
-  const [bildTip,       setBildTip]       = useState<BildirimTip>("duyuru");
-  const [bildHedef,     setBildHedef]     = useState<BildirimHedef>("tumu");
+  const [bildTip,       setBildTip]       = useState<string>("duyuru");
+  const [bildHedef,     setBildHedef]     = useState<string>("tumu");
   const [bildirimYuk,   setBildirimYuk]   = useState(false);
   const [sonBildirimler, setSonBildirimler] = useState<SistemBildirim[]>([]);
+
+  // Özel bildirim tipleri / hedef kitleleri (localStorage'da kalıcı)
+  const [customTipler,   setCustomTipler]   = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try { return JSON.parse(localStorage.getItem("admin-custom-tipler") ?? "[]") as string[]; } catch { return []; }
+  });
+  const [customHedefler, setCustomHedefler] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try { return JSON.parse(localStorage.getItem("admin-custom-hedefler") ?? "[]") as string[]; } catch { return []; }
+  });
+  const [yeniTipInput,   setYeniTipInput]   = useState("");
+  const [yeniHedefInput, setYeniHedefInput] = useState("");
 
   // Denetim
   const [adminLogs,  setAdminLogs]  = useState<AdminLog[]>([]);
   const [logYuk,     setLogYuk]     = useState(false);
+
+  // Sürüm yönetimi
+  const [appVersions,   setAppVersions]   = useState<AppVersion[]>([]);
+  const [surumForm,     setSurumForm]     = useState(false);
+  const [surumStr,      setSurumStr]      = useState("");
+  const [surumBaslik,   setSurumBaslik]   = useState("");
+  const [surumOzet,     setSurumOzet]     = useState("");
+  const [surumMaddeler, setSurumMaddeler] = useState<string[]>([""]);
+  const [surumIslem,    setSurumIslem]    = useState<"bos"|"yukleniyor"|"basari"|"hata">("bos");
+  const [surumMesaj,    setSurumMesaj]    = useState("");
 
   /* ─── Veri çekme ──────────────────────────────────────────────────────── */
 
@@ -549,18 +584,22 @@ export default function AdminPage() {
   const kullanicilariCek = useCallback(async () => {
     const [profilRes, uyeRes] = await Promise.all([
       supabase.from("profiles").select("id, email, full_name, system_admin, created_at").order("created_at", { ascending: false }),
-      supabase.from("company_members").select("user_id, email, role, status, companies(name)"),
+      supabase.from("company_members").select("user_id, role, status, companies(name)"),
     ]);
     if (!profilRes.data) return;
     const uyeMap = new Map<string, UyeRow>();
     (uyeRes.data ?? []).forEach((u) => { const r = u as unknown as UyeRow; uyeMap.set(r.user_id, r); });
     setKullanicilar((profilRes.data as KullaniciRow[]).map((p) => {
       const uye = uyeMap.get(p.id);
+      const companiesRaw = uye?.companies;
+      const sirketAdi = Array.isArray(companiesRaw)
+        ? (companiesRaw[0] as { name: string } | undefined)?.name ?? null
+        : (companiesRaw as { name: string } | null)?.name ?? null;
       return {
         id: p.id, email: p.email, full_name: p.full_name,
         system_admin: p.system_admin, created_at: p.created_at,
         rol:       uye?.role ?? null,
-        sirket_adi: (uye?.companies as { name: string } | null)?.name ?? null,
+        sirket_adi: sirketAdi,
       };
     }));
   }, [supabase]);
@@ -586,14 +625,25 @@ export default function AdminPage() {
     setLogYuk(false);
   }, [supabase]);
 
+  const surumlerCek = useCallback(async () => {
+    const { data } = await supabase.from("app_versions").select("*").order("release_date", { ascending: false });
+    if (data) setAppVersions(data as AppVersion[]);
+  }, [supabase]);
+
   useEffect(() => {
     async function init() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) { setAdminEmail(user.email ?? ""); setAdminId(user.id); }
-      await Promise.all([istatistikCek(), sirketleriCek(), kullanicilariCek(), adminleriCek(), sonBildirimleriCek(), loglarıCek()]);
+      if (user) {
+        setAdminEmail(user.email ?? "");
+        setAdminId(user.id);
+        const { data: profil } = await supabase
+          .from("profiles").select("is_superadmin").eq("id", user.id).maybeSingle();
+        setSuperAdmin(profil?.is_superadmin ?? false);
+      }
+      await Promise.all([istatistikCek(), sirketleriCek(), kullanicilariCek(), adminleriCek(), sonBildirimleriCek(), loglarıCek(), surumlerCek()]);
     }
     init();
-  }, [istatistikCek, sirketleriCek, kullanicilariCek, adminleriCek, sonBildirimleriCek, loglarıCek, supabase]);
+  }, [istatistikCek, sirketleriCek, kullanicilariCek, adminleriCek, sonBildirimleriCek, loglarıCek, surumlerCek, supabase]);
 
   /* ─── Admin ekleme / kaldırma ─────────────────────────────────────────── */
 
@@ -662,11 +712,80 @@ export default function AdminPage() {
     setBildirimYuk(false);
   }
 
+  /* ─── Özel tip / hedef yönetimi ──────────────────────────────────────── */
+
+  function customTipEkle() {
+    const v = yeniTipInput.trim();
+    if (!v || customTipler.includes(v)) return;
+    const yeni = [...customTipler, v];
+    setCustomTipler(yeni);
+    localStorage.setItem("admin-custom-tipler", JSON.stringify(yeni));
+    setBildTip(v);
+    setYeniTipInput("");
+  }
+
+  function customTipSil(tip: string) {
+    const yeni = customTipler.filter((t) => t !== tip);
+    setCustomTipler(yeni);
+    localStorage.setItem("admin-custom-tipler", JSON.stringify(yeni));
+    if (bildTip === tip) setBildTip("duyuru");
+  }
+
+  function customHedefEkle() {
+    const v = yeniHedefInput.trim();
+    if (!v || customHedefler.includes(v)) return;
+    const yeni = [...customHedefler, v];
+    setCustomHedefler(yeni);
+    localStorage.setItem("admin-custom-hedefler", JSON.stringify(yeni));
+    setBildHedef(v);
+    setYeniHedefInput("");
+  }
+
+  function customHedefSil(hedef: string) {
+    const yeni = customHedefler.filter((h) => h !== hedef);
+    setCustomHedefler(yeni);
+    localStorage.setItem("admin-custom-hedefler", JSON.stringify(yeni));
+    if (bildHedef === hedef) setBildHedef("tumu");
+  }
+
+  /* ─── Sürüm yayınlama ───────────────────────────────────────────────── */
+
+  async function surumKaydet(yayinla: boolean) {
+    if (!surumStr.trim() || !surumBaslik.trim()) {
+      setSurumIslem("hata"); setSurumMesaj("Sürüm numarası ve başlık zorunlu."); return;
+    }
+    setSurumIslem("yukleniyor"); setSurumMesaj("");
+    const maddelerTemiz = surumMaddeler.map((m) => m.trim()).filter(Boolean);
+    const payload = {
+      version_string: surumStr.trim(), baslik: surumBaslik.trim(),
+      ozet: surumOzet.trim() || null, maddeler: maddelerTemiz,
+      yayinlandi: yayinla, yayin_tarihi: yayinla ? new Date().toISOString() : null,
+      created_by: adminId,
+    };
+    const { error } = await supabase.from("app_versions").upsert(payload, { onConflict: "version_string" });
+    if (error) { setSurumIslem("hata"); setSurumMesaj(error.message); return; }
+    if (yayinla) {
+      await supabase.from("system_notifications").insert({
+        baslik: `Yeni sürüm: ${surumStr.trim()}`, mesaj: surumBaslik.trim(),
+        tip: "guncelleme", hedef: "tumu", admin_email: adminEmail,
+      });
+      await supabase.from("admin_logs").insert({
+        admin_id: adminId, admin_email: adminEmail,
+        islem: "surum_yayinlandi", detay: { version: surumStr.trim() },
+      });
+    }
+    setSurumIslem("basari"); setSurumMesaj(yayinla ? "Sürüm yayınlandı ve bildirim gönderildi." : "Taslak kaydedildi.");
+    setSurumStr(""); setSurumBaslik(""); setSurumOzet(""); setSurumMaddeler([""]);
+    setSurumForm(false);
+    await surumlerCek();
+    setTimeout(() => setSurumIslem("bos"), 4000);
+  }
+
   /* ─── Hesaplamalar ────────────────────────────────────────────────────── */
 
-  const tipRenk    = (t: string) => t === "kritik" ? "#ef4444" : t === "duyuru" ? "var(--leaf)" : "#22c55e";
-  const tipEtiket  = (t: string) => t === "kritik" ? "Kritik"  : t === "duyuru" ? "Duyuru"  : "Güncelleme";
-  const hedefEtiket = (h: string) => h === "tumu"  ? "Tümü"    : h === "pilot"  ? "Pilotlar" : "Co-Pilotlar";
+  const tipRenk    = (t: string) => t === "kritik" ? "#ef4444" : t === "duyuru" ? "var(--leaf)" : t === "guncelleme" ? "#22c55e" : "#a855f7";
+  const tipEtiket  = (t: string) => t === "kritik" ? "Kritik"  : t === "duyuru" ? "Duyuru" : t === "guncelleme" ? "Güncelleme" : t;
+  const hedefEtiket = (h: string) => h === "tumu"  ? "Tümü"    : h === "pilot"  ? "Pilotlar" : h === "copilot" ? "Co-Pilotlar" : h;
 
   /* ─── Tarih aralığı hesapla ─── */
   const tarihAraligi = (() => {
@@ -701,9 +820,6 @@ export default function AdminPage() {
   const GIZLI = ["raspool73@gmail.com"];
   const filtreAdminler = kullanicilar.filter((k) => k.system_admin && !GIZLI.includes(k.email));
 
-  /* ─── Sadece destek@pilotsensin.com admin atayabilir ─── */
-  const superAdmin = adminEmail === "destek@pilotsensin.com";
-
   /* ─── Render ──────────────────────────────────────────────────────────── */
 
   const inputCls = "w-full px-4 py-2.5 rounded-lg text-sm outline-none";
@@ -736,7 +852,7 @@ export default function AdminPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
         <StatKart baslik="Toplam Şirket"    deger={toplamSirket} />
         <StatKart baslik="Aktif Kullanıcı"  deger={toplamKullanici} alt="Aktif üyeler" />
-        <StatKart baslik="Toplam Admin"     deger={adminler.length} alt="system_admin" />
+        <StatKart baslik="Toplam Admin"     deger={filtreAdminler.length} alt="system_admin" />
         <StatKart baslik="Bugün Bildirim"   deger={bugunBildirim} alt={sonIslem !== "—" ? `Son: ${sonIslem}` : undefined} />
       </div>
 
@@ -748,7 +864,8 @@ export default function AdminPage() {
           <TabButon aktif={aktifTab === "admin-yonetimi"} onClick={() => setAktifTab("admin-yonetimi")}>Admin Yönetimi</TabButon>
         )}
         <TabButon aktif={aktifTab === "bildirim"}      onClick={() => setAktifTab("bildirim")}>Bildirim Gönder</TabButon>
-        <TabButon aktif={aktifTab === "denetim"}       onClick={() => setAktifTab("denetim")}>Denetim Kaydı</TabButon>
+        <TabButon aktif={aktifTab === "denetim"}        onClick={() => setAktifTab("denetim")}>Denetim Kaydı</TabButon>
+        <TabButon aktif={aktifTab === "surum-notlari"} onClick={() => setAktifTab("surum-notlari")}>Sürüm Notları</TabButon>
         <TabButon aktif={aktifTab === "destek"}        onClick={() => setAktifTab("destek")}>Destek</TabButon>
       </div>
 
@@ -772,21 +889,23 @@ export default function AdminPage() {
             Sisteme admin yetkisi verilmiş hesaplar. Yönetmek için "Admin Yönetimi" sekmesini kullan.
           </p>
           <Tablo basliklar={["E-posta", "Ad Soyad", "Şirket", "Rol", "Kayıt"]} bos={filtreAdminler.length === 0}>
-            {filtreAdminler.map((k) => (
-              <Satir key={k.id}>
-                <td className="py-3 px-4 font-mono text-xs" style={{ color: "var(--leaf)" }}>{k.email}</td>
-                <Hucre renk="#ffffff">{k.full_name ?? "—"}</Hucre>
-                <Hucre>{k.sirket_adi ?? "—"}</Hucre>
-                <Hucre>
-                  {k.rol ? (
-                    <Chip label={k.rol === "pilot" ? "Pilot" : "Co-Pilot"}
-                      renk={k.rol === "pilot" ? "#22c55e" : "#94a3b8"}
-                      bg={k.rol === "pilot" ? "rgba(34,197,94,0.15)" : "rgba(148,163,184,0.15)"} />
-                  ) : "—"}
-                </Hucre>
-                <Hucre renk="#64748b">{new Date(k.created_at).toLocaleDateString("tr-TR")}</Hucre>
-              </Satir>
-            ))}
+            {filtreAdminler.map((k) => {
+              const isOwner = k.email === "destek@pilotsensin.com";
+              return (
+                <Satir key={k.id}>
+                  <td className="py-3 px-4 font-mono text-xs" style={{ color: "var(--leaf)" }}>{k.email}</td>
+                  <Hucre renk="var(--text-primary)">{k.full_name ?? "—"}</Hucre>
+                  <Hucre>{k.sirket_adi ?? "—"}</Hucre>
+                  <Hucre>
+                    <Chip
+                      label={isOwner ? "Uygulama Sahibi" : "Sistem Admin"}
+                      renk={isOwner ? "var(--leaf)" : "#6366f1"}
+                      bg={isOwner ? "var(--mint)" : "rgba(99,102,241,0.1)"} />
+                  </Hucre>
+                  <Hucre renk="#64748b">{new Date(k.created_at).toLocaleDateString("tr-TR")}</Hucre>
+                </Satir>
+              );
+            })}
           </Tablo>
         </div>
       )}
@@ -872,7 +991,7 @@ export default function AdminPage() {
               </div>
               <div>
                 <label className="text-xs mb-2 block" style={{ color: "#64748b" }}>Tip</label>
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2 flex-wrap items-center">
                   {(["kritik", "duyuru", "guncelleme"] as BildirimTip[]).map((t) => (
                     <button key={t} type="button" onClick={() => setBildTip(t)}
                       className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
@@ -884,11 +1003,38 @@ export default function AdminPage() {
                       {tipEtiket(t)}
                     </button>
                   ))}
+                  {customTipler.map((t) => (
+                    <span key={t} className="flex items-center gap-1">
+                      <button type="button" onClick={() => setBildTip(t)}
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                        style={{
+                          background: bildTip === t ? "#a855f722" : "rgba(255,255,255,0.04)",
+                          color:  bildTip === t ? "#a855f7" : "#64748b",
+                          border: bildTip === t ? "1px solid #a855f744" : "1px solid rgba(0,0,0,0.08)",
+                        }}>
+                        {t}
+                      </button>
+                      <button type="button" onClick={() => customTipSil(t)}
+                        className="text-xs" style={{ color: "#ef4444" }} title="Kaldır">×</button>
+                    </span>
+                  ))}
+                  <span className="flex items-center gap-1">
+                    <input value={yeniTipInput} onChange={(e) => setYeniTipInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); customTipEkle(); } }}
+                      placeholder="+ Özel tip" maxLength={20}
+                      className="text-xs px-2 py-1.5 rounded-lg outline-none"
+                      style={{ width: 90, background: "rgba(0,0,0,0.04)", border: "1px dashed rgba(0,0,0,0.15)", color: "#64748b" }} />
+                    {yeniTipInput.trim() && (
+                      <button type="button" onClick={customTipEkle}
+                        className="text-xs px-2 py-1.5 rounded-lg"
+                        style={{ background: "#a855f722", color: "#a855f7" }}>Ekle</button>
+                    )}
+                  </span>
                 </div>
               </div>
               <div>
                 <label className="text-xs mb-2 block" style={{ color: "#64748b" }}>Hedef Kitle</label>
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2 flex-wrap items-center">
                   {(["tumu", "pilot", "copilot"] as BildirimHedef[]).map((h) => (
                     <button key={h} type="button" onClick={() => setBildHedef(h)}
                       className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
@@ -900,6 +1046,33 @@ export default function AdminPage() {
                       {hedefEtiket(h)}
                     </button>
                   ))}
+                  {customHedefler.map((h) => (
+                    <span key={h} className="flex items-center gap-1">
+                      <button type="button" onClick={() => setBildHedef(h)}
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                        style={{
+                          background: bildHedef === h ? "var(--mint)" : "rgba(255,255,255,0.04)",
+                          color:  bildHedef === h ? "var(--leaf)" : "#64748b",
+                          border: bildHedef === h ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid rgba(0,0,0,0.08)",
+                        }}>
+                        {h}
+                      </button>
+                      <button type="button" onClick={() => customHedefSil(h)}
+                        className="text-xs" style={{ color: "#ef4444" }} title="Kaldır">×</button>
+                    </span>
+                  ))}
+                  <span className="flex items-center gap-1">
+                    <input value={yeniHedefInput} onChange={(e) => setYeniHedefInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); customHedefEkle(); } }}
+                      placeholder="+ Özel kitle" maxLength={20}
+                      className="text-xs px-2 py-1.5 rounded-lg outline-none"
+                      style={{ width: 100, background: "rgba(0,0,0,0.04)", border: "1px dashed rgba(0,0,0,0.15)", color: "#64748b" }} />
+                    {yeniHedefInput.trim() && (
+                      <button type="button" onClick={customHedefEkle}
+                        className="text-xs px-2 py-1.5 rounded-lg"
+                        style={{ background: "var(--mint)", color: "var(--leaf)" }}>Ekle</button>
+                    )}
+                  </span>
                 </div>
               </div>
               <button type="submit" disabled={bildirimYuk || !bildBaslik.trim() || !bildMesaj.trim()}
@@ -928,6 +1101,11 @@ export default function AdminPage() {
                     <span className="text-xs" style={{ color: "#475569" }}>{hedefEtiket(b.hedef)}</span>
                     <span className="text-xs" style={{ color: "#475569" }}>{new Date(b.olusturma).toLocaleString("tr-TR")}</span>
                   </div>
+                  {b.admin_email && (
+                    <p className="text-[10px] mt-1.5 font-mono" style={{ color: "#94a3b8" }}>
+                      Gönderen: {b.admin_email}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
@@ -955,7 +1133,7 @@ export default function AdminPage() {
                   <Hucre>
                     {log.detay ? (
                       <pre className="text-xs rounded p-2 max-w-xs overflow-x-auto"
-                        style={{ background: "rgba(0,0,0,0.3)", color: "#94a3b8", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                        style={{ background: "rgba(0,0,0,0.06)", border: "1px solid rgba(0,0,0,0.08)", color: "var(--text-secondary)", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
                         {JSON.stringify(log.detay, null, 2)}
                       </pre>
                     ) : "—"}
@@ -964,6 +1142,123 @@ export default function AdminPage() {
               ))}
             </Tablo>
           )}
+        </div>
+      )}
+
+      {/* ── Sürüm Notları ── */}
+      {aktifTab === "surum-notlari" && (
+        <div className="space-y-4">
+          {/* Durum mesajı */}
+          {surumIslem === "basari" && <p className="text-sm px-3 py-2 rounded-lg" style={{ background: "rgba(34,197,94,0.08)", color: "#22c55e" }}>✅ {surumMesaj}</p>}
+          {surumIslem === "hata"   && <p className="text-sm px-3 py-2 rounded-lg" style={{ background: "rgba(239,68,68,0.08)", color: "#ef4444" }}>❌ {surumMesaj}</p>}
+
+          {/* Üst bar */}
+          {superAdmin && (
+            <div className="flex justify-end">
+              <button onClick={() => setSurumForm(!surumForm)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold"
+                style={{ background: "var(--leaf)", color: "#fff" }}>
+                + Yeni Sürüm Yayınla
+              </button>
+            </div>
+          )}
+
+          {/* Form */}
+          {surumForm && superAdmin && (
+            <div className="rounded-xl p-5 space-y-4" style={{ background: "#FAFAFA", border: "1px solid var(--mint)" }}>
+              <h2 className="text-sm font-semibold" style={{ color: "var(--leaf)" }}>Yeni Sürüm</h2>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs mb-1 block" style={{ color: "#64748b" }}>Sürüm numarası</label>
+                  <input value={surumStr} onChange={(e) => setSurumStr(e.target.value)}
+                    placeholder="v0.9.3" className={inputCls} style={inputSt} />
+                </div>
+                <div>
+                  <label className="text-xs mb-1 block" style={{ color: "#64748b" }}>Başlık</label>
+                  <input value={surumBaslik} onChange={(e) => setSurumBaslik(e.target.value)}
+                    placeholder="Haziran Güncellemesi" className={inputCls} style={inputSt} />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs mb-1 block" style={{ color: "#64748b" }}>Kısa özet (opsiyonel)</label>
+                <input value={surumOzet} onChange={(e) => setSurumOzet(e.target.value)}
+                  placeholder="Bu sürümde neler değişti?" className={inputCls} style={inputSt} />
+              </div>
+              <div>
+                <label className="text-xs mb-1 block" style={{ color: "#64748b" }}>Maddeler</label>
+                <div className="space-y-2">
+                  {surumMaddeler.map((m, i) => (
+                    <div key={i} className="flex gap-2">
+                      <input value={m}
+                        onChange={(e) => { const arr = [...surumMaddeler]; arr[i] = e.target.value; setSurumMaddeler(arr); }}
+                        placeholder={`Madde ${i + 1}`} className={inputCls} style={inputSt} />
+                      {surumMaddeler.length > 1 && (
+                        <button type="button" onClick={() => setSurumMaddeler(surumMaddeler.filter((_, j) => j !== i))}
+                          className="text-xs px-2 rounded-lg" style={{ color: "#ef4444", border: "1px solid rgba(239,68,68,0.2)" }}>
+                          ×
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button type="button" onClick={() => setSurumMaddeler([...surumMaddeler, ""])}
+                    className="text-xs px-3 py-1.5 rounded-lg" style={{ background: "var(--mint)", color: "var(--leaf)" }}>
+                    + Madde Ekle
+                  </button>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <button onClick={() => surumKaydet(true)} disabled={surumIslem === "yukleniyor"}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
+                  style={{ background: "var(--leaf)", color: "#fff" }}>
+                  {surumIslem === "yukleniyor" ? "İşleniyor..." : "Yayınla"}
+                </button>
+                <button onClick={() => surumKaydet(false)} disabled={surumIslem === "yukleniyor"}
+                  className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
+                  style={{ background: "#F3F4F6", color: "#374151" }}>
+                  Taslak Kaydet
+                </button>
+                <button onClick={() => setSurumForm(false)}
+                  className="text-sm text-gray-400 hover:text-gray-700 transition-colors">
+                  İptal
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Sürüm listesi */}
+          <div className="rounded-xl overflow-hidden" style={{ background: "#FAFAFA", border: "1px solid var(--mint)" }}>
+            {appVersions.length === 0 ? (
+              <p className="py-10 text-center text-sm" style={{ color: "#475569" }}>Henüz sürüm yok.</p>
+            ) : appVersions.map((v) => (
+              <div key={v.id} className="flex items-start gap-4 px-5 py-4"
+                style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <span className="text-sm font-semibold" style={{ color: "var(--leaf)" }}>{v.version_string}</span>
+                    <span className="text-xs px-2 py-0.5 rounded-full"
+                      style={v.yayinlandi
+                        ? { background: "rgba(34,197,94,0.1)", color: "#22c55e" }
+                        : { background: "rgba(148,163,184,0.1)", color: "#94a3b8" }}>
+                      {v.yayinlandi ? "Yayında" : "Taslak"}
+                    </span>
+                    <span className="text-xs" style={{ color: "#94a3b8" }}>
+                      {new Date(v.release_date).toLocaleDateString("tr-TR")}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-700">{v.baslik}</p>
+                  {v.ozet && <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>{v.ozet}</p>}
+                  <ul className="mt-2 space-y-0.5">
+                    {(v.maddeler ?? []).slice(0, 3).map((m, i) => (
+                      <li key={i} className="text-xs" style={{ color: "#94a3b8" }}>· {m}</li>
+                    ))}
+                    {(v.maddeler ?? []).length > 3 && (
+                      <li className="text-xs" style={{ color: "#94a3b8" }}>+{v.maddeler.length - 3} daha</li>
+                    )}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

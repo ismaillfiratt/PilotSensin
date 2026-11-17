@@ -12,7 +12,7 @@ export const useTema = create<TemaStore>()(
   persist(
     (set) => ({
       tema: "light",
-      setTema: (tema) => set({ tema }),
+      setTema: (tema) => { if (tema === "dark") return; set({ tema }); },
     }),
     {
       name: "pilotsensin-tema-v2",

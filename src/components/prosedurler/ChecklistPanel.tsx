@@ -17,13 +17,32 @@ import { onaylaSil } from "@/lib/onay";
 import { useGeriAl } from "@/store/geriAl";
 import KomboSecici from "./KomboSecici";
 
-// ── Sekmeler: Günlük | Haftalık | Aylık | Özel ──────────────────────────
-const SEKME_LISTESI: { value: ChecklistSikligi; label: string }[] = [
+type SiklikSekmesi = "tumu" | ChecklistSikligi;
+
+// Sekme bar (Tümü dahil)
+const SEKME_LISTESI: { value: SiklikSekmesi; label: string }[] = [
+  { value: "tumu",     label: "Tümü"     },
   { value: "gunluk",   label: "Günlük"   },
   { value: "haftalik", label: "Haftalık" },
   { value: "aylik",    label: "Aylık"    },
   { value: "ozel",     label: "Özel"     },
 ];
+
+// Modal sıklık seçici (Tümü hariç)
+const SIKLIGI_LISTESI: { value: ChecklistSikligi; label: string }[] = [
+  { value: "gunluk",   label: "Günlük"   },
+  { value: "haftalik", label: "Haftalık" },
+  { value: "aylik",    label: "Aylık"    },
+  { value: "ozel",     label: "Özel"     },
+];
+
+const SIKLIGI_LABEL: Record<string, string> = {
+  gunluk: "Günlük", haftalik: "Haftalık", aylik: "Aylık", ozel: "Özel",
+};
+
+const SIKLIK_SIRA: Record<string, number> = {
+  gunluk: 1, haftalik: 2, aylik: 3, ozel: 4,
+};
 
 // ── Otomatik kontrol badge ───────────────────────────────────────────────
 function OtomatikBadge({ tip }: { tip: OtomatikKontrol }) {
@@ -74,7 +93,7 @@ export default function ChecklistPanel() {
   const allKategoriler = tumKategoriler(ozelKategoriler, gizliVarsayilanKategoriler);
   const allSorumlular  = tumSorumlular(ozelSorumlular, gizliVarsayilanSorumlular);
 
-  const [sekme,      setSekme]      = useState<ChecklistSikligi>("gunluk");
+  const [sekme,      setSekme]      = useState<SiklikSekmesi>("tumu");
   const [maddeModal, setMaddeModal] = useState(false);
   const [yeni, setYeni] = useState<YeniForm>({
     baslik: "", kategori: allKategoriler[0] ?? "Finansal Sağlık",
@@ -82,13 +101,36 @@ export default function ChecklistPanel() {
     kritiklik: "orta", sikligi: "gunluk", ozelGunSayisi: 30,
   });
 
-  // Her sekme açıldığında form sıklığını güncelle
-  const acSekme = (s: ChecklistSikligi) => {
+  const acSekme = (s: SiklikSekmesi) => {
     setSekme(s);
-    setYeni(f => ({ ...f, sikligi: s }));
+    if (s !== "tumu") setYeni(f => ({ ...f, sikligi: s }));
   };
 
-  const filtreli = useMemo(() => checklist.filter(c => c.sikligi === sekme || (sekme === "ozel" && (c as any).sikligi === "uc_aylik")), [checklist, sekme]);
+  const sekmeCounts = useMemo(() => ({
+    tumu:     checklist.filter(c => !c.silindi).length,
+    gunluk:   checklist.filter(c => !c.silindi && c.sikligi === "gunluk").length,
+    haftalik: checklist.filter(c => !c.silindi && c.sikligi === "haftalik").length,
+    aylik:    checklist.filter(c => !c.silindi && c.sikligi === "aylik").length,
+    ozel:     checklist.filter(c => !c.silindi && (c.sikligi === "ozel" || (c as any).sikligi === "uc_aylik")).length,
+  }), [checklist]);
+
+  const filtreli = useMemo(() => {
+    const base = checklist.filter(c =>
+      !c.silindi && (
+        sekme === "tumu" ||
+        c.sikligi === sekme ||
+        (sekme === "ozel" && (c as any).sikligi === "uc_aylik")
+      )
+    );
+    if (sekme === "tumu") {
+      return [...base].sort((a, b) => {
+        const sa = SIKLIK_SIRA[a.sikligi] ?? 99;
+        const sb = SIKLIK_SIRA[b.sikligi] ?? 99;
+        return sa - sb;
+      });
+    }
+    return base;
+  }, [checklist, sekme]);
   const otomatikler = filtreli.filter(c => c.otomatikKontrol);
   const manuellar   = filtreli.filter(c => !c.otomatikKontrol);
 
@@ -140,36 +182,43 @@ export default function ChecklistPanel() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => checklistSifirla(sekme)} title="Dönemi sıfırla"
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 border border-gray-200 hover:text-[var(--leaf)] hover:border-[var(--forest-200, #B3E8C8)] transition-all">
+            <button
+              onClick={() => sekme !== "tumu" && checklistSifirla(sekme as ChecklistSikligi)}
+              disabled={sekme === "tumu"}
+              title={sekme === "tumu" ? "Dönemi sıfırlamak için bir sıklık seç" : "Dönemi sıfırla"}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 border border-gray-200 hover:text-[var(--leaf)] hover:border-[var(--forest-200, #B3E8C8)] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
             <button onClick={() => setMaddeModal(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--mint)] text-[var(--leaf)] text-xs font-bold border border-[var(--forest-200, #B3E8C8)] hover:bg-[var(--forest-200, #B3E8C8)] transition-all">
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--forest)] text-white text-xs font-medium hover:opacity-90 transition-all">
               <Plus className="w-3.5 h-3.5" /> Madde Ekle
             </button>
           </div>
         </div>
 
-        {/* Sekme butonları: Günlük | Haftalık | Aylık | Özel */}
+        {/* Sekme butonları: Tümü | Günlük | Haftalık | Aylık | Özel */}
         <div className="flex gap-1 p-1 rounded-xl bg-gray-50 border border-gray-200 mb-4">
           {SEKME_LISTESI.map(({ value, label }) => {
-            const pending = checklist.filter(c => {
-              const sikMatch = c.sikligi === value || (value === "ozel" && (c as any).sikligi === "uc_aylik");
-              return sikMatch && isDue(c) && !c.otomatikKontrol;
-            }).length;
+            const count = sekmeCounts[value as keyof typeof sekmeCounts] ?? 0;
             return (
               <button key={value} onClick={() => acSekme(value)}
                 className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all"
                 style={{
-                  backgroundColor: sekme === value ? "var(--mint)" : "transparent",
-                  color:           sekme === value ? "var(--leaf)" : "#94a3b8",
-                  border:          sekme === value ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid transparent",
+                  background: sekme === value ? "rgba(15,61,46,0.08)" : "transparent",
+                  color:      sekme === value ? "var(--forest)"       : "var(--text-secondary, #94a3b8)",
+                  border:     sekme === value ? "0.5px solid rgba(15,61,46,0.2)" : "0.5px solid transparent",
                 }}>
                 {label}
-                {pending > 0 && (
-                  <span className="w-4 h-4 rounded-full bg-[#ef4444] text-gray-800 text-[9px] font-bold flex items-center justify-center">
-                    {pending > 9 ? "9+" : pending}
+                {count > 0 && (
+                  <span
+                    className="text-[9px] font-bold px-1 rounded-full min-w-[14px] text-center"
+                    style={{
+                      background: "var(--bg-secondary, rgba(0,0,0,0.06))",
+                      color:      "var(--text-tertiary, #94a3b8)",
+                    }}
+                  >
+                    {count}
                   </span>
                 )}
               </button>
@@ -177,7 +226,6 @@ export default function ChecklistPanel() {
           })}
         </div>
 
-        {/* Özel sekme: gün açıklaması */}
         {sekme === "ozel" && (
           <p className="text-xs text-gray-400 mb-3">
             Özel aralıkla tanımlanmış kontroller — her madde kendi gün sayısına göre hatırlatılır.
@@ -206,8 +254,7 @@ export default function ChecklistPanel() {
             </p>
             {otomatikler.map(item => (
               <div key={item.id}
-                className="flex items-center gap-3 px-4 py-2.5 rounded-xl border"
-                style={{ backgroundColor: "var(--mint)", borderColor: "var(--mint)" }}>
+                className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-gray-100 bg-white">
                 <Lock className="w-4 h-4 text-[var(--leaf)] shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-gray-800 font-medium truncate">{item.baslik}</p>
@@ -233,18 +280,19 @@ export default function ChecklistPanel() {
           )}
           {manuellar.map((item, i) => {
             const done   = !isDue(item);
-            const kRenk  = getKategoriRenk(item.kategori);
+            const _kRenk = getKategoriRenk(item.kategori); void _kRenk;
             const krRenk = item.kritiklik ? KRITIKLIK_RENK[item.kritiklik] : null;
             return (
               <motion.div key={item.id}
                 initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all group"
-                style={{
-                  backgroundColor: done ? "rgba(34,197,94,0.06)" : "rgba(255,255,255,0.03)",
-                  borderColor:     done ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.07)",
-                }}>
+                className="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-100 bg-white transition-all group">
                 {/* Checkbox — toggle: done↔undone */}
-                <button onClick={() => checklistToggle(item.id)} className="shrink-0">
+                <button
+                  onClick={() => !item.otomatikKontrol && checklistToggle(item.id)}
+                  disabled={!!item.otomatikKontrol}
+                  title={item.otomatikKontrol ? "Bu kontrol otomatik yapılır — sistem her 5 dakikada günceller" : undefined}
+                  className="shrink-0 disabled:cursor-not-allowed"
+                >
                   {done
                     ? <CheckCircle2 className="w-5 h-5 text-[#22c55e]" />
                     : <Circle       className="w-5 h-5 text-gray-400 group-hover:text-[var(--leaf)] transition-colors" />
@@ -252,10 +300,26 @@ export default function ChecklistPanel() {
                 </button>
 
                 {/* İçerik */}
-                <div className="flex-1 min-w-0 cursor-pointer" onClick={() => checklistToggle(item.id)}>
-                  <p className={`text-sm font-medium leading-snug ${done ? "line-through text-gray-400" : "text-gray-800"}`}>
-                    {item.baslik}
-                  </p>
+                <div
+                  className={`flex-1 min-w-0 ${item.otomatikKontrol ? "cursor-default" : "cursor-pointer"}`}
+                  onClick={() => !item.otomatikKontrol && checklistToggle(item.id)}
+                >
+                  <div className="flex items-center gap-2">
+                    <p className={`text-sm font-medium leading-snug ${done ? "line-through text-gray-400" : "text-gray-800"}`}>
+                      {item.baslik}
+                    </p>
+                    {sekme === "tumu" && (
+                      <span
+                        className="text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0"
+                        style={{
+                          background: "var(--bg-secondary, #f3f4f6)",
+                          color: "var(--text-secondary, #6b7280)",
+                        }}
+                      >
+                        {SIKLIGI_LABEL[item.sikligi] ?? item.sikligi}
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                     <p className="text-[10px] text-gray-400">{item.sorumlu}</p>
                     {item.sikligi === "ozel" && item.ozelGunSayisi && (
@@ -270,12 +334,10 @@ export default function ChecklistPanel() {
 
                 {/* Kritiklik badge */}
                 {krRenk && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg shrink-0 hidden sm:inline"
-                    style={{ color: krRenk.color, backgroundColor: krRenk.bg }}>{item.kritiklik}</span>
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-lg shrink-0 hidden sm:inline bg-gray-100 text-gray-500">{item.kritiklik}</span>
                 )}
                 {/* Kategori badge */}
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg shrink-0 hidden md:inline"
-                  style={{ color: kRenk.color, backgroundColor: kRenk.bg }}>
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-lg shrink-0 hidden md:inline bg-gray-100 text-gray-500">
                   {item.kategori.split(" ")[0]}
                 </span>
 
@@ -319,13 +381,13 @@ export default function ChecklistPanel() {
                 <div>
                   <label className="text-xs text-gray-400 font-medium block mb-1.5">Sıklık</label>
                   <div className="flex gap-1 p-1 rounded-xl bg-gray-50 border border-gray-200">
-                    {SEKME_LISTESI.map(({ value, label }) => (
+                    {SIKLIGI_LISTESI.map(({ value, label }) => (
                       <button key={value} type="button" onClick={() => setYeni(f => ({ ...f, sikligi: value }))}
                         className="flex-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all"
                         style={{
-                          backgroundColor: yeni.sikligi === value ? "var(--mint)" : "transparent",
-                          color:           yeni.sikligi === value ? "var(--leaf)" : "#94a3b8",
-                          border:          yeni.sikligi === value ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid transparent",
+                          background: yeni.sikligi === value ? "rgba(15,61,46,0.08)" : "transparent",
+                          color:      yeni.sikligi === value ? "var(--forest)"       : "var(--text-secondary, #94a3b8)",
+                          border:     yeni.sikligi === value ? "0.5px solid rgba(15,61,46,0.2)" : "0.5px solid transparent",
                         }}>
                         {label}
                       </button>

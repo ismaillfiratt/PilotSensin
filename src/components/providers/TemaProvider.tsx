@@ -1,28 +1,24 @@
 "use client";
 
 import { useEffect } from "react";
-import { useTema } from "@/store/tema";
+import { useTema }   from "@/store/tema";
+
+function applyTema(_tema: string) {
+  // "system" ve "dark" her zaman "light" olarak uygulanır — dark mod henüz aktif değil
+  document.documentElement.setAttribute("data-theme", "light");
+}
 
 export default function TemaProvider({ children }: { children: React.ReactNode }) {
-  const { tema } = useTema();
+  // Reaktif olarak tema'yı al — state değişince component re-render olur,
+  // useEffect tekrar tetiklenir ve data-theme attribute güncellenir.
+  const tema = useTema((s) => s.tema);
 
+  // Tema değiştiğinde HTML attribute'unu güncelle
   useEffect(() => {
-    const html = document.documentElement;
-
-    const guncelle = (isDark: boolean) => {
-      html.setAttribute("data-theme", isDark ? "dark" : "light");
-    };
-
-    if (tema === "system") {
-      const mq = window.matchMedia("(prefers-color-scheme: dark)");
-      guncelle(mq.matches);
-      const listener = (e: MediaQueryListEvent) => guncelle(e.matches);
-      mq.addEventListener("change", listener);
-      return () => mq.removeEventListener("change", listener);
-    } else {
-      guncelle(tema === "dark");
-    }
+    applyTema(tema);
   }, [tema]);
+
+  // OS dark mod dinleyicisi devre dışı — dark mod henüz aktif değil
 
   return <>{children}</>;
 }

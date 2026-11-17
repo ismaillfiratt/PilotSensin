@@ -30,7 +30,7 @@ export default function SonHareketler() {
         <Link
           href="/nakit-akisi"
           className="text-xs font-medium transition-colors hover:opacity-75"
-          style={{ color: "var(--leaf)" }}
+          style={{ color: "var(--text-secondary)" }}
         >
           Tümünü gör →
         </Link>

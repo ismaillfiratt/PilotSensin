@@ -4,8 +4,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   TrendingUp, DollarSign, Package, Users, UserCheck, Shield,
-  ChevronDown, ChevronUp, ChevronRight, Check, Plus, Trash2, X, Pencil, List,
+  ChevronDown, ChevronUp, ChevronRight, Check, Plus, Trash2, X, Pencil, List, RotateCcw,
 } from "lucide-react";
+import { useGeriAl } from "@/store/geriAl";
 import {
   SOP_BELGE_SABLON_GRUPLARI, getKategoriRenk,
   type SopBelgeSablon,
@@ -15,7 +16,6 @@ import {
   type OzelSopSablonMaddesi, type OzelGrubu,
 } from "@/store/prosedurler";
 import { onaylaSil } from "@/lib/onay";
-import { useGeriAl } from "@/store/geriAl";
 import KomboSecici from "./KomboSecici";
 
 const ICONS: Record<string, React.ElementType> = {
@@ -32,7 +32,9 @@ export default function SopSablonPanel() {
     gizliVarsayilanKategoriler, gizliVarsayilanSorumlular,
     ozelSopGrupAdlari, sopGrupAdGuncelle,
     ozelSopSablonGruplari, ozelSopGrupEkle, ozelSopGrupSil,
+    gizliSopGrupIdleri, sopGrupGizle, sopGrupGoster,
   } = useProsedurler();
+  const geriAl = useGeriAl.getState;
 
   const allKategoriler = tumKategoriler(ozelKategoriler, gizliVarsayilanKategoriler);
   const allSorumlular  = tumSorumlular(ozelSorumlular, gizliVarsayilanSorumlular);
@@ -84,6 +86,7 @@ export default function SopSablonPanel() {
   const duzenleAdimSil = (i: number) =>
     setDuzenleForm(f => ({ ...f, adimlar: f.adimlar.filter((_, idx) => idx !== i).map((a, idx) => ({ ...a, sira: idx + 1 })) }));
 
+  const [gizliPaneliAcik, setGizliPaneliAcik] = useState(false);
   const [ozelModal,     setOzelModal]     = useState<string | null>(null);
   const [duzenleGrup,   setDuzenleGrup]   = useState<string | null>(null);
   const [yeniGrupAd,    setYeniGrupAd]    = useState("");
@@ -98,7 +101,7 @@ export default function SopSablonPanel() {
     adimlar: [{ sira: 1, aciklama: "" }],
   });
 
-  const ekliBasliklar = new Set(prosedurler.map(p => p.baslik));
+  const ekliBasliklar = new Set(prosedurler.filter(p => !p.silindi).map(p => p.baslik));
 
   const grupSablonlari = (grupId: string, builtin: SopBelgeSablon[]) => {
     const filtered = builtin.filter(s =>
@@ -108,18 +111,11 @@ export default function SopSablonPanel() {
     return [...filtered, ...custom];
   };
 
-  const handleToggle = async (sablon: SopBelgeSablon | OzelSopSablonMaddesi) => {
+  const handleToggle = (sablon: SopBelgeSablon | OzelSopSablonMaddesi) => {
     if (ekliBasliklar.has(sablon.baslik)) {
-      const p = prosedurler.find(x => x.baslik === sablon.baslik);
+      const p = prosedurler.find(x => x.baslik === sablon.baslik && !x.silindi);
       if (!p) return;
-      const { onaylandi } = await onaylaSil({ tip: "prosedur", isim: sablon.baslik });
-      if (!onaylandi) return;
       prosedurSil(p.id);
-      useGeriAl.getState().goster({
-        mesaj: `"${sablon.baslik}" kaldırıldı.`,
-        sureMs: 10000,
-        geriAlFn: async () => useProsedurler.getState().prosedurGeriAl(p.id),
-      });
     } else {
       prosedurEkle({
         baslik:   sablon.baslik,
@@ -168,19 +164,40 @@ export default function SopSablonPanel() {
     });
   };
 
+  const handleGrupSil = async (grup: { id: string; baslik: string }) => {
+    const isOzel = grup.id.startsWith("sopozel-");
+    const { onaylandi } = await onaylaSil({ tip: "sopGrup", isim: grup.baslik });
+    if (!onaylandi) return;
+    if (isOzel) {
+      ozelSopGrupSil(grup.id);
+    } else {
+      sopGrupGizle(grup.id);
+    }
+    geriAl().goster({
+      mesaj: `"${grup.baslik}" grubu kaldırıldı`,
+      sureMs: 10000,
+      geriAlFn: async () => {
+        if (isOzel) return;
+        sopGrupGoster(grup.id);
+      },
+    });
+  };
+
   const tumGruplar: Array<{
     id: string; baslik: string; aciklama: string;
     icon: string; riskSeviyesi: "yuksek" | "kritik";
     builtin: SopBelgeSablon[];
   }> = [
-    ...SOP_BELGE_SABLON_GRUPLARI.map(g => ({
-      id: g.id,
-      baslik: ozelSopGrupAdlari[g.id] ?? g.baslik,
-      aciklama: g.aciklama,
-      icon: g.icon,
-      riskSeviyesi: g.riskSeviyesi,
-      builtin: g.sablonlar,
-    })),
+    ...SOP_BELGE_SABLON_GRUPLARI
+      .filter(g => !gizliSopGrupIdleri.includes(g.id))
+      .map(g => ({
+        id: g.id,
+        baslik: ozelSopGrupAdlari[g.id] ?? g.baslik,
+        aciklama: g.aciklama,
+        icon: g.icon,
+        riskSeviyesi: g.riskSeviyesi,
+        builtin: g.sablonlar,
+      })),
     ...ozelSopSablonGruplari.map(g => ({
       id: g.id,
       baslik: ozelSopGrupAdlari[g.id] ?? g.baslik,
@@ -200,7 +217,7 @@ export default function SopSablonPanel() {
         </div>
         <button
           onClick={() => { setYeniGrup({ baslik: "", aciklama: "", riskSeviyesi: "yuksek" }); setYeniGrupModal(true); }}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--mint)] text-[var(--leaf)] text-xs font-bold border border-[var(--forest-200, #B3E8C8)] hover:bg-[var(--forest-100, #D9F2E4)] transition-all shrink-0"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--forest)] text-white text-xs font-medium hover:opacity-90 transition-all shrink-0"
         >
           <Plus className="w-3.5 h-3.5" /> Yeni Grup
         </button>
@@ -214,9 +231,6 @@ export default function SopSablonPanel() {
           const gorunen  = grupSablonlari(grup.id, grup.builtin);
           const tumEkli  = gorunen.length > 0 && gorunen.every(s => ekliBasliklar.has(s.baslik));
           const isCustom = grup.id.startsWith("sopozel-");
-          const katRenk  = grup.riskSeviyesi === "kritik"
-            ? { color: "#ef4444", bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.2)" }
-            : { color: "#f97316", bg: "rgba(249,115,22,0.1)", border: "rgba(249,115,22,0.2)" };
 
           const ozet = gorMini ? gorunen : gorunen.slice(0, 3);
           const fazla = gorunen.length - 3;
@@ -224,20 +238,13 @@ export default function SopSablonPanel() {
           return (
             <div
               key={grup.id}
-              className="rounded-xl border overflow-hidden"
-              style={{
-                borderColor: acik ? katRenk.color + "40" : "rgba(255,255,255,0.07)",
-                backgroundColor: "rgba(255,255,255,0.02)",
-              }}
+              className={`rounded-xl border overflow-hidden bg-white ${acik ? "border-gray-300" : "border-gray-200"}`}
             >
               <div className="p-4">
                 {/* Kart başlığı */}
                 <div className="flex items-start gap-3 mb-3">
-                  <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: katRenk.bg, border: `1px solid ${katRenk.border}` }}
-                  >
-                    <Icon className="w-4 h-4" style={{ color: katRenk.color }} />
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-gray-100 border border-gray-200">
+                    <Icon className="w-4 h-4 text-gray-400" />
                   </div>
                   <div className="flex-1 min-w-0">
                     {duzenleGrup === grup.id ? (
@@ -259,20 +266,21 @@ export default function SopSablonPanel() {
                       </div>
                     ) : (
                       <div className="flex items-center gap-1.5">
-                        <p className="text-sm font-semibold text-gray-800 truncate">{grup.baslik}</p>
+                        <p className="text-sm font-semibold text-[#0F172A] truncate">{grup.baslik}</p>
                         <button onClick={() => { setDuzenleGrup(grup.id); setYeniGrupAd(grup.baslik); }}
                           className="text-gray-500 hover:text-[var(--leaf)] transition-colors shrink-0">
                           <Pencil className="w-3 h-3" />
                         </button>
-                        {isCustom && (
-                          <button onClick={() => ozelSopGrupSil(grup.id)}
-                            className="text-gray-500 hover:text-[#ef4444] transition-colors shrink-0">
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        )}
+                        <button
+                          onClick={() => handleGrupSil(grup)}
+                          className="text-gray-400 hover:text-[#C97676] transition-colors shrink-0"
+                          title="Grubu kaldır"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
                       </div>
                     )}
-                    <p className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">{grup.aciklama}</p>
+                    <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{grup.aciklama}</p>
                   </div>
                 </div>
 
@@ -284,7 +292,7 @@ export default function SopSablonPanel() {
                     <>
                       {ozet.map((s, i) => {
                         const ekli    = ekliBasliklar.has(s.baslik);
-                        const kRenk   = getKategoriRenk(s.kategori);
+                        void getKategoriRenk; // kRenk artık kullanılmıyor
                         const isOzel  = "id" in s;
                         const sKey    = `${grup.id}-${s.baslik}`;
                         const expanded = acikSablonlar.has(sKey);
@@ -298,7 +306,7 @@ export default function SopSablonPanel() {
                                 className={`w-3 h-3 shrink-0 transition-transform duration-150 ${expanded ? "rotate-90" : ""}`}
                                 style={{ color: ekli ? "#22c55e" : "#475569" }}
                               />
-                              <span className={`text-xs flex-1 leading-snug ${ekli ? "text-[#22c55e]" : "text-gray-400"}`}>
+                              <span className={`text-xs flex-1 leading-snug ${ekli ? "text-[#22c55e]" : "text-gray-700"}`}>
                                 {s.baslik}
                               </span>
                               <span className="text-[10px] text-gray-500 shrink-0 flex items-center gap-0.5">
@@ -353,15 +361,10 @@ export default function SopSablonPanel() {
                   {gorunen.length > 0 && (
                     <button
                       onClick={() => handleGrupEkle(grup.id, grup.builtin)}
-                      className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all"
-                      style={{
-                        backgroundColor: tumEkli ? "rgba(34,197,94,0.12)" : katRenk.bg,
-                        color:           tumEkli ? "#22c55e" : katRenk.color,
-                        border:          `1px solid ${tumEkli ? "rgba(34,197,94,0.3)" : katRenk.border}`,
-                      }}
+                      className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition-all"
                     >
                       {tumEkli
-                        ? <><Check className="w-3.5 h-3.5" /> Eklendi</>
+                        ? <><Check className="w-3.5 h-3.5 text-[#22c55e]" /> <span className="text-[#22c55e]">Eklendi</span></>
                         : <><Plus  className="w-3.5 h-3.5" /> Tümünü</>}
                     </button>
                   )}
@@ -379,18 +382,14 @@ export default function SopSablonPanel() {
                     <div className="p-4 space-y-2">
                       {gorunen.map((s, i) => {
                         const ekli    = ekliBasliklar.has(s.baslik);
-                        const kRenk   = getKategoriRenk(s.kategori);
+                        void getKategoriRenk; // kRenk artık kullanılmıyor
                         const isOzel  = "id" in s;
                         const sKey    = `yonet-${grup.id}-${s.baslik}`;
                         const expanded = acikSablonlar.has(sKey);
                         return (
                           <div
                             key={i}
-                            className="rounded-lg overflow-hidden"
-                            style={{
-                              backgroundColor: ekli ? "rgba(34,197,94,0.06)" : "rgba(255,255,255,0.02)",
-                              border: `1px solid ${ekli ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.05)"}`,
-                            }}
+                            className="rounded-lg overflow-hidden border border-gray-100 bg-white"
                           >
                             <div className="flex items-start gap-3 px-3 py-2.5">
                               {/* Başlık — tıkla adımları gör */}
@@ -408,10 +407,7 @@ export default function SopSablonPanel() {
                                   </p>
                                 </div>
                                 <div className="flex items-center gap-2 mt-1 ml-5 flex-wrap">
-                                  <span
-                                    className="text-[10px] font-bold px-1.5 py-0.5 rounded"
-                                    style={{ color: kRenk.color, backgroundColor: kRenk.bg }}
-                                  >
+                                  <span className="text-[10px] font-medium text-gray-500 px-1.5 py-0.5 rounded bg-gray-100">
                                     {s.kategori}
                                   </span>
                                   <span className="text-[10px] text-gray-500">{s.sorumlu}</span>
@@ -424,16 +420,16 @@ export default function SopSablonPanel() {
                                 {/* Ekle / Kaldır */}
                                 <button
                                   onClick={() => handleToggle(s)}
-                                  className="w-7 h-7 flex items-center justify-center rounded-lg transition-all hover:scale-110"
+                                  className="w-7 h-7 flex items-center justify-center rounded-lg border transition-all hover:scale-110"
                                   style={{
-                                    backgroundColor: ekli ? "rgba(34,197,94,0.12)" : katRenk.bg,
-                                    border: `1px solid ${ekli ? "rgba(34,197,94,0.3)" : katRenk.border}`,
+                                    backgroundColor: ekli ? "rgba(34,197,94,0.1)" : "transparent",
+                                    borderColor:     ekli ? "rgba(34,197,94,0.3)" : "#E2E8F0",
                                   }}
                                   title={ekli ? "SOP listesinden kaldır" : "SOP listesine ekle"}
                                 >
                                   {ekli
                                     ? <Check className="w-3.5 h-3.5 text-[#22c55e]" />
-                                    : <Plus  className="w-3.5 h-3.5" style={{ color: katRenk.color }} />}
+                                    : <Plus  className="w-3.5 h-3.5 text-gray-400" />}
                                 </button>
                                 {/* Düzenle */}
                                 <button
@@ -462,10 +458,10 @@ export default function SopSablonPanel() {
                                 <p className="text-[10px] text-gray-500 font-semibold pt-2 pb-0.5">Adımlar</p>
                                 {s.adimlar.map((adim, ai) => (
                                   <div key={ai} className="flex items-start gap-2">
-                                    <span className="w-4 h-4 rounded-full bg-[var(--mint)] border border-[var(--forest-100, #D9F2E4)] text-[var(--leaf)] text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                                    <span className="w-4 h-4 rounded-full bg-gray-100 border border-gray-200 text-gray-500 text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                                       {adim.sira}
                                     </span>
-                                    <p className="text-[11px] text-gray-500 leading-relaxed">{adim.aciklama}</p>
+                                    <p className="text-[11px] text-gray-600 leading-relaxed">{adim.aciklama}</p>
                                   </div>
                                 ))}
                               </div>
@@ -488,6 +484,49 @@ export default function SopSablonPanel() {
           );
         })}
       </div>
+
+      {/* Gizli gruplar yönetimi */}
+      {gizliSopGrupIdleri.length > 0 && (
+        <div className="mt-4 text-center">
+          <button
+            onClick={() => setGizliPaneliAcik(p => !p)}
+            className="text-xs transition-opacity hover:opacity-75 underline"
+            style={{ color: "var(--text-tertiary, #94a3b8)" }}
+          >
+            {gizliSopGrupIdleri.length} gizli grup · Yönet
+          </button>
+
+          {gizliPaneliAcik && (
+            <div
+              className="mt-3 p-3 rounded-lg text-left space-y-2"
+              style={{
+                background: "var(--bg-secondary, #f8fafc)",
+                border: "0.5px solid var(--border-default, rgba(0,0,0,0.08))",
+              }}
+            >
+              <p className="text-xs font-semibold mb-2" style={{ color: "var(--text-secondary, #64748b)" }}>
+                Gizli gruplar
+              </p>
+              {gizliSopGrupIdleri.map(id => {
+                const g = SOP_BELGE_SABLON_GRUPLARI.find(x => x.id === id);
+                if (!g) return null;
+                return (
+                  <div key={id} className="flex items-center justify-between gap-2">
+                    <span className="text-sm" style={{ color: "var(--text-primary, #1e293b)" }}>{ozelSopGrupAdlari[id] ?? g.baslik}</span>
+                    <button
+                      onClick={() => sopGrupGoster(id)}
+                      className="flex items-center gap-1 text-xs px-2 py-1 rounded-md transition-colors hover:opacity-75"
+                      style={{ color: "var(--forest)", border: "0.5px solid rgba(15,61,46,0.2)" }}
+                    >
+                      <RotateCcw className="w-3 h-3" /> Geri Yükle
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Özel Şablon Ekle Modal */}
       <AnimatePresence>
@@ -548,7 +587,7 @@ export default function SopSablonPanel() {
                   <div className="space-y-2">
                     {ozelForm.adimlar.map((adim, i) => (
                       <div key={i} className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-full bg-[var(--mint)] border border-[var(--forest-200, #B3E8C8)] text-[var(--leaf)] text-[10px] font-bold flex items-center justify-center shrink-0">
+                        <span className="w-5 h-5 rounded-full bg-gray-100 border border-gray-200 text-gray-500 text-[10px] font-bold flex items-center justify-center shrink-0">
                           {i + 1}
                         </span>
                         <input
@@ -726,7 +765,7 @@ export default function SopSablonPanel() {
                   <div className="space-y-2">
                     {duzenleForm.adimlar.map((adim, i) => (
                       <div key={i} className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-full bg-[var(--mint)] border border-[var(--forest-200, #B3E8C8)] text-[var(--leaf)] text-[10px] font-bold flex items-center justify-center shrink-0">
+                        <span className="w-5 h-5 rounded-full bg-gray-100 border border-gray-200 text-gray-500 text-[10px] font-bold flex items-center justify-center shrink-0">
                           {i + 1}
                         </span>
                         <input

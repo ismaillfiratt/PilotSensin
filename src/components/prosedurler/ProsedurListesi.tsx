@@ -88,11 +88,8 @@ export default function ProsedurListesi() {
               className="card rounded-2xl overflow-hidden"
             >
               <div className="flex">
-                {/* Sol renk çubuğu — kategoriye göre */}
-                <div
-                  className="w-[3px] shrink-0"
-                  style={{ backgroundColor: kRenk.color, opacity: 0.8 }}
-                />
+                {/* Sol çubuk */}
+                <div className="w-[3px] shrink-0 bg-gray-200" />
 
                 {/* Kart içeriği */}
                 <div className="flex-1 min-w-0 px-4 pt-4 pb-3">
@@ -136,10 +133,7 @@ export default function ProsedurListesi() {
                   {/* Meta satırı */}
                   <div className="flex items-center gap-2 mt-2.5 flex-wrap">
                     {/* Kategori badge */}
-                    <span
-                      className="inline-flex items-center text-[10px] font-bold px-2 py-[3px] rounded-md whitespace-nowrap"
-                      style={{ color: kRenk.color, backgroundColor: kRenk.bg }}
-                    >
+                    <span className="inline-flex items-center text-[10px] font-medium px-2 py-[3px] rounded-md whitespace-nowrap bg-gray-100 text-gray-600">
                       {p.kategori}
                     </span>
 
@@ -156,7 +150,7 @@ export default function ProsedurListesi() {
                     {/* Tarih */}
                     <span
                       className="flex items-center gap-1 text-[11px] whitespace-nowrap"
-                      style={{ color: durum.renk }}
+                      style={{ color: durum.gun === 0 ? "#94a3b8" : durum.renk }}
                     >
                       <Clock className="w-3 h-3 shrink-0" />
                       {durum.gun === 0 ? "Bugün güncellendi" : `${durum.gun}g önce · ${durum.etiket}`}

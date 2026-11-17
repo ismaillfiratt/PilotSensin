@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Search, Plus, History, Pencil, Trash2, ShoppingCart } from "lucide-react";
+import { Search, Plus, History, Pencil, Trash2, ShoppingCart, MoreHorizontal } from "lucide-react";
 import { stokDurumu, gunKaldi, type Urun } from "@/lib/stok-data";
 import { useStok }       from "@/store/stok";
 import { useSirket }     from "@/store/sirket";
 import { useKdvHavuzu } from "@/store/kdvHavuzu";
 import { useSatislar }   from "@/store/satislar";
+import { useNakit }      from "@/store/nakit";
 import { onaylaSil }     from "@/lib/onay";
 import { useGeriAl }     from "@/store/geriAl";
 import StokSeviyesi  from "./StokSeviyesi";
@@ -18,6 +19,9 @@ import SatisModal    from "./SatisModal";
 
 type Filtre = "tumu" | "kritik" | "uyari" | "olu" | "normal";
 
+// Tek COL sabiti — header ve satırlar aynı şablonu kullanır → hizalama garantili
+const COL = "lg:grid-cols-[minmax(180px,1.6fr)_100px_minmax(140px,1.4fr)_80px_140px_200px]";
+
 const filtreSecenekleri: { value: Filtre; label: string; color: string; activeBg: string }[] = [
   { value: "tumu",   label: "Tümü",     color: "#475569", activeBg: "#F1F5F9" },
   { value: "kritik", label: "Kritik",   color: "#EF4444", activeBg: "#FEF2F2" },
@@ -25,6 +29,95 @@ const filtreSecenekleri: { value: Filtre; label: string; color: string; activeBg
   { value: "olu",    label: "Ölü Stok", color: "#94A3B8", activeBg: "#F8FAFC" },
   { value: "normal", label: "Normal",   color: "#10B981", activeBg: "#F0FDF4" },
 ];
+
+interface UrunAksiyonMenuProps {
+  urun:       Urun;
+  isPilot:    boolean;
+  onSat:      (u: Urun) => void;
+  onHareket:  (u: Urun) => void;
+  onDuzenle:  (u: Urun) => void;
+  onSil:      (u: Urun) => void;
+}
+
+function UrunAksiyonMenu({ urun, isPilot, onSat, onHareket, onDuzenle, onSil }: UrunAksiyonMenuProps) {
+  const [acik, setAcik] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setAcik(false);
+    }
+    if (acik) document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [acik]);
+
+  return (
+    <div className="flex items-center gap-1.5 justify-end min-w-0 flex-nowrap whitespace-nowrap">
+      <button
+        onClick={() => onSat(urun)}
+        title="Satış Yap"
+        className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs
+                   text-gray-500 border border-gray-200
+                   hover:border-emerald-300 hover:text-emerald-600
+                   hover:bg-emerald-50 transition-all"
+      >
+        <ShoppingCart className="w-3.5 h-3.5" />
+        <span className="hidden xl:inline">Sat</span>
+      </button>
+
+      <button
+        onClick={() => onHareket(urun)}
+        title="Stok Hareketi"
+        className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs
+                   text-gray-500 border border-gray-200
+                   hover:border-amber-300 hover:text-amber-600
+                   hover:bg-amber-50 transition-all"
+      >
+        <History className="w-3.5 h-3.5" />
+        <span className="hidden xl:inline">Hareket</span>
+      </button>
+
+      <div ref={ref} className="relative">
+        <button
+          onClick={() => setAcik((p) => !p)}
+          title="Daha fazla"
+          className="w-7 h-7 flex items-center justify-center rounded-lg
+                     text-gray-500 border border-gray-200
+                     hover:border-gray-300 hover:bg-gray-50 transition-all"
+        >
+          <MoreHorizontal className="w-3.5 h-3.5" />
+        </button>
+
+        {acik && (
+          <div className="absolute right-0 top-full mt-1 w-32 bg-white
+                          rounded-lg shadow-lg border border-gray-200
+                          overflow-hidden z-20">
+            {isPilot && (
+              <button
+                onClick={() => { onDuzenle(urun); setAcik(false); }}
+                className="w-full flex items-center gap-2 px-3 py-2
+                           text-xs text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <Pencil className="w-3.5 h-3.5 text-gray-500" />
+                Düzenle
+              </button>
+            )}
+            <button
+              onClick={() => { onSil(urun); setAcik(false); }}
+              className="w-full flex items-center gap-2 px-3 py-2
+                         text-xs font-medium text-[#C97676]
+                         hover:bg-[#FEF3F2] transition-colors
+                         border-t border-gray-100"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              Sil
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 interface Props { otomatikAcilModal?: boolean; }
 
@@ -42,10 +135,30 @@ export default function StokTablosu({ otomatikAcilModal }: Props) {
   const [duzenle,     setDuzenle]     = useState<Urun | null>(null);
   const [urunEkleAcik, setUrunEkleAcik] = useState(false);
 
+  const handleTumunuSil = async () => {
+    const silinecekler = filtrelenmis;
+    if (silinecekler.length === 0) return;
+    const { onaylandi } = await onaylaSil({
+      tip: "urun",
+      isim: `Tüm ${silinecekler.length} ürün`,
+      baglıSayisi: silinecekler.length,
+    });
+    if (!onaylandi) return;
+    await Promise.all(silinecekler.map((u) => storesSil(u.id)));
+    useGeriAl.getState().goster({
+      mesaj: `${silinecekler.length} ürün silindi.`,
+      sureMs: 12000,
+      geriAlFn: async () => {
+        await Promise.all(silinecekler.map((u) => useStok.getState().geriAl(u.id)));
+      },
+    });
+  };
+
   const handleSil = async (urun: Urun) => {
-    const baglıSayisi = useSatislar.getState().kayitlar.filter(
+    const baglıSatislar = useSatislar.getState().kayitlar.filter(
       (k) => k.urunId === urun.id && !k.silindi
-    ).length;
+    );
+    const baglıSayisi = baglıSatislar.length;
 
     const { onaylandi, kaskad } = await onaylaSil({ tip: "urun", isim: urun.ad, baglıSayisi });
     if (!onaylandi) return;
@@ -53,21 +166,34 @@ export default function StokTablosu({ otomatikAcilModal }: Props) {
     const kaskadIslemId = kaskad && baglıSayisi > 0 ? crypto.randomUUID() : undefined;
 
     if (kaskadIslemId) {
-      const kaskadKayitlar = useSatislar.getState().kayitlar
-        .filter((k) => k.urunId === urun.id && !k.silindi);
-      await Promise.all(kaskadKayitlar.map((k) => useSatislar.getState().sil(k.id, { kaskadIslemId })));
+      // Satış kayıtlarını soft-delete
+      await Promise.all(baglıSatislar.map((k) => useSatislar.getState().sil(k.id, { kaskadIslemId })));
+
+      // Bu satışlara ait nakit gelir kayıtlarını da soft-delete
+      const islemIdleri = baglıSatislar.map((k) => k.islemId).filter(Boolean) as string[];
+      const baglıNakit = useNakit.getState().islemler.filter(
+        (n) => n.islemId && islemIdleri.includes(n.islemId) && !n.silindi
+      );
+      await Promise.all(baglıNakit.map((n) => useNakit.getState().sil(n.id)));
     }
+
     kdvUrunSil(urun.id);
     await storesSil(urun.id, { kaskadIslemId });
 
     useGeriAl.getState().goster({
-      mesaj: `${urun.ad} silindi.${kaskadIslemId ? ` ${baglıSayisi} bağlı kayıt da silindi.` : ""}`,
+      mesaj: `${urun.ad} silindi.${kaskadIslemId ? ` ${baglıSayisi} bağlı satış ve nakit kaydı da silindi.` : ""}`,
       sureMs: 10000,
       geriAlFn: async () => {
         await useStok.getState().geriAl(urun.id);
         if (kaskadIslemId) {
           const silinenSatislar = useSatislar.getState().kayitlar.filter((k) => k.kaskadIslemId === kaskadIslemId);
           await Promise.all(silinenSatislar.map((k) => useSatislar.getState().geriAl(k.id)));
+          // Nakit kayıtlarını da geri al
+          const islemIdleri2 = silinenSatislar.map((k) => k.islemId).filter(Boolean) as string[];
+          const silinenNakit = useNakit.getState().islemler.filter(
+            (n) => n.islemId && islemIdleri2.includes(n.islemId) && n.silindi
+          );
+          await Promise.all(silinenNakit.map((n) => useNakit.getState().geriAl(n.id)));
         }
       },
     });
@@ -129,7 +255,7 @@ export default function StokTablosu({ otomatikAcilModal }: Props) {
           {isPilot && (
             <button
               onClick={() => setUrunEkleAcik(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-gray-800 text-sm font-bold transition-opacity hover:opacity-90"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-medium transition-opacity hover:opacity-90"
               style={{ background: "var(--forest)" }}
             >
               <Plus className="w-4 h-4" />Stok Ekle
@@ -139,15 +265,15 @@ export default function StokTablosu({ otomatikAcilModal }: Props) {
       </div>
 
       {/* Tablo */}
-      <div className="card overflow-hidden">
+      <div className="card">
         {/* Başlıklar — desktop */}
-        <div className="hidden lg:grid lg:grid-cols-[minmax(180px,2fr)_120px_minmax(160px,2fr)_100px_110px_120px] gap-x-4 px-5 py-3 bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <div className={`hidden lg:grid ${COL} gap-x-3 px-5 py-3 bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider`}>
           <span>Ürün</span>
           <span>Kategori</span>
           <span>Stok Seviyesi</span>
-          <span>Gün. Satış</span>
-          <span>Değer</span>
-          <span>İşlemler</span>
+          <span className="text-right">Gün. Satış</span>
+          <span className="text-right">Değer</span>
+          <span className="text-right">İşlemler</span>
         </div>
 
         <div className="divide-y divide-gray-100">
@@ -200,17 +326,15 @@ export default function StokTablosu({ otomatikAcilModal }: Props) {
                         <Pencil className="w-4 h-4" />
                       </button>
                     )}
-                    {isPilot && (
-                      <button onClick={() => handleSil(urun)}
-                        className="min-w-11 min-h-11 flex items-center justify-center rounded-xl text-gray-400 border border-gray-200 active:text-red-500 active:border-red-200 transition-colors">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
+                    <button onClick={() => handleSil(urun)}
+                      className="flex items-center justify-center gap-1.5 min-w-11 min-h-11 rounded-xl text-xs font-medium text-[#C97676] border border-transparent hover:bg-[#FEF3F2] hover:border-[rgba(201,118,118,0.25)] transition-colors">
+                      <Trash2 className="w-4 h-4" />Sil
+                    </button>
                   </div>
                 </div>
 
                 {/* Desktop satır */}
-                <div className="hidden lg:grid lg:grid-cols-[minmax(180px,2fr)_120px_minmax(160px,2fr)_100px_110px_120px] gap-x-4 px-5 py-4 items-center hover:bg-gray-50 transition-colors">
+                <div className={`hidden lg:grid ${COL} gap-x-3 px-5 py-4 items-center hover:bg-gray-50 transition-colors`}>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-gray-800 truncate">{urun.ad}</p>
                     <p className="text-xs text-gray-400">{urun.sku || "—"}</p>
@@ -219,48 +343,34 @@ export default function StokTablosu({ otomatikAcilModal }: Props) {
                     <span className="text-xs text-gray-500 px-2 py-1 rounded-lg bg-gray-100 whitespace-nowrap">{urun.kategori}</span>
                   </div>
                   <div><StokSeviyesi urun={urun} /></div>
-                  <div>
-                    <p className="text-sm text-gray-700 font-medium font-number">{urun.gunlukSatis} {urun.birim}</p>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-700 font-medium font-number tabular-nums">{urun.gunlukSatis} {urun.birim}</p>
                     {gun !== null && (
-                      <p className={`text-xs mt-0.5 font-number ${gun <= 3 ? "text-red-500" : gun <= 7 ? "text-amber-500" : "text-gray-400"}`}>
+                      <p className={`text-xs mt-0.5 font-number tabular-nums ${gun <= 3 ? "text-red-500" : gun <= 7 ? "text-amber-500" : "text-gray-400"}`}>
                         {gun} gün
                       </p>
                     )}
                   </div>
-                  <div>
+                  <div className="min-w-0 overflow-hidden text-right">
                     {deger !== null ? (
                       <>
-                        <p className="text-sm text-gray-700 font-medium font-number">
+                        <p className="text-sm text-gray-700 font-medium font-number tabular-nums truncate whitespace-nowrap">
                           {(deger / 100).toLocaleString("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 })}
                         </p>
-                        <p className="text-xs text-gray-400 font-number">
-                          {urun.birimMaliyetKurus != null ? (urun.birimMaliyetKurus / 100).toLocaleString("tr-TR", { style: "currency", currency: "TRY" }) : undefined}/birim
+                        <p className="text-xs text-gray-400 font-number tabular-nums truncate whitespace-nowrap">
+                          {urun.birimMaliyetKurus != null ? (urun.birimMaliyetKurus / 100).toLocaleString("tr-TR", { style: "currency", currency: "TRY" }) : "—"}/birim
                         </p>
                       </>
                     ) : <span className="text-xs text-gray-300">—</span>}
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <button onClick={() => setSatis(urun)} title="Satış Yap"
-                      className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs text-gray-500 border border-gray-200 hover:border-emerald-300 hover:text-emerald-600 hover:bg-emerald-50 transition-all">
-                      <ShoppingCart className="w-3.5 h-3.5" /><span className="hidden xl:inline">Sat</span>
-                    </button>
-                    <button onClick={() => setHareket(urun)} title="Stok Hareketi"
-                      className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs text-gray-500 border border-gray-200 hover:border-amber-300 hover:text-amber-600 hover:bg-amber-50 transition-all">
-                      <History className="w-3.5 h-3.5" /><span className="hidden xl:inline">Hareket</span>
-                    </button>
-                    {isPilot && (
-                      <button onClick={() => setDuzenle(urun)} title="Düzenle"
-                        className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 border border-gray-200 hover:border-gray-300 hover:text-gray-600 transition-all">
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                    {isPilot && (
-                      <button onClick={() => handleSil(urun)} title="Sil"
-                        className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 border border-gray-200 hover:border-red-200 hover:text-red-500 hover:bg-red-50 transition-all">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
+                  <UrunAksiyonMenu
+                    urun={urun}
+                    isPilot={isPilot}
+                    onSat={setSatis}
+                    onHareket={setHareket}
+                    onDuzenle={setDuzenle}
+                    onSil={handleSil}
+                  />
                 </div>
 
               </motion.div>

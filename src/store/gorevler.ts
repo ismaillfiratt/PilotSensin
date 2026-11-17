@@ -4,6 +4,8 @@ import { type Gorev, type GorevDurumu } from "@/lib/gorev-data";
 import { yayin } from "@/lib/realtime";
 import { storeKaydet } from "@/lib/db";
 import { softDeletePatch, softDeleteTemizle, type SilOpts } from "@/lib/softDelete";
+import { aktiviteKaydet } from "@/lib/aktiviteLog";
+import { aksiyonKaydet }  from "@/lib/uyari-motoru/aksiyonTakipci";
 
 const VARSAYILAN_SORUMLULAR = ["İsmail", "Ayşe", "Mehmet", "Ali", "Fatma"];
 
@@ -47,15 +49,21 @@ export const useGorevler = create<GorevStore>()(
         set((s) => ({ gorevler: [yeni, ...s.gorevler] }));
         yayin({ tip: "gorevler", veri: get().gorevler });
         await kaydet(get().gorevler);
+        void aktiviteKaydet({ modul: "gorev", eylem: "ekle", ozet: `"${gorev.baslik}" görevi eklendi`, meta: { gorevId: yeni.id, oncelik: gorev.oncelik } });
+        aksiyonKaydet("gorev");
       },
 
       guncelle: async (id, gorev) => {
+        const onceki = get().gorevler.find(g => g.id === id);
         set((s) => ({ gorevler: s.gorevler.map((g) => g.id === id ? { ...g, ...gorev } : g) }));
         yayin({ tip: "gorevler", veri: get().gorevler });
         await kaydet(get().gorevler);
+        void aktiviteKaydet({ modul: "gorev", eylem: "guncelle", ozet: `"${onceki?.baslik ?? id}" görevi güncellendi`, meta: { gorevId: id } });
+        aksiyonKaydet("gorev");
       },
 
       durumDegis: async (id, durum) => {
+        const gorev = get().gorevler.find(g => g.id === id);
         const simdi = new Date().toISOString();
         set((s) => ({
           gorevler: s.gorevler.map((g) =>
@@ -71,13 +79,18 @@ export const useGorevler = create<GorevStore>()(
         }));
         yayin({ tip: "gorevler", veri: get().gorevler });
         await kaydet(get().gorevler);
+        const durumLabel: Record<GorevDurumu, string> = { yapilacak: "yapılacak", devam: "devam ediyor", tamamlandi: "tamamlandı" };
+        void aktiviteKaydet({ modul: "gorev", eylem: "durum", ozet: `"${gorev?.baslik ?? id}" görevi ${durumLabel[durum]}`, meta: { gorevId: id, durum } });
       },
 
       sil: async (id, opts) => {
+        const gorev = get().gorevler.find(g => g.id === id);
         const patch = await softDeletePatch(opts);
         set((s) => ({ gorevler: s.gorevler.map((g) => g.id === id ? { ...g, ...patch } : g) }));
         yayin({ tip: "gorevler", veri: get().gorevler });
         await kaydet(get().gorevler);
+        void aktiviteKaydet({ modul: "gorev", eylem: "sil", ozet: `"${gorev?.baslik ?? id}" görevi silindi`, meta: { gorevId: id } });
+        aksiyonKaydet("gorev");
       },
 
       geriAl: async (id) => {

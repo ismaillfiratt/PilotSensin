@@ -2,20 +2,24 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
-import { aylikTutar, trialGunKaldi } from "@/store/sirket";
+import { trialGunKaldi } from "@/store/sirket";
+import { PRICING } from "@/lib/pricing";
+
+type Donem = "aylik" | "yillik";
 
 interface AbonelikBilgi {
-  sirketAdi:      string;
-  isPremium:      boolean;
-  trialEndsAt:    Date | null;
-  aktifCoPilot:   number;
+  sirketAdi:   string;
+  isPremium:   boolean;
+  trialEndsAt: Date | null;
 }
 
 export default function FiyatlandirmaPage() {
-  const [bilgi,    setBilgi]    = useState<AbonelikBilgi | null>(null);
-  const [yuklendi, setYuklendi] = useState(false);
-  const [user,     setUser]     = useState<{ email: string } | null>(null);
+  const [bilgi,     setBilgi]     = useState<AbonelikBilgi | null>(null);
+  const [yuklendi,  setYuklendi]  = useState(false);
+  const [user,      setUser]      = useState<{ email: string } | null>(null);
+  const [donem,     setDonem]     = useState<Donem>("yillik");
 
   useEffect(() => {
     async function yukle() {
@@ -37,36 +41,29 @@ export default function FiyatlandirmaPage() {
         name: string; is_premium: boolean; trial_ends_at: string | null;
       } | null;
 
-      // Aktif co-pilot sayısı
-      const { count } = await supabase
-        .from("company_members")
-        .select("id", { count: "exact", head: true })
-        .eq("company_id", uyelik.company_id)
-        .eq("role", "copilot")
-        .eq("status", "active");
-
       setBilgi({
-        sirketAdi:    company?.name ?? "",
-        isPremium:    company?.is_premium ?? false,
-        trialEndsAt:  company?.trial_ends_at ? new Date(company.trial_ends_at) : null,
-        aktifCoPilot: count ?? 0,
+        sirketAdi:   company?.name ?? "",
+        isPremium:   company?.is_premium ?? false,
+        trialEndsAt: company?.trial_ends_at ? new Date(company.trial_ends_at) : null,
       });
       setYuklendi(true);
     }
     yukle();
   }, []);
 
-  const tutar        = bilgi ? aylikTutar(bilgi.aktifCoPilot) : 499;
-  const gunKaldi     = bilgi ? trialGunKaldi(bilgi.trialEndsAt) : 0;
-  const trialBitti   = bilgi && !bilgi.isPremium && gunKaldi === 0;
-  const trialDevam   = bilgi && !bilgi.isPremium && gunKaldi > 0;
+  const gunKaldi   = bilgi ? trialGunKaldi(bilgi.trialEndsAt) : 0;
+  const trialBitti = bilgi && !bilgi.isPremium && gunKaldi === 0;
+  const trialDevam = bilgi && !bilgi.isPremium && gunKaldi > 0;
+  const aylikFiyat = donem === "aylik" ? 299 : 249;
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--forest)", color: "#ffffff" }}>
 
       {/* Navbar */}
-      <header className="flex items-center justify-between px-6 py-4 border-b"
-        style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+      <header
+        className="flex items-center justify-between px-6 py-4 border-b"
+        style={{ borderColor: "rgba(255,255,255,0.07)" }}
+      >
         <Link href="/" className="flex items-center gap-2">
           <span className="text-xl font-black tracking-tight" style={{ color: "var(--leaf)" }}>
             Pilot<span style={{ color: "#ffffff" }}>Sensin</span>
@@ -84,130 +81,171 @@ export default function FiyatlandirmaPage() {
         }
       </header>
 
-      <main className="flex-1 flex flex-col items-center px-4 py-16 gap-12">
+      <main className="flex-1 flex flex-col items-center px-4 py-16 gap-10">
 
         {/* Başlık */}
         <div className="text-center max-w-xl">
-          <h1 className="text-3xl font-bold mb-3">Fiyatlandırma</h1>
-          <p style={{ color: "#64748b" }}>
-            Tek plan, şeffaf fiyat. İlk 7 gün kredi kartı olmadan ücretsiz.
-          </p>
+          <h1 className="font-bold mb-3" style={{ fontSize: 40 }}>Şeffaf fiyat, gizli ücret yok.</h1>
+          <p style={{ color: "#94a3b8" }}>Tek paket, tüm özellikler. 7 gün ücretsiz dene.</p>
         </div>
 
         {/* Mevcut durum kartı */}
         {yuklendi && bilgi && (
-          <div className="w-full max-w-lg rounded-2xl p-6 space-y-3"
-            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--forest-100, #D9F2E4)" }}>
-            <p className="text-xs uppercase tracking-widest" style={{ color: "#475569" }}>Mevcut Durum</p>
+          <div
+            className="w-full max-w-lg rounded-2xl p-5 space-y-2"
+            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)" }}
+          >
+            <p className="text-xs uppercase tracking-widest" style={{ color: "#64748b" }}>Mevcut Durum</p>
             <p className="font-semibold text-lg">{bilgi.sirketAdi}</p>
             <div className="flex items-center gap-2">
               {bilgi.isPremium ? (
                 <span className="text-xs px-2.5 py-1 rounded-full font-semibold"
-                  style={{ background: "rgba(34,197,94,0.15)", color: "#22c55e" }}>Premium</span>
+                  style={{ background: "rgba(34,197,94,0.15)", color: "#22c55e" }}>
+                  Aktif Abonelik
+                </span>
               ) : trialBitti ? (
                 <span className="text-xs px-2.5 py-1 rounded-full font-semibold"
-                  style={{ background: "rgba(239,68,68,0.15)", color: "#ef4444" }}>Deneme Süresi Doldu</span>
-              ) : (
+                  style={{ background: "rgba(239,68,68,0.15)", color: "#ef4444" }}>
+                  Deneme Süresi Doldu
+                </span>
+              ) : trialDevam ? (
                 <span className="text-xs px-2.5 py-1 rounded-full font-semibold"
                   style={{ background: "var(--mint)", color: "var(--leaf)" }}>
                   {gunKaldi} Gün Deneme Kaldı
                 </span>
-              )}
+              ) : null}
             </div>
           </div>
         )}
 
-        {/* Fiyat kartı */}
-        <div className="w-full max-w-lg rounded-2xl overflow-hidden"
-          style={{ border: "1px solid var(--forest-200, #B3E8C8)" }}>
+        {/* Toggle */}
+        <div
+          className="inline-flex gap-1"
+          style={{ padding: 4, background: "rgba(255,255,255,0.06)", borderRadius: 999, border: "0.5px solid rgba(255,255,255,0.1)" }}
+        >
+          {(["aylik", "yillik"] as const).map((d) => (
+            <button
+              key={d}
+              onClick={() => setDonem(d)}
+              style={{
+                padding: "6px 18px", fontSize: 13, fontWeight: 500, borderRadius: 999,
+                border: "none", cursor: "pointer",
+                background: donem === d ? "#ffffff" : "transparent",
+                color: donem === d ? "#1F5C44" : "#94a3b8",
+                WebkitTextFillColor: donem === d ? "#1F5C44" : "#94a3b8",
+                transition: "all 0.15s",
+              }}
+            >
+              {d === "aylik" ? "Aylık" : "Yıllık · 2 ay bedava"}
+            </button>
+          ))}
+        </div>
 
-          {/* Başlık şerit */}
-          <div className="px-8 pt-8 pb-6"
-            style={{ background: "var(--mint)" }}>
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--leaf)" }}>İşletme Paketi</p>
-                <h2 className="text-4xl font-black" style={{ color: "var(--leaf)" }}>
-                  499 <span className="text-lg font-semibold" style={{ color: "#94a3b8" }}>TL/ay</span>
-                </h2>
-              </div>
-              {trialDevam && (
-                <span className="text-xs px-2.5 py-1 rounded-full font-semibold mt-1"
-                  style={{ background: "var(--mint)", color: "var(--leaf)" }}>
-                  7 Gün Ücretsiz
-                </span>
-              )}
-            </div>
-            <p className="text-sm mt-3" style={{ color: "#64748b" }}>
-              İlk 3 çalışan (Co-Pilot) dahildir.
-              Her ek Co-Pilot için aylık +100 TL.
-            </p>
+        {/* Tek fiyat kartı */}
+        <div
+          className="w-full max-w-lg rounded-2xl relative"
+          style={{ background: "#ffffff", border: "2px solid rgba(255,255,255,0.3)", padding: 32 }}
+        >
+          <div
+            className="absolute"
+            style={{
+              top: -11, left: "50%", transform: "translateX(-50%)",
+              background: "#1F5C44", color: "#ffffff",
+              fontSize: 10, fontWeight: 600, padding: "4px 14px",
+              borderRadius: 999, whiteSpace: "nowrap",
+            }}
+          >
+            EN POPÜLER
           </div>
 
-          {/* Özellikler */}
-          <div className="px-8 py-6 space-y-3" style={{ background: "rgba(255,255,255,0.02)" }}>
-            {[
-              "Nakit akışı ve işlem takibi",
-              "KDV mahsuplaşma hesaplama",
-              "Kâr-zarar analizi",
-              "Stok ve hareket yönetimi",
-              "Görev ve SOP kütüphanesi",
-              "Acil durum fonu modülü",
-              "Pilot / Co-Pilot rol kısıtlama",
-              "Gerçek zamanlı bildirimler",
-            ].map((f) => (
-              <div key={f} className="flex items-center gap-3 text-sm" style={{ color: "#94a3b8" }}>
-                <span style={{ color: "var(--leaf)", fontWeight: 700 }}>✓</span>
-                {f}
-              </div>
-            ))}
-          </div>
+          <p style={{ fontSize: 12, fontWeight: 600, color: "#1F5C44", letterSpacing: "0.04em", marginBottom: 4 }}>
+            {PRICING.packageName.toUpperCase()}
+          </p>
+          <p style={{ fontSize: 13, color: "#525252", marginBottom: 16 }}>İşletmen için tam paket</p>
 
-          {/* Hesaplayıcı */}
-          {bilgi && (
-            <div className="px-8 py-5" style={{ borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.01)" }}>
-              <p className="text-xs mb-3" style={{ color: "#475569" }}>Aylık tahmini tutarınız</p>
-              <div className="flex items-center justify-between text-sm" style={{ color: "#64748b" }}>
-                <span>Sabit paket</span><span>499 TL</span>
-              </div>
-              {bilgi.aktifCoPilot > 3 && (
-                <div className="flex items-center justify-between text-sm mt-1" style={{ color: "#64748b" }}>
-                  <span>{bilgi.aktifCoPilot - 3} ek Co-Pilot × 100 TL</span>
-                  <span>+{(bilgi.aktifCoPilot - 3) * 100} TL</span>
-                </div>
-              )}
-              <div className="flex items-center justify-between font-bold mt-3 pt-3"
-                style={{ borderTop: "1px solid rgba(255,255,255,0.06)", color: "var(--leaf)" }}>
-                <span>Toplam</span>
-                <span>{tutar} TL/ay</span>
-              </div>
+          {/* Fiyat */}
+          <div style={{ marginBottom: 20 }}>
+            <div className="flex items-baseline gap-1">
+              <span style={{ fontSize: 48, fontWeight: 700, color: "#0a0a0a", lineHeight: 1 }}>₺{aylikFiyat}</span>
+              <span style={{ fontSize: 15, color: "#737373" }}>/ay</span>
             </div>
-          )}
+            {donem === "yillik" && (
+              <p style={{ fontSize: 12, color: "#1F5C44", marginTop: 5 }}>
+                ₺2.990 yıllık ödenir · 2 ay bedava
+              </p>
+            )}
+          </div>
 
           {/* CTA */}
-          <div className="px-8 pb-8 pt-4">
-            {!user ? (
-              <Link href="/kayit"
-                className="w-full block text-center py-3.5 rounded-xl font-bold text-base transition-all"
-                style={{ background: "var(--leaf)", color: "var(--forest)" }}>
-                7 Gün Ücretsiz Başla
-              </Link>
-            ) : bilgi?.isPremium ? (
-              <div className="w-full text-center py-3.5 rounded-xl font-semibold text-sm"
-                style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)" }}>
-                Premium Aboneliğiniz Aktif
-              </div>
-            ) : (
-              <a href="mailto:destek@pilotsensin.com?subject=Premium Abonelik Talebi"
-                className="w-full block text-center py-3.5 rounded-xl font-bold text-base transition-all"
-                style={{ background: "var(--leaf)", color: "var(--forest)" }}>
-                Pakete Geç — Destek ile İletişime Geç
-              </a>
-            )}
-            <p className="text-center text-xs mt-3" style={{ color: "#334155" }}>
-              Kredi kartı gerekmez · İstediğiniz zaman iptal
-            </p>
-          </div>
+          {!user ? (
+            <Link
+              href="/kayit"
+              style={{
+                display: "block", textAlign: "center", width: "100%",
+                padding: "14px 0", background: "#1F5C44",
+                color: "#ffffff", WebkitTextFillColor: "#ffffff",
+                fontWeight: 700, borderRadius: 10, fontSize: 15,
+                textDecoration: "none", marginBottom: 24,
+              }}
+            >
+              7 Gün Ücretsiz Başla
+            </Link>
+          ) : bilgi?.isPremium ? (
+            <div
+              style={{
+                display: "block", textAlign: "center", width: "100%",
+                padding: "14px 0", background: "rgba(34,197,94,0.1)",
+                color: "#22c55e", fontWeight: 600, borderRadius: 10,
+                fontSize: 14, border: "1px solid rgba(34,197,94,0.2)",
+                marginBottom: 24,
+              }}
+            >
+              Aboneliğiniz Aktif
+            </div>
+          ) : (
+            <a
+              href="mailto:destek@pilotsensin.com?subject=Abonelik Talebi"
+              style={{
+                display: "block", textAlign: "center", width: "100%",
+                padding: "14px 0", background: "#1F5C44",
+                color: "#ffffff", WebkitTextFillColor: "#ffffff",
+                fontWeight: 700, borderRadius: 10, fontSize: 15,
+                textDecoration: "none", marginBottom: 24,
+              }}
+            >
+              Pakete Geç
+            </a>
+          )}
+
+          {/* Özellikler */}
+          <ul className="flex flex-col" style={{ gap: 10, listStyle: "none", padding: 0, margin: 0 }}>
+            {PRICING.features.map((f) => (
+              <li key={f} className="flex items-start gap-2.5">
+                <Check style={{ width: 14, height: 14, color: "#1F5C44", flexShrink: 0, marginTop: 2 }} />
+                <span style={{ fontSize: 13, color: "#1a1a1a" }}>{f}</span>
+              </li>
+            ))}
+          </ul>
+
+          <p className="text-center" style={{ fontSize: 11, color: "#737373", marginTop: 20 }}>
+            Kredi kartı gerekmez · İstediğin zaman iptal
+          </p>
+        </div>
+
+        {/* SSS */}
+        <div className="w-full max-w-lg space-y-3">
+          <p className="text-sm font-semibold" style={{ color: "#94a3b8" }}>Sıkça sorulan sorular</p>
+          {[
+            { s: "Bu bir muhasebe programı mı?", c: "Hayır. PilotSensin bir erken uyarı sistemi. Mali müşavirinizin yerini almaz, ona düzenli sinyaller göndererek işini kolaylaştırır." },
+            { s: "İstediğim zaman iptal edebilir miyim?", c: "Evet, aboneliği aylık iptal edebilirsin. Taahhüt yok." },
+            { s: "Ekibimi nasıl eklerim?", c: "Ayarlar > Ekip Yönetimi > Üye Davet Et. E-mail ile davet gönderirsin, üye tıklayıp kayıt olur." },
+            { s: "Pilot Skoru nasıl hesaplanır?", c: "9 modülün verisinden ağırlıklı ortalama. Nakit Akışı %30, Kar-Zarar %20, Stok %15 ve diğer modüller." },
+          ].map(({ s, c }) => (
+            <div key={s} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 10, padding: "14px 16px" }}>
+              <p className="text-sm font-medium" style={{ color: "#e2e8f0", marginBottom: 4 }}>{s}</p>
+              <p className="text-xs" style={{ color: "#64748b", lineHeight: 1.6 }}>{c}</p>
+            </div>
+          ))}
         </div>
 
       </main>

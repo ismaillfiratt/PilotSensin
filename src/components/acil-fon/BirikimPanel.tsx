@@ -149,12 +149,12 @@ export default function BirikimPanel() {
                   return (
                     <tr key={ay} className="hover:bg-gray-50 transition-colors">
                       <td className="py-2.5 pr-3 text-gray-800 font-medium whitespace-nowrap">{ay}</td>
-                      <td className="py-2.5 pr-3 text-[#22c55e] font-semibold">{yatirma > 0 ? formatTL(yatirma) : "—"}</td>
-                      <td className="py-2.5 pr-3 text-[#ef4444] font-semibold">{cekme > 0 ? formatTL(cekme) : "—"}</td>
-                      <td className="py-2.5 pr-3 font-bold" style={{ color: net >= 0 ? "#22c55e" : "#ef4444" }}>
+                      <td className="py-2.5 pr-3 text-[#22c55e] font-semibold font-number tabular-nums">{yatirma > 0 ? formatTL(yatirma) : "—"}</td>
+                      <td className="py-2.5 pr-3 text-[#ef4444] font-semibold font-number tabular-nums">{cekme > 0 ? formatTL(cekme) : "—"}</td>
+                      <td className="py-2.5 pr-3 font-bold font-number tabular-nums" style={{ color: net >= 0 ? "#22c55e" : "#ef4444" }}>
                         {net !== 0 ? `${net > 0 ? "+" : ""}${formatTL(Math.abs(net))}` : "—"}
                       </td>
-                      <td className="py-2.5 text-[var(--leaf)] font-bold">{bakiye > 0 ? formatTL(bakiye) : "—"}</td>
+                      <td className="py-2.5 text-[var(--leaf)] font-bold font-number tabular-nums">{bakiye > 0 ? formatTL(bakiye) : "—"}</td>
                     </tr>
                   );
                 })}
@@ -163,12 +163,12 @@ export default function BirikimPanel() {
                 <tfoot>
                   <tr className="border-t border-gray-200">
                     <td className="py-2.5 pr-3 text-gray-400 font-semibold uppercase text-[10px]">Toplam</td>
-                    <td className="py-2.5 pr-3 text-[#22c55e] font-bold">{formatTL(tabloToplam.yatirma)}</td>
-                    <td className="py-2.5 pr-3 text-[#ef4444] font-bold">{formatTL(tabloToplam.cekme)}</td>
-                    <td className="py-2.5 pr-3 font-bold" style={{ color: tabloToplam.yatirma - tabloToplam.cekme >= 0 ? "#22c55e" : "#ef4444" }}>
+                    <td className="py-2.5 pr-3 text-[#22c55e] font-bold font-number tabular-nums">{formatTL(tabloToplam.yatirma)}</td>
+                    <td className="py-2.5 pr-3 text-[#ef4444] font-bold font-number tabular-nums">{formatTL(tabloToplam.cekme)}</td>
+                    <td className="py-2.5 pr-3 font-bold font-number tabular-nums" style={{ color: tabloToplam.yatirma - tabloToplam.cekme >= 0 ? "#22c55e" : "#ef4444" }}>
                       {tabloToplam.yatirma - tabloToplam.cekme > 0 ? "+" : ""}{formatTL(Math.abs(tabloToplam.yatirma - tabloToplam.cekme))}
                     </td>
-                    <td className="py-2.5 text-[var(--leaf)] font-bold">
+                    <td className="py-2.5 text-[var(--leaf)] font-bold font-number tabular-nums">
                       {tabloData.length > 0 ? formatTL(tabloData[tabloData.length - 1].bakiye) : "—"}
                     </td>
                   </tr>
@@ -205,17 +205,17 @@ export default function BirikimPanel() {
               </ResponsiveContainer>
             </div>
             <div className="grid grid-cols-2 gap-3 mt-4">
-              <div className="bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.2)] rounded-xl p-3">
+              <div className="bg-white border border-gray-100 rounded-xl p-3">
                 <p className="text-[10px] text-gray-400 mb-1">Toplam Yatırılan</p>
-                <p className="text-sm font-bold text-[#22c55e]">{formatTL(totalYatirma)}</p>
+                <p className="text-sm font-semibold font-number tabular-nums text-[#22c55e]">{formatTL(totalYatirma)}</p>
               </div>
-              <div className="bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.2)] rounded-xl p-3">
+              <div className="bg-white border border-gray-100 rounded-xl p-3">
                 <p className="text-[10px] text-gray-400 mb-1">Toplam Çekilen</p>
-                <p className="text-sm font-bold text-[#ef4444]">{formatTL(totalCekme)}</p>
+                <p className="text-sm font-semibold font-number tabular-nums text-[#ef4444]">{formatTL(totalCekme)}</p>
               </div>
-              <div className="bg-[var(--mint)] border border-[var(--forest-100, #D9F2E4)] rounded-xl p-3 col-span-2">
+              <div className="bg-white border border-gray-100 rounded-xl p-3 col-span-2">
                 <p className="text-[10px] text-gray-400 mb-1">Net Dönem Birikimi</p>
-                <p className="text-sm font-bold" style={{ color: totalYatirma - totalCekme >= 0 ? "#22c55e" : "#ef4444" }}>
+                <p className="text-sm font-semibold font-number tabular-nums" style={{ color: totalYatirma - totalCekme >= 0 ? "#22c55e" : "#ef4444" }}>
                   {totalYatirma - totalCekme > 0 ? "+" : ""}{formatTL(Math.abs(totalYatirma - totalCekme))}
                 </p>
               </div>

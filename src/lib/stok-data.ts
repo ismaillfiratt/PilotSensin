@@ -27,7 +27,12 @@ export interface Urun extends Silinebilir {
   /** @deprecated selectors/stok.ts::gunlukOrtalamaSatis() kullanın */
   gunlukSatis:   number;
   birim:         string;
-  birimMaliyetKurus?: Kurus;
+  birimMaliyetKurus?:      Kurus;
+  birimSatisFiyatiKurus?:  Kurus;
+  alisKdvDahilHaric?:      "dahil" | "haric";
+  alisKdvOrani?:           number;
+  satisKdvDahilHaric?:     "dahil" | "haric";
+  satisKdvOrani?:          number;
   sonHareket:    string;
   hareketler:    StokHareketi[];
 }

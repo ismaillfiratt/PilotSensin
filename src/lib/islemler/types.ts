@@ -5,9 +5,16 @@
  */
 
 import type { Kurus } from "@/lib/para";
+import type { Taksit } from "@/lib/borc-data";
 
 /** Tüm ödeme yöntemleri */
-export type OdemeYontemi = "nakit" | "kart" | "havale" | "cek" | "vadeli";
+export type OdemeYontemi = "nakit" | "kart" | "havale" | "cek" | "vadeli" | "taksitli";
+
+/** Peşin ödeme yöntemleri — kasadan ANINDA düşülür */
+export const PESIN_ODEME = new Set<OdemeYontemi>(["nakit", "kart", "havale", "cek"]);
+
+/** Vadeli/Taksitli ödeme yöntemleri — nakit gider değil, borç olarak kaydedilir */
+export const VADELI_ODEME = new Set<OdemeYontemi>(["vadeli", "taksitli"]);
 
 /** İşlem sonuç zarfı — atomik fonksiyonlar bunu döner */
 export interface IslemSonuc<T = void> {
@@ -51,6 +58,13 @@ export interface AlimGirdi {
   kdvOrani:         number;
   /** Ödeme yöntemi */
   odemeYontemi:     OdemeYontemi;
+  /** Vadeli ödeme için tek vade tarihi (ISO YYYY-MM-DD).
+   *  odemeYontemi === "vadeli" ise ZORUNLU. */
+  vadeTarihi?:      string;
+  /** Taksitli ödeme için önceden hesaplanmış taksit listesi.
+   *  odemeYontemi === "taksitli" ise ZORUNLU.
+   *  Caller esitTaksitler() veya manuel ile oluşturur. */
+  taksitler?:       Taksit[];
   /** İşlem tarihi (ISO). Verilmezse şimdiki zaman. */
   tarih?:           string;
   /** Opsiyonel açıklama */

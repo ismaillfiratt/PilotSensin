@@ -4,22 +4,27 @@
  * Başarı sırası:
  *   1. Ürün varlık kontrolü
  *   2. Stok adedi artırma + ağırlıklı ortalama maliyet güncelleme
- *   3. Nakit gider kaydı
- *   4. İndirilecek KDV kaydı
- *   5. Realtime yayın
+ *   3. Ödeme türüne göre kayıt:
+ *      - Peşin (nakit/kart/havale/cek) → Nakit gider kaydı (kasadan eksi)
+ *      - Vadeli/Taksitli                → Borç + taksit kayıtları (nakit etkilenmez)
+ *   4. İndirilecek KDV kaydı (her durumda — tahakkuk esası)
+ *   5. Kasa minimum bildirim kontrolü
+ *   6. Realtime yayın
  */
 
 import { useStok }             from "@/store/stok";
 import { useNakit }            from "@/store/nakit";
 import { useKdvHavuzu }        from "@/store/kdvHavuzu";
+import { useBorclar }          from "@/store/borclar";
 import { useSirket }           from "@/store/sirket";
 import { useBildirimler }      from "@/store/bildirimler";
 import { useBildirimAyarlari } from "@/store/bildirimAyarlari";
 import { yayin }               from "@/lib/realtime";
 import { yazabilir, yetkiYok } from "./yetki";
 import { kasaMinAltiBildirim } from "@/lib/bildirimler/anlik";
-import type { Kurus }          from "@/lib/para";
+import { tekTaksit }           from "@/lib/borc-data";
 import type { AlimGirdi, IslemSonuc } from "./types";
+import { PESIN_ODEME }         from "./types";
 
 /**
  * Bir tedarik/alım iş olayını atomik olarak gerçekleştirir.
@@ -32,8 +37,10 @@ export async function alimYap(girdi: AlimGirdi): Promise<IslemSonuc> {
   const islemId = girdi.islemId ?? crypto.randomUUID();
   const tarih   = girdi.tarih ?? new Date().toISOString();
 
-  // İdempotency: aynı islemId zaten nakitte varsa atla
-  if (useNakit.getState().islemler.some((i) => i.islemId === islemId)) {
+  // İdempotency: aynı islemId zaten nakit'te veya borçlar'da varsa atla
+  const nakittenVar = useNakit.getState().islemler.some((i) => i.islemId === islemId);
+  const borctanVar  = useBorclar.getState().borclar.some((b) => b.kaynakId === islemId && !b.silindi);
+  if (nakittenVar || borctanVar) {
     return { basarili: true, islemId };
   }
 
@@ -78,16 +85,55 @@ export async function alimYap(girdi: AlimGirdi): Promise<IslemSonuc> {
       islemId,
     });
 
-    // ── 3. Nakit gider kaydı ──────────────────────────────────────────
-    await useNakit.getState().ekle({
-      tip:          "gider",
-      tutarKurus:        kasaCikis,
-      kategori:     "Tedarik / Hammadde",
-      aciklama:     girdi.aciklama ?? `${urun.ad} — ${girdi.adet} ${urun.birim} alımı`,
-      tarih,
-      odemeYontemi: girdi.odemeYontemi as "nakit" | "kart" | "havale" | "cek",
-      islemId,
-    });
+    // ── 3. Ödeme: peşin ise nakit gider, vadeli/taksitli ise borç ────
+    const pesin = PESIN_ODEME.has(girdi.odemeYontemi);
+
+    if (pesin) {
+      // Peşin: kasadan ANINDA eksi
+      await useNakit.getState().ekle({
+        tip:          "gider",
+        tutarKurus:   kasaCikis,
+        kategori:     "Tedarik / Hammadde",
+        aciklama:     girdi.aciklama ?? `${urun.ad} — ${girdi.adet} ${urun.birim} alımı`,
+        tarih,
+        odemeYontemi: girdi.odemeYontemi as "nakit" | "kart" | "havale" | "cek",
+        islemId,
+      });
+    } else {
+      // Vadeli veya taksitli: borç olarak kaydet, kasa şimdilik etkilenmez.
+      // Her taksit ödendiğinde useBorclar.taksitOde() çağrılır → orada nakit gider oluşur.
+      let taksitler;
+      if (girdi.odemeYontemi === "vadeli") {
+        if (!girdi.vadeTarihi) {
+          return { basarili: false, islemId, hata: "Vadeli ödemede vadeTarihi zorunludur" };
+        }
+        taksitler = tekTaksit(kasaCikis, girdi.vadeTarihi);
+      } else {
+        // taksitli
+        if (!girdi.taksitler?.length) {
+          return { basarili: false, islemId, hata: "Taksitli ödemede taksitler dizisi zorunludur" };
+        }
+        taksitler = girdi.taksitler;
+
+        // Tutar kontrolü — taksit toplamı kasaCikis ile eşleşmeli (yuvarlama farkı 1 kuruş tolere)
+        const taksitToplam = taksitler.reduce((t, x) => t + x.tutarKurus, 0);
+        if (Math.abs(taksitToplam - kasaCikis) > 1) {
+          return {
+            basarili: false, islemId,
+            hata: `Taksit toplamı (${taksitToplam}) alım tutarı (${kasaCikis}) ile uyuşmuyor`,
+          };
+        }
+      }
+
+      await useBorclar.getState().ekle({
+        kaynak:           "alim",
+        kaynakId:         islemId,
+        aciklama:         girdi.aciklama ?? `${urun.ad} — ${girdi.adet} ${urun.birim} alımı`,
+        toplamTutarKurus: kasaCikis,
+        paraBirimi:       "TRY",
+        taksitler,
+      });
+    }
 
     // ── 4. İndirilecek KDV kaydı ──────────────────────────────────────
     if (girdi.kdvOrani > 0) {

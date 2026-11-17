@@ -4,7 +4,8 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Plus, Trash2, Pencil,
-  Banknote, ArrowUpFromLine, Search, ChevronLeft, ChevronRight,
+  ArrowDown, ArrowUp, Search, Calendar,
+  ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { formatTL, type FonIslem } from "@/lib/acil-fon-data";
 import { useAcilFon } from "@/store/acilFon";
@@ -16,19 +17,19 @@ type Filtre = "tumu" | "yatirma" | "cekme";
 
 const SAYFA_BOYUTU = 10;
 
-
 export default function IslemGecmisi() {
-  const { islemler, islemEkle, islemGuncelle, islemSil, aktifHedefId, hedefler } = useAcilFon();
+  const { islemler, islemEkle, islemGuncelle, islemSil, hedefler } = useAcilFon();
 
-  const [modalAcik, setModalAcik] = useState(false);
-  const [duzenle,   setDuzenle]   = useState<FonIslem | null>(null);
+  const [modalAcik,   setModalAcik]   = useState(false);
+  const [duzenle,     setDuzenle]     = useState<FonIslem | null>(null);
+  const [hedefFiltre, setHedefFiltre] = useState<string | null>(null);
 
-  // Filtreler
   const [arama,     setArama]     = useState("");
   const [filtre,    setFiltre]    = useState<Filtre>("tumu");
   const [tarihBas,  setTarihBas]  = useState("");
   const [tarihBit,  setTarihBit]  = useState("");
   const [sayfaNo,   setSayfaNo]   = useState(1);
+  const [tarihAcik, setTarihAcik] = useState(false);
 
   const handleIslemSil = async (islem: FonIslem) => {
     const { onaylandi } = await onaylaSil({ tip: "acilFonIslem", isim: islem.aciklama || formatTL(islem.tutarKurus) });
@@ -43,7 +44,8 @@ export default function IslemGecmisi() {
 
   const filtrelenmis = useMemo(() => {
     return [...islemler]
-      .filter(i => aktifHedefId ? i.hedefId === aktifHedefId : true)
+      .filter(i => !i.silindi)
+      .filter(i => hedefFiltre ? i.hedefId === hedefFiltre : true)
       .filter(i => filtre === "tumu" || i.tip === filtre)
       .filter(i => !arama || (i.aciklama ?? "").toLowerCase().includes(arama.toLowerCase()))
       .filter(i => {
@@ -54,9 +56,9 @@ export default function IslemGecmisi() {
         return (!bas || t >= bas) && (!bit || t <= bit);
       })
       .sort((a, b) => new Date(b.tarih).getTime() - new Date(a.tarih).getTime());
-  }, [islemler, aktifHedefId, filtre, arama, tarihBas, tarihBit]);
+  }, [islemler, hedefFiltre, filtre, arama, tarihBas, tarihBit]);
 
-  const toplamSayfa  = Math.max(1, Math.ceil(filtrelenmis.length / SAYFA_BOYUTU));
+  const toplamSayfa   = Math.max(1, Math.ceil(filtrelenmis.length / SAYFA_BOYUTU));
   const sayfaIslemler = filtrelenmis.slice((sayfaNo - 1) * SAYFA_BOYUTU, sayfaNo * SAYFA_BOYUTU);
 
   const setFiltreSayfa = (f: Filtre) => { setFiltre(f); setSayfaNo(1); };
@@ -70,69 +72,173 @@ export default function IslemGecmisi() {
     else          { islemEkle(yeni); }
   };
 
+  const tarihAktif = !!(tarihBas || tarihBit);
+
   return (
     <>
-      <div className="card rounded-2xl overflow-hidden">
+      <div
+        className="rounded-xl overflow-hidden"
+        style={{
+          background: "var(--bg-card)",
+          border: "0.5px solid var(--border-default)",
+        }}
+      >
+        {/* ÜST — tek satır toolbar */}
+        <div className="px-5 py-4" style={{ borderBottom: "0.5px solid var(--border-default)" }}>
+          <div className="flex items-center gap-2 flex-wrap">
 
-        {/* ÜST — arama + filtreler + ekle */}
-        <div className="px-5 py-4 border-b border-gray-200 space-y-3">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
             {/* Arama */}
-            <div className="relative flex-1 min-w-48">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <div className="relative flex-1 min-w-44">
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
+                style={{ color: "var(--text-tertiary)" }}
+              />
               <input
-                value={arama} onChange={(e) => setAramaSayfa(e.target.value)}
+                value={arama}
+                onChange={e => setAramaSayfa(e.target.value)}
                 placeholder="Açıklama ara..."
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-[var(--leaf)] transition-colors"
+                className="w-full pl-9 pr-3 py-2 rounded-lg text-sm focus:outline-none"
+                style={{
+                  background: "var(--bg-input)",
+                  border: "0.5px solid var(--border-default)",
+                  color: "var(--text-primary)",
+                }}
               />
             </div>
-            {/* Tip filtresi */}
-            <div className="flex gap-1 p-1 rounded-xl bg-gray-50 border border-gray-200">
-              {([
-                { v: "tumu",    l: "Tümü"    },
-                { v: "yatirma", l: "Yatırma" },
-                { v: "cekme",   l: "Çekme"   },
-              ] as { v: Filtre; l: string }[]).map(({ v, l }) => (
-                <button key={v} onClick={() => setFiltreSayfa(v)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                  style={{
-                    backgroundColor: filtre === v ? "var(--mint)" : "transparent",
-                    color:           filtre === v ? "var(--leaf)" : "#94a3b8",
-                    border:          filtre === v ? "1px solid var(--forest-200, #B3E8C8)" : "1px solid transparent",
-                  }}>
-                  {l}
-                </button>
-              ))}
+
+            {/* Tip dropdown */}
+            <select
+              value={filtre}
+              onChange={e => setFiltreSayfa(e.target.value as Filtre)}
+              className="px-3 py-2 rounded-lg text-sm focus:outline-none cursor-pointer"
+              style={{
+                background: "var(--bg-input)",
+                border: "0.5px solid var(--border-default)",
+                color: "var(--text-primary)",
+              }}
+            >
+              <option value="tumu">Tüm Tipler</option>
+              <option value="yatirma">Yatırma</option>
+              <option value="cekme">Çekme</option>
+            </select>
+
+            {/* Hedef dropdown */}
+            {hedefler.filter(h => !h.silindi).length > 0 && (
+              <select
+                value={hedefFiltre ?? ""}
+                onChange={e => { setHedefFiltre(e.target.value || null); setSayfaNo(1); }}
+                className="px-3 py-2 rounded-lg text-sm focus:outline-none cursor-pointer"
+                style={{
+                  background: "var(--bg-input)",
+                  border: "0.5px solid var(--border-default)",
+                  color: "var(--text-primary)",
+                  maxWidth: 180,
+                }}
+              >
+                <option value="">Tüm Hedefler</option>
+                {hedefler.filter(h => !h.silindi).map(h => (
+                  <option key={h.id} value={h.id}>{h.ad}</option>
+                ))}
+              </select>
+            )}
+
+            {/* Tarih butonu — dropdown panel açar */}
+            <div className="relative">
+              <button
+                onClick={() => setTarihAcik(p => !p)}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors"
+                style={{
+                  background: tarihAktif ? "var(--mint)" : "var(--bg-input)",
+                  border: "0.5px solid var(--border-default)",
+                  color: tarihAktif ? "var(--leaf)" : "var(--text-primary)",
+                }}
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                Tarih
+                {tarihAktif && <span className="text-[10px] font-semibold">●</span>}
+              </button>
+
+              {tarihAcik && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setTarihAcik(false)} />
+                  <div
+                    className="absolute right-0 top-full mt-1 z-20 rounded-lg p-3 shadow-lg w-64"
+                    style={{
+                      background: "var(--bg-card)",
+                      border: "0.5px solid var(--border-default)",
+                    }}
+                  >
+                    <div className="space-y-2">
+                      <div>
+                        <label className="text-[11px]" style={{ color: "var(--text-secondary)" }}>Başlangıç</label>
+                        <input
+                          type="date"
+                          value={tarihBas}
+                          onChange={e => { setTarihBas(e.target.value); setSayfaNo(1); }}
+                          className="w-full px-2 py-1.5 rounded-md text-sm mt-1 focus:outline-none"
+                          style={{
+                            background: "var(--bg-input)",
+                            border: "0.5px solid var(--border-default)",
+                            color: "var(--text-primary)",
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px]" style={{ color: "var(--text-secondary)" }}>Bitiş</label>
+                        <input
+                          type="date"
+                          value={tarihBit}
+                          onChange={e => { setTarihBit(e.target.value); setSayfaNo(1); }}
+                          className="w-full px-2 py-1.5 rounded-md text-sm mt-1 focus:outline-none"
+                          style={{
+                            background: "var(--bg-input)",
+                            border: "0.5px solid var(--border-default)",
+                            color: "var(--text-primary)",
+                          }}
+                        />
+                      </div>
+                      {tarihAktif && (
+                        <button
+                          onClick={() => { setTarihBas(""); setTarihBit(""); setSayfaNo(1); }}
+                          className="w-full text-xs py-1.5 rounded-md transition-colors"
+                          style={{ color: "var(--text-secondary)" }}
+                        >
+                          Tarihleri temizle
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-            {/* Ekle butonu */}
+
+            {/* Hareket Ekle */}
             <button
               onClick={() => { setDuzenle(null); setModalAcik(true); }}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--forest)] text-white text-sm font-bold hover:opacity-90 transition-colors shrink-0"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
+              style={{ background: "var(--forest)" }}
             >
-              <Plus className="w-4 h-4" /> Hareket Ekle
+              <Plus className="w-3.5 h-3.5" /> Ekle
             </button>
           </div>
 
-          {/* Tarih aralığı */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-gray-400">Tarih:</span>
-            <input type="date" value={tarihBas} onChange={(e) => { setTarihBas(e.target.value); setSayfaNo(1); }}
-              className="px-2 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-xs focus:outline-none focus:border-[var(--leaf)] scheme-dark" />
-            <span className="text-gray-400 text-xs">—</span>
-            <input type="date" value={tarihBit} onChange={(e) => { setTarihBit(e.target.value); setSayfaNo(1); }}
-              className="px-2 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-xs focus:outline-none focus:border-[var(--leaf)] scheme-dark" />
-            {(tarihBas || tarihBit) && (
-              <button onClick={() => { setTarihBas(""); setTarihBit(""); setSayfaNo(1); }}
-                className="text-xs text-gray-400 hover:text-gray-800 transition-colors px-2 py-0.5 rounded-lg border border-gray-200 hover:border-gray-200">
-                Temizle
-              </button>
-            )}
-            <span className="text-xs text-gray-400 ml-auto">{filtrelenmis.length} kayıt</span>
+          {/* Sayım */}
+          <div className="flex justify-end mt-2">
+            <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+              {filtrelenmis.length} kayıt
+            </span>
           </div>
         </div>
 
         {/* Tablo başlıkları */}
-        <div className="grid grid-cols-[44px_140px_1fr_1fr_120px_80px] gap-3 px-5 py-3 border-b border-gray-200 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+        <div
+          className="grid grid-cols-[44px_140px_1fr_1fr_120px_80px] gap-3 px-5 py-3 text-[10px] font-semibold uppercase tracking-wider"
+          style={{
+            borderBottom: "0.5px solid var(--border-default)",
+            background: "var(--bg-secondary)",
+            color: "var(--text-tertiary)",
+          }}
+        >
           <span>Tip</span>
           <span>Hedef</span>
           <span>Açıklama</span>
@@ -142,9 +248,9 @@ export default function IslemGecmisi() {
         </div>
 
         {/* Satırlar */}
-        <div className="divide-y divide-gray-100 min-h-[120px]">
+        <div className="divide-y min-h-[120px]" style={{ borderColor: "var(--border-default)" }}>
           {sayfaIslemler.length === 0 ? (
-            <div className="py-16 text-center text-gray-400 text-sm">
+            <div className="py-16 text-center text-sm" style={{ color: "var(--text-tertiary)" }}>
               {filtrelenmis.length === 0 && islemler.length > 0 ? "Filtre sonucu bulunamadı." : "Henüz işlem yok."}
             </div>
           ) : (
@@ -159,47 +265,70 @@ export default function IslemGecmisi() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: i * 0.02 }}
-                  className="grid grid-cols-[44px_140px_1fr_1fr_120px_80px] gap-3 px-5 py-3.5 items-center hover:bg-[var(--mint)] transition-colors"
+                  className="group grid grid-cols-[44px_140px_1fr_1fr_120px_80px] gap-3 px-5 py-3.5 items-center hover:bg-gray-50 transition-colors"
                 >
                   {/* Tip */}
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: yatirmaMi ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)" }}>
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                    style={{
+                      background: "transparent",
+                      border: "0.5px solid var(--border-default)",
+                    }}
+                  >
                     {yatirmaMi
-                      ? <Banknote className="w-4 h-4 text-[#22c55e]" />
-                      : <ArrowUpFromLine className="w-4 h-4 text-[#ef4444]" />}
+                      ? <ArrowDown className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
+                      : <ArrowUp   className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />}
                   </div>
 
                   {/* Hedef adı */}
                   {hedefAdi ? (
                     <span
-                      className="text-xs font-semibold px-2 py-1 rounded-lg truncate"
-                      style={{ backgroundColor: "var(--mint)", color: "var(--leaf)", border: "1px solid var(--forest-200, #B3E8C8)" }}
+                      className="text-xs px-2 py-0.5 rounded-md truncate"
+                      style={{
+                        background: "var(--bg-secondary)",
+                        color: "var(--text-secondary)",
+                      }}
                     >
                       {hedefAdi}
                     </span>
                   ) : (
-                    <span className="text-xs text-gray-500">—</span>
+                    <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>—</span>
                   )}
 
                   {/* Açıklama */}
-                  <p className="text-sm text-gray-800 font-medium truncate">{islem.aciklama || "—"}</p>
+                  <p className="text-sm font-medium truncate" style={{ color: "var(--text-primary)" }}>
+                    {islem.aciklama || "—"}
+                  </p>
 
                   {/* Tarih */}
-                  <p className="text-xs text-gray-400">{tarihFormat(islem.tarih)}</p>
+                  <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                    {tarihFormat(islem.tarih)}
+                  </p>
 
                   {/* Tutar */}
-                  <p className="text-sm font-bold text-right whitespace-nowrap" style={{ color: yatirmaMi ? "#22c55e" : "#ef4444" }}>
-                    {yatirmaMi ? "+" : "-"}{formatTL(islem.tutarKurus)}
+                  <p
+                    className="text-sm font-medium font-number tabular-nums text-right whitespace-nowrap"
+                    style={{ color: yatirmaMi ? "#047857" : "#C97676" }}
+                  >
+                    {yatirmaMi ? "+" : "−"}{formatTL(islem.tutarKurus)}
                   </p>
 
                   {/* Aksiyonlar */}
-                  <div className="flex items-center justify-end gap-1">
-                    <button onClick={() => { setDuzenle(islem); setModalAcik(true); }}
-                      className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 border border-gray-200 hover:border-[var(--forest-300, #7DD0A0)] hover:text-[var(--leaf)] transition-all">
+                  <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => { setDuzenle(islem); setModalAcik(true); }}
+                      className="w-7 h-7 flex items-center justify-center rounded-md transition-colors hover:bg-gray-100"
+                      style={{ color: "var(--text-tertiary)" }}
+                    >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
-                    <button onClick={() => handleIslemSil(islem)}
-                      className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 border border-gray-200 hover:border-[rgba(239,68,68,0.4)] hover:text-[#ef4444] transition-all">
+                    <button
+                      onClick={() => handleIslemSil(islem)}
+                      className="w-7 h-7 flex items-center justify-center rounded-md transition-colors"
+                      style={{ color: "var(--text-tertiary)" }}
+                      onMouseEnter={e => (e.currentTarget.style.color = "#C97676")}
+                      onMouseLeave={e => (e.currentTarget.style.color = "var(--text-tertiary)")}
+                    >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -211,35 +340,58 @@ export default function IslemGecmisi() {
 
         {/* ALT — sayfalama */}
         {toplamSayfa > 1 && (
-          <div className="flex items-center justify-between px-5 py-3 border-t border-gray-200">
-            <span className="text-xs text-gray-400">
+          <div
+            className="flex items-center justify-between px-5 py-3"
+            style={{ borderTop: "0.5px solid var(--border-default)" }}
+          >
+            <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
               {(sayfaNo - 1) * SAYFA_BOYUTU + 1}–{Math.min(sayfaNo * SAYFA_BOYUTU, filtrelenmis.length)} / {filtrelenmis.length} kayıt
             </span>
             <div className="flex items-center gap-1">
-              <button onClick={() => setSayfaNo(p => Math.max(1, p - 1))} disabled={sayfaNo === 1}
-                className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:text-gray-800 hover:border-gray-200 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
-                <ChevronLeft className="w-4 h-4" />
+              <button
+                onClick={() => setSayfaNo(p => Math.max(1, p - 1))}
+                disabled={sayfaNo === 1}
+                className="w-7 h-7 flex items-center justify-center rounded-md disabled:opacity-30"
+                style={{
+                  border: "0.5px solid var(--border-default)",
+                  color: "var(--text-secondary)",
+                }}
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
               </button>
+
               {Array.from({ length: Math.min(toplamSayfa, 5) }, (_, i) => {
                 const p = toplamSayfa <= 5 ? i + 1
                   : sayfaNo <= 3 ? i + 1
                   : sayfaNo >= toplamSayfa - 2 ? toplamSayfa - 4 + i
                   : sayfaNo - 2 + i;
                 return (
-                  <button key={p} onClick={() => setSayfaNo(p)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg text-xs font-medium transition-all border"
+                  <button
+                    key={p}
+                    onClick={() => setSayfaNo(p)}
+                    className="w-7 h-7 flex items-center justify-center rounded-md text-xs font-medium transition-all"
                     style={{
-                      borderColor:     sayfaNo === p ? "var(--leaf)" : "rgba(255,255,255,0.08)",
-                      backgroundColor: sayfaNo === p ? "var(--mint)" : "transparent",
-                      color:           sayfaNo === p ? "var(--leaf)" : "#94a3b8",
-                    }}>
+                      border: "0.5px solid var(--border-default)",
+                      background: sayfaNo === p ? "var(--bg-secondary)" : "transparent",
+                      color: sayfaNo === p ? "var(--text-primary)" : "var(--text-tertiary)",
+                      fontWeight: sayfaNo === p ? 600 : 400,
+                    }}
+                  >
                     {p}
                   </button>
                 );
               })}
-              <button onClick={() => setSayfaNo(p => Math.min(toplamSayfa, p + 1))} disabled={sayfaNo === toplamSayfa}
-                className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:text-gray-800 hover:border-gray-200 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
-                <ChevronRight className="w-4 h-4" />
+
+              <button
+                onClick={() => setSayfaNo(p => Math.min(toplamSayfa, p + 1))}
+                disabled={sayfaNo === toplamSayfa}
+                className="w-7 h-7 flex items-center justify-center rounded-md disabled:opacity-30"
+                style={{
+                  border: "0.5px solid var(--border-default)",
+                  color: "var(--text-secondary)",
+                }}
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
@@ -251,7 +403,7 @@ export default function IslemGecmisi() {
         open={modalAcik || duzenle !== null}
         onClose={() => { setModalAcik(false); setDuzenle(null); }}
         mevcutIslem={duzenle ?? undefined}
-        defaultHedefId={aktifHedefId}
+        defaultHedefId={hedefFiltre}
         onKaydet={handleKaydet}
       />
     </>

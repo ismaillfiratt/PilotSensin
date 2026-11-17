@@ -116,22 +116,49 @@ export function isDue(item: ChecklistItem): boolean {
   return Date.now() - sonMs > gunMs;
 }
 
-/** Checklist uyum skoru (0-100) — gerçek tamamlama geçmişine dayanır */
+/**
+ * Checklist uyum skoru (0-100).
+ * Soru: "Şu an kaç madde uyumlu?" — geçmiş sayısına değil, anlık duruma bakar.
+ *   Manuel maddeler → isDue(item) === false ise uyumlu
+ *   Otomatik maddeler → item.tamamlandi === true ise uyumlu
+ */
 export function uyumSkoru(checklist: ChecklistItem[]): number {
-  const manuelList = checklist.filter(c => !c.otomatikKontrol);
-  if (manuelList.length === 0) return 100;
-  const now = Date.now();
-  let toplam = 0;
+  const aktif = checklist.filter(c => !c.silindi);
+  if (aktif.length === 0) return 100;
 
-  for (const item of manuelList) {
-    const gecmis  = item.tamamlanmaGecmisi ?? [];
-    const gunSayisi = getGunSayisi(item);
-    const expected  = Math.max(1, Math.round(90 / gunSayisi));
-    const sinirMs   = expected * gunSayisi * 86400000;
-    const tamamlanan = gecmis.filter(d => now - new Date(d).getTime() < sinirMs).length;
-    toplam += Math.min(tamamlanan / expected, 1);
+  let uyumlu = 0;
+  for (const item of aktif) {
+    if (item.otomatikKontrol) {
+      if (item.tamamlandi) uyumlu++;
+    } else {
+      if (!isDue(item)) uyumlu++;
+    }
   }
-  return Math.round((toplam / manuelList.length) * 100);
+  return Math.round(Math.max(0, Math.min(100, (uyumlu / aktif.length) * 100)));
+}
+
+/** Uyum detayı — UI/debug için */
+export function uyumDetayi(checklist: ChecklistItem[]): {
+  uyumlu: number; uyumsuz: number; toplam: number;
+  manuel: number; otomatik: number; gecmisBoyutu: number;
+} {
+  const aktif     = checklist.filter(c => !c.silindi);
+  const manuel    = aktif.filter(c => !c.otomatikKontrol);
+  const otomatik  = aktif.filter(c => !!c.otomatikKontrol);
+  let uyumlu = 0;
+  for (const item of aktif) {
+    if (item.otomatikKontrol) { if (item.tamamlandi) uyumlu++; }
+    else                      { if (!isDue(item))    uyumlu++; }
+  }
+  const gecmisBoyutu = aktif.reduce((s, c) => s + (c.tamamlanmaGecmisi?.length ?? 0), 0);
+  return {
+    uyumlu,
+    uyumsuz:    aktif.length - uyumlu,
+    toplam:     aktif.length,
+    manuel:     manuel.length,
+    otomatik:   otomatik.length,
+    gecmisBoyutu,
+  };
 }
 
 export function prosedurDurumu(sonGuncelleme: string) {

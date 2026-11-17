@@ -67,7 +67,7 @@ export default function RealtimeProvider() {
           })
         .on("broadcast", { event: "acil-fon" },
           ({ payload }) => {
-            const d = payload as { hedefler: FonHedef[]; islemler: FonIslem[]; aktifHedefId: string | null };
+            const d = payload as { hedefler: FonHedef[]; islemler: FonIslem[] };
             acilFonSync(d);
           })
         .on("broadcast", { event: "isletme-giderleri" },

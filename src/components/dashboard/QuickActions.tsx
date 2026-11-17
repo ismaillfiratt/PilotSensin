@@ -8,12 +8,12 @@ import {
 } from "lucide-react";
 
 const actions = [
-  { label: "Gelir Ekle",    icon: TrendingUp,   color: "#10B981", href: "/nakit-akisi?modal=gelir" },
+  { label: "Gelir Ekle",    icon: TrendingUp,   color: "#e5e5e5", href: "/nakit-akisi?modal=gelir" },
   { label: "Gider Ekle",    icon: TrendingDown, color: "#EF4444", href: "/nakit-akisi?modal=gider" },
   { label: "Ürün Ekle",     icon: Package,      color: "#3B82F6", href: "/stok?modal=urun-ekle"   },
   { label: "Görev Ekle",    icon: CheckSquare,  color: "#8B5CF6", href: "/gorevler?modal=ekle"    },
-  { label: "Prosedür Ekle", icon: ClipboardList, color: "#F59E0B", href: "/prosedurler"            },
-  { label: "Fon Yatır",     icon: Shield,        color: "#10B981", href: "/acil-fon"               },
+  { label: "Prosedür Ekle", icon: ClipboardList, color: "#d4a373", href: "/prosedurler"            },
+  { label: "Fon Yatır",     icon: Shield,        color: "#e5e5e5", href: "/acil-fon"               },
 ];
 
 export default function QuickActions() {

@@ -13,14 +13,29 @@ import type { FonIslem, FonHedef }      from "./acil-fon-data";
 import type { IsletmeGideri }           from "./kar-zarar-data";
 import type { PlanlananKalem, TekrarlayanKayit } from "@/store/nakitAkis";
 import type { SatisKaydi }              from "@/store/satislar";
+import type { KdvKaydi }               from "@/store/kdvHavuzu";
+import type { Borc }                   from "./borc-data";
 
 const sb = () => createClient();
+
+// Son bildirim hata zamanını tut — aynı hata 5dk içinde tekrar bildirim oluşturmasın
+const SON_HATA: Map<string, number> = new Map();
 
 async function kontrol(hata: unknown, islem: string) {
   if (!hata) return;
   const err   = hata as { message?: string; code?: string; details?: string };
   const mesaj = err.message ?? String(hata);
+
+  // Bildirim kaydı başarısız olursa sessizce çık — sonsuz döngüyü önler
+  if (islem.toLowerCase().includes("bildirim")) return;
+
   console.error(`[DB Hatası] ${islem}:`, mesaj, { code: err.code, details: err.details });
+
+  // Rate limit: aynı hata 5 dakika içinde bir kez bildirim oluşturur
+  const anahtar = `${islem}:${mesaj.slice(0, 60)}`;
+  const simdi   = Date.now();
+  if ((SON_HATA.get(anahtar) ?? 0) > simdi - 5 * 60_000) return;
+  SON_HATA.set(anahtar, simdi);
 
   // Kullanıcıya bildirim gönder (lazy import — döngüsel bağımlılığı önler)
   try {
@@ -47,6 +62,8 @@ export interface UserStoreData {
   nakit_planlanan:   PlanlananKalem[];
   nakit_tekrarlayan: TekrarlayanKayit[];
   satislar:          SatisKaydi[];
+  kdv_havuzu:        KdvKaydi[];
+  borclar:           Borc[];
 }
 
 const BOŞ: UserStoreData = {
@@ -62,6 +79,8 @@ const BOŞ: UserStoreData = {
   nakit_planlanan:   [],
   nakit_tekrarlayan: [],
   satislar:          [],
+  kdv_havuzu:        [],
+  borclar:           [],
 };
 
 /* ─── Şirket veri deposu ─── */
@@ -90,6 +109,8 @@ export const userStoreDB = {
         nakit_planlanan:   cs.nakit_planlanan   ?? [],
         nakit_tekrarlayan: cs.nakit_tekrarlayan ?? [],
         satislar:          cs.satislar          ?? [],
+        kdv_havuzu:        cs.kdv_havuzu        ?? [],
+        borclar:           cs.borclar           ?? [],
       };
     }
 
@@ -113,6 +134,8 @@ export const userStoreDB = {
       nakit_planlanan:   us.nakit_planlanan   ?? [],
       nakit_tekrarlayan: us.nakit_tekrarlayan ?? [],
       satislar:          us.satislar          ?? [],
+      kdv_havuzu:        us.kdv_havuzu        ?? [],
+      borclar:           us.borclar           ?? [],
     };
   },
 
@@ -168,7 +191,9 @@ export async function storeKaydet<K extends keyof UserStoreData>(
   try {
     await userStoreDB.kaydet(uid, alan, veri);
   } catch (e) {
-    console.error(`[Store] ${alan} kayıt hatası:`, e);
+    if (alan !== "bildirimler") {
+      console.error(`[Store] ${alan} kayıt hatası:`, e);
+    }
   }
 }
 
@@ -211,6 +236,7 @@ export const sirketDB = {
         nakit_planlanan:   us.nakit_planlanan   ?? [],
         nakit_tekrarlayan: us.nakit_tekrarlayan ?? [],
         satislar:          us.satislar          ?? [],
+        kdv_havuzu:        us.kdv_havuzu        ?? [],
         }, { onConflict: "company_id" });
     }
 

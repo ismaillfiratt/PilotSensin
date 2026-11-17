@@ -38,156 +38,166 @@ const MODUL_ADI: Record<SilinebilirTip, string> = {
   stokHareketi:     "Stok Hareketi",
   ekipUye:          "Ekip",
   davet:            "Ekip",
+  sopGrup:          "Prosedürler",
+  checklistGrup:    "Kontrol Listesi",
+  borç:             "Borçlar",
+  ödeme:            "Ödemeler",
 };
 
-/** Tüm store'lardan silinen kayıtları birleştirir — yeniden eskiye sıralı. */
+/**
+ * Tüm store'lardan silinen kayıtları birleştirir — yeniden eskiye sıralı.
+ *
+ * Store'lardaki `silinenler` getter'ları stabil fonksiyon referansları olduğu için
+ * useMemo deps olarak kullanılamaz. Bunun yerine gerçek data array'lerine
+ * subscribe ediyoruz; array değişince memo yeniden hesaplanır.
+ */
 export function useTumSilinenler(): SilinmisOge[] {
-  const nakitSil   = useNakit((s) => s.silinenler);
+  // ── Data arrays (reactive — memo'yu tetikler) ──
+  const nakitIslemler   = useNakit((s) => s.islemler);
+  const stokUrunler     = useStok((s) => s.urunler);
+  const satisKayitlar   = useSatislar((s) => s.kayitlar);
+  const gorevListesi    = useGorevler((s) => s.gorevler);
+  const prosedurListesi = useProsedurler((s) => s.prosedurler);
+  const checklistler    = useProsedurler((s) => s.checklist);
+  const fonHedefler     = useAcilFon((s) => s.hedefler);
+  const fonIslemler     = useAcilFon((s) => s.islemler);
+  const giderler        = useIsletmeGiderleri((s) => s.giderler);
+  const bildirimListesi = useBildirimler((s) => s.bildirimler);
+
+  // ── Action functions (stable refs — closure için) ──
   const nakitGeri  = useNakit((s) => s.geriAl);
   const nakitKal   = useNakit((s) => s.kaliciSil);
-
-  const stokSil    = useStok((s) => s.silinenler);
   const stokGeri   = useStok((s) => s.geriAl);
   const stokKal    = useStok((s) => s.kaliciSil);
-
-  const satisSil   = useSatislar((s) => s.silinenler);
   const satisGeri  = useSatislar((s) => s.geriAl);
   const satisKal   = useSatislar((s) => s.kaliciSil);
-
-  const gorevSil   = useGorevler((s) => s.silinenler);
   const gorevGeri  = useGorevler((s) => s.geriAl);
   const gorevKal   = useGorevler((s) => s.kaliciSil);
-
-  const prosedurSil  = useProsedurler((s) => s.prosedurSilinenler);
   const prosedurGeri = useProsedurler((s) => s.prosedurGeriAl);
   const prosedurKal  = useProsedurler((s) => s.prosedurKaliciSil);
-
-  const checkSil     = useProsedurler((s) => s.checklistSilinenler);
   const checkGeri    = useProsedurler((s) => s.checklistGeriAl);
   const checkKal     = useProsedurler((s) => s.checklistKaliciSil);
-
-  const fonHSil  = useAcilFon((s) => s.hedefSilinenler);
-  const fonHGeri = useAcilFon((s) => s.hedefGeriAl);
-  const fonHKal  = useAcilFon((s) => s.hedefKaliciSil);
-
-  const fonISil  = useAcilFon((s) => s.islemSilinenler);
-  const fonIGeri = useAcilFon((s) => s.islemGeriAl);
-  const fonIKal  = useAcilFon((s) => s.islemKaliciSil);
-
-  const giderSil  = useIsletmeGiderleri((s) => s.silinenler);
-  const giderGeri = useIsletmeGiderleri((s) => s.geriAl);
-  const giderKal  = useIsletmeGiderleri((s) => s.kaliciSil);
-
-  const bildSil  = useBildirimler((s) => s.silinenler);
-  const bildGeri = useBildirimler((s) => s.geriAl);
-  const bildKal  = useBildirimler((s) => s.kaliciSil);
+  const fonHGeri   = useAcilFon((s) => s.hedefGeriAl);
+  const fonHKal    = useAcilFon((s) => s.hedefKaliciSil);
+  const fonIGeri   = useAcilFon((s) => s.islemGeriAl);
+  const fonIKal    = useAcilFon((s) => s.islemKaliciSil);
+  const giderGeri  = useIsletmeGiderleri((s) => s.geriAl);
+  const giderKal   = useIsletmeGiderleri((s) => s.kaliciSil);
+  const bildGeri   = useBildirimler((s) => s.geriAl);
+  const bildKal    = useBildirimler((s) => s.kaliciSil);
 
   return useMemo<SilinmisOge[]>(() => {
     const liste: SilinmisOge[] = [];
 
-    nakitSil().forEach((i) => liste.push({
+    nakitIslemler.filter((i) => i.silindi).forEach((i) => liste.push({
       id: i.id, tip: "nakitIslem",
       isim: `${i.kategori} — ${(i.tutarKurus / 100).toLocaleString("tr-TR")} ₺`,
       silinmeTarihi: i.silinmeTarihi!, silenKullaniciAd: i.silenKullaniciAd,
       modulAdi: MODUL_ADI.nakitIslem, kaskadIslemId: i.kaskadIslemId,
-      geriAlFn: () => nakitGeri(i.id),
+      geriAlFn:    () => nakitGeri(i.id),
       kaliciSilFn: () => nakitKal(i.id),
     }));
 
-    stokSil().forEach((u) => liste.push({
+    stokUrunler.filter((u) => u.silindi).forEach((u) => liste.push({
       id: u.id, tip: "urun",
       isim: u.ad,
       silinmeTarihi: u.silinmeTarihi!, silenKullaniciAd: u.silenKullaniciAd,
       modulAdi: MODUL_ADI.urun, kaskadIslemId: u.kaskadIslemId,
-      geriAlFn: () => stokGeri(u.id),
+      geriAlFn:    () => stokGeri(u.id),
       kaliciSilFn: () => stokKal(u.id),
     }));
 
-    satisSil().forEach((k) => liste.push({
+    satisKayitlar.filter((k) => k.silindi).forEach((k) => liste.push({
       id: k.id, tip: "satisKaydi",
       isim: `${k.urunAd} × ${k.adet}`,
       silinmeTarihi: k.silinmeTarihi!, silenKullaniciAd: k.silenKullaniciAd,
       modulAdi: MODUL_ADI.satisKaydi, kaskadIslemId: k.kaskadIslemId,
-      geriAlFn: () => satisGeri(k.id),
+      geriAlFn:    () => satisGeri(k.id),
       kaliciSilFn: () => satisKal(k.id),
     }));
 
-    gorevSil().forEach((g) => liste.push({
+    gorevListesi.filter((g) => g.silindi).forEach((g) => liste.push({
       id: g.id, tip: "gorev",
       isim: g.baslik,
       silinmeTarihi: g.silinmeTarihi!, silenKullaniciAd: g.silenKullaniciAd,
       modulAdi: MODUL_ADI.gorev, kaskadIslemId: g.kaskadIslemId,
-      geriAlFn: () => gorevGeri(g.id),
+      geriAlFn:    () => gorevGeri(g.id),
       kaliciSilFn: () => gorevKal(g.id),
     }));
 
-    prosedurSil().forEach((p) => liste.push({
+    prosedurListesi.filter((p) => p.silindi).forEach((p) => liste.push({
       id: p.id, tip: "prosedur",
       isim: p.baslik,
       silinmeTarihi: p.silinmeTarihi!, silenKullaniciAd: p.silenKullaniciAd,
       modulAdi: MODUL_ADI.prosedur, kaskadIslemId: p.kaskadIslemId,
-      geriAlFn: async () => { await prosedurGeri(p.id); },
-      kaliciSilFn: async () => { await prosedurKal(p.id); },
+      geriAlFn:    () => Promise.resolve(prosedurGeri(p.id)),
+      kaliciSilFn: () => Promise.resolve(prosedurKal(p.id)),
     }));
 
-    checkSil().forEach((c) => liste.push({
+    checklistler.filter((c) => c.silindi).forEach((c) => liste.push({
       id: c.id, tip: "checklistMaddesi",
       isim: c.baslik,
       silinmeTarihi: c.silinmeTarihi!, silenKullaniciAd: c.silenKullaniciAd,
       modulAdi: MODUL_ADI.checklistMaddesi, kaskadIslemId: c.kaskadIslemId,
-      geriAlFn: async () => { await checkGeri(c.id); },
-      kaliciSilFn: async () => { await checkKal(c.id); },
+      geriAlFn:    () => Promise.resolve(checkGeri(c.id)),
+      kaliciSilFn: () => Promise.resolve(checkKal(c.id)),
     }));
 
-    fonHSil().forEach((h) => liste.push({
+    fonHedefler.filter((h) => h.silindi).forEach((h) => liste.push({
       id: h.id, tip: "acilFonHedef",
       isim: h.ad,
       silinmeTarihi: h.silinmeTarihi!, silenKullaniciAd: h.silenKullaniciAd,
       modulAdi: MODUL_ADI.acilFonHedef, kaskadIslemId: h.kaskadIslemId,
-      geriAlFn: () => fonHGeri(h.id),
+      geriAlFn:    () => fonHGeri(h.id),
       kaliciSilFn: () => fonHKal(h.id),
     }));
 
-    fonISil().forEach((i) => liste.push({
+    fonIslemler.filter((i) => i.silindi).forEach((i) => liste.push({
       id: i.id, tip: "acilFonIslem",
       isim: `${i.tip === "yatirma" ? "Yatırma" : "Çekme"} — ${(i.tutarKurus / 100).toLocaleString("tr-TR")} ₺`,
       silinmeTarihi: i.silinmeTarihi!, silenKullaniciAd: i.silenKullaniciAd,
       modulAdi: MODUL_ADI.acilFonIslem, kaskadIslemId: i.kaskadIslemId,
-      geriAlFn: () => fonIGeri(i.id),
+      geriAlFn:    () => fonIGeri(i.id),
       kaliciSilFn: () => fonIKal(i.id),
     }));
 
-    giderSil().forEach((g) => liste.push({
+    giderler.filter((g) => g.silindi).forEach((g) => liste.push({
       id: g.id, tip: "isletmeGideri",
       isim: `${g.kategori} — ${(g.tutarKurus / 100).toLocaleString("tr-TR")} ₺/ay`,
       silinmeTarihi: g.silinmeTarihi!, silenKullaniciAd: g.silenKullaniciAd,
       modulAdi: MODUL_ADI.isletmeGideri, kaskadIslemId: g.kaskadIslemId,
-      geriAlFn: () => giderGeri(g.id),
+      geriAlFn:    () => giderGeri(g.id),
       kaliciSilFn: () => giderKal(g.id),
     }));
 
-    bildSil().forEach((b) => liste.push({
+    bildirimListesi.filter((b) => b.silindi).forEach((b) => liste.push({
       id: b.id, tip: "bildirim",
       isim: b.baslik,
       silinmeTarihi: b.silinmeTarihi!, silenKullaniciAd: b.silenKullaniciAd,
       modulAdi: MODUL_ADI.bildirim, kaskadIslemId: b.kaskadIslemId,
-      geriAlFn:   async () => { bildGeri(b.id); },
+      geriAlFn:    async () => { bildGeri(b.id); },
       kaliciSilFn: async () => { bildKal(b.id); },
     }));
 
     return liste
       .filter((x) => !!x.silinmeTarihi)
-      .sort((a, b) => b.silinmeTarihi.localeCompare(a.silinmeTarihi));
+      .sort((a, b) => {
+        const at = new Date(a.silinmeTarihi).getTime();
+        const bt = new Date(b.silinmeTarihi).getTime();
+        if (bt !== at) return bt - at;
+        if (a.tip !== b.tip) return a.tip.localeCompare(b.tip);
+        return a.id.localeCompare(b.id);
+      });
   }, [
-    nakitSil, nakitGeri, nakitKal,
-    stokSil, stokGeri, stokKal,
-    satisSil, satisGeri, satisKal,
-    gorevSil, gorevGeri, gorevKal,
-    prosedurSil, prosedurGeri, prosedurKal,
-    checkSil, checkGeri, checkKal,
-    fonHSil, fonHGeri, fonHKal,
-    fonISil, fonIGeri, fonIKal,
-    giderSil, giderGeri, giderKal,
-    bildSil, bildGeri, bildKal,
+    nakitIslemler, nakitGeri, nakitKal,
+    stokUrunler, stokGeri, stokKal,
+    satisKayitlar, satisGeri, satisKal,
+    gorevListesi, gorevGeri, gorevKal,
+    prosedurListesi, prosedurGeri, prosedurKal,
+    checklistler, checkGeri, checkKal,
+    fonHedefler, fonHGeri, fonHKal,
+    fonIslemler, fonIGeri, fonIKal,
+    giderler, giderGeri, giderKal,
+    bildirimListesi, bildGeri, bildKal,
   ]);
 }

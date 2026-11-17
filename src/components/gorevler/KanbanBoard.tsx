@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
@@ -41,10 +41,12 @@ function KanbanSutun({ durum, liste, aktifId, onEkle, onDuzenle, onSil, onTasi }
   const cfg = DURUM_CONFIG[durum];
   const { setNodeRef, isOver } = useDroppable({ id: durum });
 
+  // sıralamayı memoize et — her render'da yeni array referansı oluşmasın
+  const siraliListe = useMemo(() => sirala(liste), [liste]);
+
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between px-4 py-2.5 rounded-xl border"
-        style={{ backgroundColor: cfg.bg, borderColor: cfg.border }}>
+      <div className="flex items-center justify-between px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full" style={{ backgroundColor: cfg.color }} />
           <span className="text-sm font-semibold" style={{ color: cfg.color }}>{cfg.label}</span>
@@ -63,26 +65,24 @@ function KanbanSutun({ durum, liste, aktifId, onEkle, onDuzenle, onSil, onTasi }
       <div ref={setNodeRef}
         className="flex flex-col gap-2 min-h-20 rounded-xl transition-all duration-150 p-1"
         style={isOver ? { backgroundColor: `${cfg.color}12`, outline: `2px dashed ${cfg.color}60` } : {}}>
-        <AnimatePresence mode="popLayout">
-          {liste.length === 0 ? (
-            <motion.div key="bos" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="py-8 text-center text-xs border border-dashed rounded-xl transition-colors"
-              style={{
-                color: isOver ? cfg.color : "#94a3b8",
-                borderColor: isOver ? `${cfg.color}60` : "rgba(255,255,255,0.06)",
-              }}>
-              {isOver ? "Buraya bırak" : "Görev eklenmedi"}
-            </motion.div>
-          ) : (
-            sirala(liste).map((g, i) => (
-              <GorevKarti key={g.id} gorev={g} index={i}
-                onDuzenle={() => onDuzenle(g)}
-                onSil={() => onSil(g)}
-                onTasi={(yeni) => onTasi(g.id, yeni)}
-              />
-            ))
-          )}
-        </AnimatePresence>
+        {siraliListe.length === 0 ? (
+          <div
+            className="py-8 text-center text-xs border border-dashed rounded-xl transition-colors"
+            style={{
+              color: isOver ? cfg.color : "#94a3b8",
+              borderColor: isOver ? `${cfg.color}60` : "rgba(255,255,255,0.06)",
+            }}>
+            {isOver ? "Buraya bırak" : "Görev eklenmedi"}
+          </div>
+        ) : (
+          siraliListe.map((g, i) => (
+            <GorevKarti key={g.id} gorev={g} index={i}
+              onDuzenle={() => onDuzenle(g)}
+              onSil={() => onSil(g)}
+              onTasi={(yeni) => onTasi(g.id, yeni)}
+            />
+          ))
+        )}
       </div>
     </div>
   );

@@ -335,14 +335,22 @@ export function staleIdler(
   const gunBasi  = new Date(); gunBasi.setHours(0, 0, 0, 0);
   const gunSonu  = new Date(); gunSonu.setHours(23, 59, 59, 999);
 
-  // Stok kritik bildirimi — kritik ürün kalmadıysa sil
+  // Stok kritik bildirimi (engine, günlük ID) — kritik ürün kalmadıysa sil
   if (mevcut(gid("stok-kritik")) && !urunler.some((u) => stokDurumu(u) === "kritik")) {
     stale.push(gid("stok-kritik"));
   }
-  // Stok uyarı bildirimi — uyarı ürün kalmadıysa sil
+  // Stok uyarı bildirimi (engine, günlük ID) — uyarı ürün kalmadıysa sil
   if (mevcut(gid("stok-uyari")) && !urunler.some((u) => stokDurumu(u) === "uyari")) {
     stale.push(gid("stok-uyari"));
   }
+  // Anlık stok-kritik bildirimleri (UUID ID, kaynak:"olay") — ürün artık kritik değilse sil
+  mevcutlar
+    .filter((b) => !b.silindi && b.modul === "stok" && b.baslik === "Kritik Stok Uyarısı" && b.kaynak === "olay")
+    .forEach((b) => {
+      const urunAd     = b.mesaj.split(" kritik seviyenin")[0];
+      const halaKritik = urunler.some((u) => u.ad === urunAd && stokDurumu(u) === "kritik");
+      if (!halaKritik) stale.push(b.id);
+    });
   // Gecikmiş görev bildirimi — gecikmiş görev kalmadıysa sil
   if (
     mevcut(gid("gorev-gecik")) &&
@@ -376,5 +384,52 @@ export function staleIdler(
   if (mevcut(gid("kz-dusuk-marj"))  && (marj2 === null || marj2 >= 0.05)) stale.push(gid("kz-dusuk-marj"));
   if (mevcut(gid("kz-smm-yuksek"))  && smm2 <= ciro2)                   stale.push(gid("kz-smm-yuksek"));
 
+  // Önceki günlere ait günlük-ID'li bildirimler — bugünün tarihi değilse sil
+  const bugun = trBugun();
+  mevcutlar
+    .filter((b) => !b.silindi && b.id.includes("__") && !b.id.endsWith(`__${bugun}`))
+    .forEach((b) => stale.push(b.id));
+
   return stale;
+}
+
+/* ─── 8. ÜRÜN MARJ TETİKLEYİCİSİ ──────────────────────────────────── */
+import type { UrunMarjHesap } from "@/lib/selectors/urun-marj";
+
+export function urunMarjTetikle(
+  marjlar:   UrunMarjHesap[],
+  mevcutlar: Bildirim[],
+): YeniBildirim[] {
+  const sonuc: YeniBildirim[] = [];
+
+  const zararli = marjlar.filter((m) => m.durumu === "zarar" && m.satisFiyati > 0);
+  const alarmli = marjlar.filter((m) => m.alarmAktif);
+
+  if (zararli.length > 0 && !varMi(gid("marj-zarar"), mevcutlar)) {
+    sonuc.push({
+      id:         gid("marj-zarar"),
+      tip:        "kritik",
+      modul:      "stok",
+      baslik:     "Ürün zarar ediyor",
+      mesaj:      zararli.length === 1
+        ? `"${zararli[0].urunAd}" her satışta zarar ediyor. Gider veya fiyatı düzenle.`
+        : `${zararli.length} ürün zarar ediyor (${zararli.slice(0, 2).map((m) => m.urunAd).join(", ")}${zararli.length > 2 ? "…" : ""}).`,
+      ilgiliLink: "/stok",
+    });
+  }
+
+  if (alarmli.length > 0 && !varMi(gid("marj-alarm"), mevcutlar)) {
+    sonuc.push({
+      id:         gid("marj-alarm"),
+      tip:        "uyari",
+      modul:      "stok",
+      baslik:     "Ürün hedef marjın altında",
+      mesaj:      alarmli.length === 1
+        ? `"${alarmli[0].urunAd}" marjı %${alarmli[0].birimBrutMarj.toFixed(1)} — hedef %${alarmli[0].hedefMarjYuzde}.`
+        : `${alarmli.length} ürün hedef marjın altında.`,
+      ilgiliLink: "/stok",
+    });
+  }
+
+  return sonuc;
 }

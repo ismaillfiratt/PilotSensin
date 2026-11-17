@@ -13,6 +13,8 @@ import { useLayout }      from "@/store/layout";
 import { createClient }   from "@/utils/supabase/client";
 import { useBildirimler } from "@/store/bildirimler";
 import AramaModal         from "@/components/arama/AramaModal";
+import UyariRozeti        from "./UyariRozeti";
+import { storesSifirla }     from "@/lib/auth-temizlik";
 
 const MODUL_HREF: Record<string, string> = {
   "stok":        "/stok",
@@ -47,7 +49,7 @@ export default function Topbar() {
   const [aramaAcik,   setAramaAcik]   = useState(false);
   const [kullanici,   setKullanici]   = useState<KullaniciBilgi | null>(null);
 
-  const { bildirimler, okunduYap, okunduToggle, tumunuOkunduYap } = useBildirimler();
+  const { bildirimler, okunduYap, okunduToggle } = useBildirimler();
   const notifRef                = useRef<HTMLDivElement>(null);
   const { mobileSidebarToggle } = useLayout();
 
@@ -65,7 +67,28 @@ export default function Topbar() {
     });
   }, []);
 
-  const okunmamis = bildirimler.filter((b) => !b.okundu);
+  // ── Badge hesabı — sadece kaynak !== "tarama" okunmamışlar ──────────────
+  const okunmamisOlaylar = bildirimler.filter((b) =>
+    !b.silindi && !b.okundu && b.kaynak !== "tarama"
+  );
+
+  const toplamBadge = okunmamisOlaylar.length;
+
+  const badgeRenk =
+    okunmamisOlaylar.some((b) => b.tip === "kritik") ? "#EF4444" :
+    okunmamisOlaylar.some((b) => b.tip === "uyari")  ? "#F59E0B" :
+    okunmamisOlaylar.length > 0                       ? "var(--leaf)" : undefined;
+
+  const handleTumunuOkundu = () => {
+    bildirimler
+      .filter((b) => !b.silindi && !b.okundu && b.kaynak !== "tarama")
+      .forEach((b) => okunduYap(b.id));
+  };
+
+  // ── Dropdown son olaylar ───────────────────────────────────────────────────
+  const sonOlaylar = bildirimler
+    .filter((b) => !b.silindi && b.kaynak !== "tarama")
+    .slice(0, 5);
 
   useEffect(() => {
     if (!notifOpen) return;
@@ -83,16 +106,23 @@ export default function Topbar() {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
         setAramaAcik((p) => !p);
+        return;
+      }
+      if (e.key === "/" && !aramaAcik) {
+        const target = e.target as HTMLElement;
+        const editable = ["INPUT", "TEXTAREA"].includes(target.tagName) || target.isContentEditable;
+        if (!editable) { e.preventDefault(); setAramaAcik(true); }
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [aramaAcik]);
 
   const handleCikis = async () => {
+    storesSifirla();
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/giris");
+    router.replace("/giris");
     router.refresh();
   };
 
@@ -108,8 +138,8 @@ export default function Topbar() {
     <>
       {/* ── Mobile header ── */}
       <header
-        className="md:hidden flex items-center justify-between h-14 px-4 shrink-0 bg-white"
-        style={{ borderBottom: "1px solid var(--border-color)" }}
+        className="md:hidden flex items-center justify-between h-14 px-4 shrink-0"
+        style={{ background: "var(--bg-card)", borderBottom: "1px solid var(--border-color)" }}
       >
         {pathname !== "/dashboard" ? (
           <button
@@ -129,8 +159,8 @@ export default function Topbar() {
           </button>
         )}
 
-        <Link href="/dashboard" className="font-semibold text-sm text-gray-800">
-          Pilot Sensin
+        <Link href="/dashboard" className="font-semibold text-sm text-gray-800 truncate max-w-[160px] text-center">
+          {kullanici?.businessAd ?? "—"}
         </Link>
 
         <Link
@@ -138,9 +168,12 @@ export default function Topbar() {
           className="min-w-11 min-h-11 flex items-center justify-center -mr-1 rounded-xl text-gray-400 active:bg-gray-50 transition-colors relative"
         >
           <Bell className="w-5 h-5" />
-          {okunmamis.length > 0 && (
-            <span className="absolute top-2 right-2 min-w-4.5 h-4.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1">
-              {okunmamis.length > 9 ? "9+" : okunmamis.length}
+          {toplamBadge > 0 && (
+            <span
+              className="absolute top-2 right-2 min-w-4.5 h-4.5 flex items-center justify-center rounded-full text-white text-[10px] font-bold px-1"
+              style={{ backgroundColor: badgeRenk ?? "#EF4444" }}
+            >
+              {toplamBadge > 9 ? "9+" : toplamBadge}
             </span>
           )}
         </Link>
@@ -148,16 +181,18 @@ export default function Topbar() {
 
       {/* ── Desktop header ── */}
       <header
-        className="hidden md:flex items-center justify-between px-6 py-3 shrink-0 bg-white"
-        style={{ borderBottom: "1px solid var(--border-color)" }}
+        className="hidden md:flex items-center justify-between px-6 py-3 shrink-0"
+        style={{ background: "var(--bg-card)", borderBottom: "1px solid var(--border-color)" }}
       >
-        {/* Sol: breadcrumb */}
+        {/* Sol: işletme adı + breadcrumb */}
         <div className="flex items-center gap-1 text-xs text-gray-400">
-          <Link href="/dashboard" className="hover:text-gray-600 transition-colors">Ana sayfa</Link>
+          <Link href="/dashboard" className="font-medium text-gray-700 hover:text-gray-900 transition-colors">
+            {kullanici?.businessAd ?? "—"}
+          </Link>
           {pathname !== "/dashboard" && pathname !== "/" && (
             <>
-              <span>/</span>
-              <span className="text-gray-600 font-medium capitalize">
+              <span className="text-gray-300">/</span>
+              <span className="text-gray-500 capitalize">
                 {pathname.split("/").filter(Boolean).pop()?.replace(/-/g, " ")}
               </span>
             </>
@@ -182,6 +217,9 @@ export default function Topbar() {
             <Search className="w-4 h-4" />
           </button>
 
+          {/* Uyarı rozeti */}
+          <UyariRozeti />
+
           {/* Bildirimler */}
           <div className="relative" ref={notifRef}>
             <button
@@ -189,9 +227,12 @@ export default function Topbar() {
               className="relative w-9 h-9 flex items-center justify-center rounded-lg bg-gray-50 border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-colors"
             >
               <Bell className="w-4 h-4" />
-              {okunmamis.length > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 min-w-4.5 h-4.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1 pulse-green">
-                  {okunmamis.length > 9 ? "9+" : okunmamis.length}
+              {toplamBadge > 0 && (
+                <span
+                  className="absolute -top-0.5 -right-0.5 min-w-4.5 h-4.5 flex items-center justify-center rounded-full text-white text-[10px] font-bold px-1"
+                  style={{ backgroundColor: badgeRenk ?? "#EF4444" }}
+                >
+                  {toplamBadge > 9 ? "9+" : toplamBadge}
                 </span>
               )}
             </button>
@@ -205,37 +246,34 @@ export default function Topbar() {
                   transition={{ duration: 0.15 }}
                   className="absolute right-0 top-11 w-80 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden"
                 >
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                    <span className="text-sm font-semibold text-gray-800">Bildirimler</span>
-                    <div className="flex items-center gap-3">
-                      {okunmamis.length > 0 && (
+                  <div className="max-h-[420px] overflow-y-auto">
+
+                    {/* ── Son Olaylar ── */}
+                    <div className="px-4 pt-2 pb-1 flex items-center justify-between">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                        Son Olaylar
+                      </p>
+                      {okunmamisOlaylar.length > 0 && (
                         <button
-                          onClick={tumunuOkunduYap}
-                          className="text-xs text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-1"
+                          onClick={handleTumunuOkundu}
+                          className="text-[10px] text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-1"
                         >
-                          <CheckCheck className="w-3.5 h-3.5" />
-                          Okundu say
+                          <CheckCheck className="w-3 h-3" />
+                          Tümünü okundu say
                         </button>
                       )}
-                      <span className="text-xs font-semibold" style={{ color: "var(--leaf)" }}>
-                        {okunmamis.length} yeni
-                      </span>
                     </div>
-                  </div>
-
-                  <div className="max-h-80 overflow-y-auto divide-y divide-gray-50">
-                    {bildirimler.length === 0 ? (
-                      <div className="py-8 text-center text-xs text-gray-400">Bildirim yok</div>
+                    {sonOlaylar.length === 0 ? (
+                      <div className="px-4 pb-3 text-xs text-gray-400">Olay kaydı yok</div>
                     ) : (
-                      bildirimler.slice(0, 8).map((b) => {
+                      sonOlaylar.map((b) => {
                         const dotColor =
                           b.tip === "kritik" ? "#EF4444" :
-                          b.tip === "uyari"  ? "#F59E0B" :
-                          "#10B981";
+                          b.tip === "uyari"  ? "#F59E0B" : "#10B981";
                         return (
                           <div
                             key={b.id}
-                            className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors group"
+                            className="flex items-start gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors group"
                           >
                             <span
                               className="mt-1.5 w-2 h-2 rounded-full shrink-0"
@@ -282,7 +320,8 @@ export default function Topbar() {
                     )}
                   </div>
 
-                  <div className="px-4 py-2.5 border-t border-gray-100">
+                  {/* ── En alt ── */}
+                  <div className="px-4 py-2.5 border-t border-gray-100 flex items-center justify-between">
                     <Link
                       href="/bildirimler"
                       onClick={() => setNotifOpen(false)}
@@ -291,6 +330,11 @@ export default function Topbar() {
                     >
                       Tüm bildirimleri gör →
                     </Link>
+                    {toplamBadge > 0 && (
+                      <span className="text-xs font-semibold" style={{ color: badgeRenk }}>
+                        {toplamBadge} bekliyor
+                      </span>
+                    )}
                   </div>
                 </motion.div>
               )}
